@@ -24,7 +24,7 @@ Response:
 - Errors :
   - Invalid input value:
     - status 400
-    - Error data example:
+    - Error content:
     ```json
     {
       "error field": "error message"
