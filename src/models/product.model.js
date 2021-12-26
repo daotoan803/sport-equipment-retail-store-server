@@ -21,7 +21,7 @@ Product.init(
       },
       validate: {
         len: {
-          args: [4, 50],
+          args: [[4, 50]],
           msg: 'Product title must be between 4 and 50 characters',
         },
       },
@@ -29,7 +29,7 @@ Product.init(
 
     details: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
 
     price: {
@@ -82,6 +82,7 @@ Product.init(
     availableQuantity: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      allowNull: true,
       validate: {
         min: {
           args: 0,
@@ -96,10 +97,11 @@ Product.init(
 
     state: {
       type: DataTypes.STRING,
+      allowNull: true,
       defaultValue: Product.state.hidden,
       validate: {
         isIn: {
-          args: Object.values(Product.state),
+          args: [Object.values(Product.state)],
           msg: `Invalid product state, only accept : ${Object.values(
             Product.state
           ).join(', ')}`,

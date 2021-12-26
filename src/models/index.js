@@ -11,5 +11,5 @@ Product.hasMany(Image);
 Image.belongsTo(Product);
 
 module.exports = () => {
-  return sequelizeConnection.sync({ alter: true });
+  return sequelizeConnection.sync({ force: true });
 };

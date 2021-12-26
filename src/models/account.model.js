@@ -17,6 +17,19 @@ Account.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(value) {
+        this.setDataValue('password', value.trim() !== '' ? value : null);
+      },
+      validate: {
+        len: {
+          args: [4, 200],
+          msg: 'Password must be at least 4 characters',
+        },
+        notNull: {
+          args: true,
+          msg: "password can't be empty",
+        },
+      },
     },
     role: {
       type: DataTypes.STRING,
