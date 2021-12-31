@@ -4,7 +4,6 @@ const errorHandler = require('../utils/error-handler');
 
 exports.signup = async (req, res, next) => {
   const { name, email, dob, gender, password } = req.body;
-
   try {
     const isEmailExists = await User.isEmailAlreadyExist(email);
     if (isEmailExists)
@@ -16,7 +15,7 @@ exports.signup = async (req, res, next) => {
       gender,
       password,
     });
-    res.json(user.toJSON());
+    res.status(200).json(user.toJSON());
   } catch (e) {
     if (e instanceof ValidationError) {
       const errors = errorHandler.parseValidationErrors(e);

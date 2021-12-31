@@ -1,15 +1,15 @@
 {
-  "name": "server",
+  "name": "sport_equipment_retail_store",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "author": "Đào Đình Toàn",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -22,6 +22,8 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "eslint": "^8.5.0"
+    "@types/jest": "^27.4.0",
+    "eslint": "^8.5.0",
+    "jest": "^27.4.5"
   }
 }

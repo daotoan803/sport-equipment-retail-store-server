@@ -39,14 +39,18 @@ class User extends Model {
 
   static async signupUser({ name, email, dob, gender, password }) {
     const t = await sequelizeConnection.transaction();
-
-    const user = await User.create(
-      { name, email, dob, gender, password },
-      { transaction: t }
-    );
-    await user.createAccount({ password }, { transaction: t });
-    await t.commit();
-    return user;
+    try {
+      const user = await User.create(
+        { name, email, dob, gender, password },
+        { transaction: t }
+      );
+      await user.createAccount({ password }, { transaction: t });
+      await t.commit();
+      return user;
+    } catch (e) {
+      t.rollback();
+      throw e;
+    }
   }
 }
 
@@ -60,15 +64,20 @@ User.init(
       },
       validate: {
         notEmpty: {
-          args: true,
           msg: "Name can't be empty",
         },
       },
     },
 
     dob: {
-      type: DataTypes.STRING,
-      allowNull: true,
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        isDate: {
+          args: true,
+          msg: 'Invalid date format, must be "mm-dd-yyyy" or UTC format or ISO format ',
+        },
+      },
     },
 
     phoneNumber: {
@@ -97,7 +106,6 @@ User.init(
       },
       validate: {
         isEmail: {
-          args: true,
           msg: 'Please enter a valid email address',
         },
       },
@@ -106,9 +114,15 @@ User.init(
     gender: {
       type: DataTypes.STRING,
       defaultValue: User.gender.other,
+      set(value) {
+        this.setDataValue(
+          'gender',
+          value.trim() === '' ? User.gender.other : value
+        );
+      },
       validate: {
         isIn: {
-          args: Object.values(User.gender),
+          args: [Object.values(User.gender)],
           msg: `Invalid gender, only accept: ${Object.values(User.gender).join(
             ', '
           )}`,
@@ -121,7 +135,6 @@ User.init(
       allowNull: true,
       validate: {
         notEmpty: {
-          args: true,
           msg: "Address can't be empty",
         },
       },

@@ -9,6 +9,12 @@ class Product extends Model {
     outStock: 'outStock',
     hidden: 'hidden',
   };
+
+  static async isTitleExists(title) {
+    const product = await Product.findOne({ where: { title } });
+    if (product) return true;
+    return false;
+  }
 }
 
 Product.init(
@@ -19,6 +25,7 @@ Product.init(
       set(value) {
         this.setDataValue('title', _.capitalize(value.trim()));
       },
+      unique: true,
       validate: {
         len: {
           args: [[4, 50]],
@@ -35,13 +42,15 @@ Product.init(
     price: {
       type: DataTypes.DOUBLE,
       allowNull: false,
+      set(value) {
+        this.setDataValue('price', Number(value));
+      },
       validate: {
         isDecimal: {
-          args: true,
           msg: 'Product price must be a number',
         },
         min: {
-          args: 0,
+          args: [0],
           msg: "Product price can't be negative",
         },
       },
@@ -50,14 +59,15 @@ Product.init(
     promotionPrice: {
       type: DataTypes.DOUBLE,
       allowNull: true,
-
+      set(value) {
+        this.setDataValue('promotionPrice', Number(value));
+      },
       validate: {
         isDecimal: {
-          args: true,
           msg: 'Product promotion price must be a number',
         },
         min: {
-          args: 0,
+          args: [0],
           msg: "Product promotion price can't be negative",
         },
       },
@@ -67,13 +77,15 @@ Product.init(
       type: DataTypes.INTEGER,
       allowNull: false,
 
+      set(value) {
+        this.setDataValue('warrantyPeriodByDay', Number(value));
+      },
       validate: {
         isInt: {
-          args: true,
           msg: 'Invalid warranty period by day value, must be an integer and greater than 0',
         },
         min: {
-          args: 0,
+          args: [0],
           msg: 'Invalid warranty period by day value, must be an integer and greater than 0',
         },
       },
@@ -83,13 +95,15 @@ Product.init(
       type: DataTypes.INTEGER,
       defaultValue: 0,
       allowNull: true,
+      set(value) {
+        this.setDataValue('availableQuantity', Number(value));
+      },
       validate: {
         min: {
-          args: 0,
+          args: [0],
           msg: "Product available quantity can't be negative",
         },
         isInt: {
-          args: 0,
           msg: 'Product available quantity must be an integer',
         },
       },

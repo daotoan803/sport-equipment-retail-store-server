@@ -1,10 +1,12 @@
 const express = require('express');
 
 const userRoutes = require('./user.routes.js');
+const adminRoutes = require('./admin');
 
-const routes = new express.Router();
+const routes = express.Router();
 
 routes.use('/user', userRoutes);
+routes.use('/admin', adminRoutes);
 
 routes.use((req, res) => {
   res.sendStatus(404);

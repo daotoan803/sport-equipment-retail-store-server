@@ -10,6 +10,10 @@ Account.belongsTo(User);
 Product.hasMany(Image);
 Image.belongsTo(Product);
 
-module.exports = () => {
-  return sequelizeConnection.sync({ force: true });
+module.exports.initialize = (log = false) => {
+  return sequelizeConnection.sync({ force: true, log });
+};
+
+module.exports.terminate = () => {
+  return sequelizeConnection.close();
 };

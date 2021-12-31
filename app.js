@@ -12,9 +12,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', routes);
 
-database().then(() => {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log('port : http://localhost:' + PORT);
+if (require.main === module) {
+  database.initialize().then(() => {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log('port : http://localhost:' + PORT);
+    });
   });
-});
+}
+
+module.exports = app;
