@@ -8,6 +8,12 @@ const routes = express.Router();
 routes.use('/user', userRoutes);
 routes.use('/admin', adminRoutes);
 
+routes.use('/', (req, res) => {
+  res.sendFile(
+    path.join(__dirname, '..', '..', 'client', 'shop', 'index.html')
+  );
+});
+
 routes.use((req, res) => {
   res.sendStatus(404);
 });

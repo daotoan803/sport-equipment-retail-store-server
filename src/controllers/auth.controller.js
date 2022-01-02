@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
+const Account = require('../models/account.model');
 
 exports.signin = async (req, res, next) => {
   const { email, password } = req.body;
@@ -10,9 +11,12 @@ exports.signin = async (req, res, next) => {
     const user = await User.validateLoginAndGetUser(email, password);
     if (!user)
       return res.status(400).json({ error: 'invalid email or password' });
-
     const TOKEN_KEY = process.env.TOKEN_KEY;
     const token = jwt.sign({ userId: user.id }, TOKEN_KEY);
+    if (user.account.role !== Account.role.customer) {
+      role = user.account.role;
+      return res.json({ token, role });
+    }
     res.json({ token });
   } catch (e) {
     next(e);

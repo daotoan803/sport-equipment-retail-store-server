@@ -115,10 +115,7 @@ User.init(
       type: DataTypes.STRING,
       defaultValue: User.gender.other,
       set(value) {
-        this.setDataValue(
-          'gender',
-          value.trim() === '' ? User.gender.other : value
-        );
+        this.setDataValue('gender', value === '' ? User.gender.other : value);
       },
       validate: {
         isIn: {

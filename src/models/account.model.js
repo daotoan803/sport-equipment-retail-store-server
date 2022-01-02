@@ -39,7 +39,7 @@ Account.init(
       },
       validate: {
         isIn: {
-          args: Object.values(Account.role),
+          args: [Object.values(Account.role)],
           msg: 'Invalid role',
         },
       },

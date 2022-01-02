@@ -17,7 +17,7 @@ Required field:
 - Email: String
 - password: String
 - gender: "male"|"female"|"other"
-- dob: the number of milliseconds since the Unix Epoch (Date.getTime()).
+- dob: date format can be any format that new Date() except.
 
 Response:
 

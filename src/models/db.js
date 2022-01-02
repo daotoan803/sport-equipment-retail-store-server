@@ -7,7 +7,7 @@ const sequelizeConnection = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   host: 'localhost',
   dialect: 'mysql',
   timezone: '+07:00',
-  logging: false,
+  logging: true,
 });
 
 module.exports = sequelizeConnection;
