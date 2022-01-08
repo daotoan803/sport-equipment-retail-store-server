@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 
-const sequelizeConnection = require('./db');
+const sequelizeConnection = require('./config/db');
 
 class Image extends Model {}
 

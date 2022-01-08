@@ -4,6 +4,6 @@ const productRoutes = require("./product.routes")
 
 const routes = express.Router();
 
-routes.use('/product', productRoutes)
+routes.post('/product', productRoutes)
 
 module.exports = routes;

@@ -4,7 +4,7 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const Account = require('./account.model');
 
-const sequelizeConnection = require('./db');
+const sequelizeConnection = require('./config/db');
 
 class User extends Model {
   static gender = {
@@ -34,6 +34,7 @@ class User extends Model {
 
     const validPassword = await bcrypt.compare(password, user.account.password);
     if (!validPassword) return null;
+
     return user;
   }
 
@@ -44,7 +45,7 @@ class User extends Model {
         { name, email, dob, gender, password },
         { transaction: t }
       );
-      await user.createAccount({ password }, { transaction: t });
+      user.account = await user.createAccount({ password }, { transaction: t });
       await t.commit();
       return user;
     } catch (e) {

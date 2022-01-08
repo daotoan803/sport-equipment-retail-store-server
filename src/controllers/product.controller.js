@@ -12,6 +12,8 @@ exports.addProduct = async (req, res, next) => {
     availableQuantity,
   } = req.body;
 
+  console.log(req.body);
+
   try {
     const product = await Product.create({
       title,

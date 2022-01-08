@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
 
-const sequelizeConnection = require('./db');
+const sequelizeConnection = require('./config/db');
 
 class Account extends Model {
   static role = {

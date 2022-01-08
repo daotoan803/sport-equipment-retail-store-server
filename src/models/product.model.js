@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 
-const sequelizeConnection = require('./db');
+const sequelizeConnection = require('./config/db');
 const _ = require('lodash');
 
 class Product extends Model {

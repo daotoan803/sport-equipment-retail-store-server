@@ -8,13 +8,15 @@ exports.signup = async (req, res, next) => {
     const isEmailExists = await User.isEmailAlreadyExist(email);
     if (isEmailExists)
       return res.status(409).json({ error: 'Email already exists' });
-    await User.signupUser({
+    const user = await User.signupUser({
       name,
       email,
       dob,
       gender,
       password,
     });
+    req.user = user;
+    console.log(user);
     next();
   } catch (e) {
     if (e instanceof ValidationError) {

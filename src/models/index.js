@@ -1,6 +1,6 @@
 const User = require('./user.model');
 const Account = require('./account.model');
-const sequelizeConnection = require('./db');
+const sequelizeConnection = require('./config/db');
 const Image = require('./image.model');
 const Product = require('./product.model');
 
@@ -30,7 +30,7 @@ const createDefaultAdminAccount = async () => {
 };
 
 module.exports.initialize = async () => {
-  await sequelizeConnection.sync({ alter: true });
+  await sequelizeConnection.sync({ force: true });
   await createDefaultAdminAccount();
   return;
 };
