@@ -1,9 +1,11 @@
+const path = require('path');
+
 exports.fileUploadingIsImage = (file) => {
-  const imageTypes = /jpeg|jpg|png|gif/;
-  const extname = imageTypes.test(
+  const validImageExtname = ['.jpeg', '.jpg', '.png', '.gif'];
+  const extnameIsValid = validImageExtname.includes(
     path.extname(file.originalname).toLowerCase()
   );
-  const mimetype = imageTypes.test(file.mimetype);
-  if (mimetype && extname) return true;
+  const mimeTypeIsValid = file.mimetype.split('/')[0] === 'image';
+  if (extnameIsValid && mimeTypeIsValid) return true;
   return false;
 };

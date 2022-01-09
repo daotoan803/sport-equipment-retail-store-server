@@ -1,14 +1,15 @@
 const express = require('express');
 
-const ProductController = require('../../controllers/product.controller');
+const productController = require('../../controllers/product.controller');
+const uploadController = require('../../controllers/upload.controller');
 
 const routes = express.Router();
 
 routes.post(
   '/',
-  ProductController.validateProductDetail,
-  ProductController.handleImageUpload,
-  ProductController.addProduct
+  productController.validateProductDetail,
+  uploadController.handleMultipleImagesUpload,
+  productController.addProduct
 );
 
 module.exports = routes;

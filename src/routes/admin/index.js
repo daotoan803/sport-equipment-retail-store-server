@@ -1,9 +1,11 @@
 const express = require('express');
 
-const productRoutes = require("./product.routes")
+const productRoutes = require('./product.routes');
+const brandRoutes = require('./brand.routes');
 
 const routes = express.Router();
 
-routes.post('/product', productRoutes)
+routes.use('/product', productRoutes);
+routes.use('/brand', brandRoutes);
 
 module.exports = routes;

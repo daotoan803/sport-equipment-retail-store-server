@@ -1,5 +1,6 @@
 const express = require('express');
 
+const path = require('path');
 const userRoutes = require('./user.routes.js');
 const adminRoutes = require('./admin');
 

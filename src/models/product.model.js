@@ -15,6 +15,11 @@ class Product extends Model {
     if (product) return true;
     return false;
   }
+
+  static createProduct = async () => {
+    
+  }
+
 }
 
 Product.init(
