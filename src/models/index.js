@@ -1,14 +1,20 @@
 const User = require('./user.model');
 const Account = require('./account.model');
 const sequelizeConnection = require('./config/db');
-const Image = require('./image.model');
+const ProductImage = require('./product-image.model');
 const Product = require('./product.model');
+const Category = require('./category.model');
+const Brand = require('./brand.model');
 
 User.hasOne(Account);
 Account.belongsTo(User);
 
-Product.hasMany(Image);
-Image.belongsTo(Product);
+Product.hasMany(ProductImage);
+ProductImage.belongsTo(Product);
+Product.belongsToMany(Category, { through: 'category_product' });
+Category.belongsToMany(Product, { through: 'category_product' });
+Brand.hasMany(Product);
+Product.belongsTo(Brand);
 
 const createDefaultAdminAccount = async () => {
   const defaultAdminAccount = {

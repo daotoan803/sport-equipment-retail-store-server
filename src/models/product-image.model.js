@@ -2,9 +2,9 @@ const { Model, DataTypes } = require('sequelize');
 
 const sequelizeConnection = require('./config/db');
 
-class Image extends Model {}
+class ProductImage extends Model {}
 
-Image.init(
+ProductImage.init(
   {
     url: {
       type: DataTypes.STRING,
@@ -13,8 +13,8 @@ Image.init(
   },
   {
     sequelize: sequelizeConnection,
-    modelName: 'image',
+    modelName: 'product_image',
   }
 );
 
-module.exports = Image;
+module.exports = ProductImage;

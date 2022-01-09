@@ -7,5 +7,6 @@ const routes = express.Router();
 
 routes.post('/signup', UserController.signup, AuthController.createAccessToken);
 routes.post('/signin', AuthController.signin, AuthController.createAccessToken);
+// routes.get('/reset-password', AuthController.sendOtpCode);
 
 module.exports = routes;

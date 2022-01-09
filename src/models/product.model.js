@@ -56,19 +56,19 @@ Product.init(
       },
     },
 
-    promotionPrice: {
+    discountPrice: {
       type: DataTypes.DOUBLE,
       allowNull: true,
       set(value) {
-        this.setDataValue('promotionPrice', Number(value));
+        this.setDataValue('discountPrice', Number(value));
       },
       validate: {
         isDecimal: {
-          msg: 'Product promotion price must be a number',
+          msg: 'Product discount price must be a number',
         },
         min: {
           args: [0],
-          msg: "Product promotion price can't be negative",
+          msg: "Product discount price can't be negative",
         },
       },
     },
