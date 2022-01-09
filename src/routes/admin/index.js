@@ -8,7 +8,10 @@ const categoryRoutes = require('./category.routes');
 
 const routes = express.Router();
 
-routes.use(authController.validateAccessToken);
+routes.use(
+  authController.validateAccessToken,
+  authController.checkAdminAuthorization
+);
 
 routes.use('/product', productRoutes);
 routes.use('/brand', brandRoutes);

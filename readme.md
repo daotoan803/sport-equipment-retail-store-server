@@ -6,7 +6,9 @@ Demo :
 
 ## Endpoints
 
-### Signup
+## User and account
+
+### 1. Signup
 
 POST `/api/user/signup`  
 Signup new user
@@ -34,9 +36,9 @@ Response:
     - status 409
 - Success :
   - Status 200
-  - Content : user data
+  - Content : `{"token" : "token-value"}`
 
-### Login
+### 2. Login
 
 POST `/api/user/signin`  
 validate user and get access token  
@@ -57,3 +59,71 @@ Response:
     "token": "token value"
   }
   ```
+
+### 3. Logout everywhere
+
+POST `/api/user/logout/all`  
+This function will make all access tokens belong to current user account invalid.  
+Must be logged in to use this function
+
+Required field:
+
+- password: String
+
+Response:
+
+- Errors:
+
+  - Incorrect password (status 400)
+  - Invalid token (status 401)
+
+- Success: status 200
+
+## ADMIN
+
+All end point after `/api/admin` can only be access with account that have admin permission.
+Default admin account is :
+
+- email: vnsport@vnsport.com
+- password: admin
+
+### 1. Add brand
+
+POST `/api/admin/brand`  
+Required field:
+
+- name: String
+
+Optional field:
+
+- image: Image file (jpeg, jpg, png, gif)
+
+response:
+
+- Errors:
+
+  - Name already exists or missing name (status 400)
+
+- Success:
+  - status(200)
+  - content: brand object
+
+### 2. Add category
+POST `/api/admin/category`   
+Required field:
+
+- name: String
+
+Optional field:
+
+- image: Image file (jpeg, jpg, png, gif)
+
+response:
+
+- Errors:
+
+  - Name already exists or missing name (status 400)
+
+- Success:
+  - status(200)
+  - content: brand object

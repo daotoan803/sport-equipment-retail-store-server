@@ -44,6 +44,7 @@ exports.handleMultipleImagesUpload = (req, res, next) => {
   }).array('images');
   multipleImagesUpload(req, res, (err) => handleUploadError(err, res, next));
 };
+
 exports.handleSingleImageUpload = (req, res, next) => {
   const singleImageUpload = multer({
     storage: imageStorage,

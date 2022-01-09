@@ -61,3 +61,16 @@ exports.logoutEveryWhere = async (req, res) => {
   await userAccount.save();
   res.sendStatus(200);
 };
+
+const generateAuthorizationFunction = (role) => {
+  return async (req, res, next) => {
+    const userAccount = req.userAccount;
+    if (userAccount.role !== role) return res.sendStatus(403);
+
+    next();
+  };
+};
+
+exports.checkAdminAuthorization = generateAuthorizationFunction(
+  Account.role.admin
+);

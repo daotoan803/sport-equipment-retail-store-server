@@ -38,7 +38,7 @@ const createDefaultAdminAccount = async () => {
 };
 
 module.exports.initialize = async () => {
-  await sequelizeConnection.sync({ force: true });
+  await sequelizeConnection.sync({ alter: true });
   await createDefaultAdminAccount();
   return;
 };
