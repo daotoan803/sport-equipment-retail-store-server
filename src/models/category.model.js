@@ -12,10 +12,11 @@ Category.init(
       set(value) {
         const name = value
           .split(' ')
-          .map((word) => _.toCapitalized(word))
+          .map((word) => _.capitalize(word))
           .join(' ');
         this.setDataValue('name', name);
       },
+      unique: true,
       allowNull: false,
       validate: {
         notEmpty: {
