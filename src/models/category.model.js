@@ -27,7 +27,7 @@ Category.init(
         },
       },
     },
-    logo: {
+    logoUrl: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -35,6 +35,7 @@ Category.init(
   {
     sequelize: sequelizeConnection,
     modelName: 'category',
+    timestamps: false,
   }
 );
 

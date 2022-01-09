@@ -14,6 +14,7 @@ ProductImage.init(
   {
     sequelize: sequelizeConnection,
     modelName: 'product_image',
+    timestamps: false,
   }
 );
 

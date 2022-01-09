@@ -31,6 +31,7 @@ Brand.init(
   {
     sequelize: sequelizeConnection,
     modelName: 'brand',
+    timestamps: false,
   }
 );
 

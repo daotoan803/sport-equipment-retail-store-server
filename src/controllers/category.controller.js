@@ -11,10 +11,15 @@ exports.addCategory = async (req, res, next) => {
   try {
     const category = await Category.create({
       name,
-      logoUrl: `images/${logo.filename}`,
+      logoUrl: logo ? `images/${logo.filename}` : null,
     });
     res.json(category);
   } catch (e) {
     next(e);
   }
+};
+
+exports.getCategories = async (req, res) => {
+  const categories = await Category.findAll();
+  res.json(categories);
 };

@@ -2,6 +2,8 @@ const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const Account = require('../models/account.model');
 
+const TOKEN_KEY = process.env.TOKEN_KEY;
+
 exports.signin = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -22,12 +24,23 @@ exports.signin = async (req, res, next) => {
 exports.createAccessToken = (req, res, next) => {
   const { user } = req;
   if (!user || !user.account)
-    return next(new Error('Missing user or user account in create access token'));
-  const TOKEN_KEY = process.env.TOKEN_KEY;
+    return next(
+      new Error('Missing user or user account in create access token')
+    );
   const token = jwt.sign({ userId: user.id }, TOKEN_KEY);
   if (user.account.role !== Account.role.customer) {
     const role = user.account.role;
     return res.json({ token, role });
   }
   res.json({ token });
+};
+
+exports.validateAccessToken = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) return res.sendStatus(401);
+  const token = authorization.split('Bearer ')[1];
+  console.log(token);
+  const info = jwt.verify(token, TOKEN_KEY);
+  console.log(info);
+  next();
 };
