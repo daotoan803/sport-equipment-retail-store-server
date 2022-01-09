@@ -1,6 +1,4 @@
 const User = require('../models/user.model');
-const { ValidationError } = require('sequelize');
-const errorHandler = require('../utils/error-handler');
 
 exports.signup = async (req, res, next) => {
   const { name, email, dob, gender, password } = req.body;
@@ -16,13 +14,8 @@ exports.signup = async (req, res, next) => {
       password,
     });
     req.user = user;
-    console.log(user);
     next();
   } catch (e) {
-    if (e instanceof ValidationError) {
-      const errors = errorHandler.parseValidationErrors(e);
-      return res.status(400).json(errors);
-    }
     next(e);
   }
 };

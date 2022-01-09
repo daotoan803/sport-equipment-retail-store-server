@@ -26,7 +26,7 @@ exports.createAccessToken = (req, res, next) => {
   const TOKEN_KEY = process.env.TOKEN_KEY;
   const token = jwt.sign({ userId: user.id }, TOKEN_KEY);
   if (user.account.role !== Account.role.customer) {
-    role = user.account.role;
+    const role = user.account.role;
     return res.json({ token, role });
   }
   res.json({ token });

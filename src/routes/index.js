@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const userRoutes = require('./user.routes.js');
 const adminRoutes = require('./admin');
+const errorHandlerController = require('../controllers/error-handler.controller');
 
 const routes = express.Router();
 
@@ -15,14 +16,8 @@ routes.use('/', (req, res) => {
   );
 });
 
-routes.use((req, res) => {
-  res.sendStatus(404);
-});
+routes.use(errorHandlerController.routesNotExistsHandle);
 
-// eslint-disable-next-line no-unused-vars
-routes.use((err, req, res, next) => {
-  res.sendStatus(500);
-  console.error(err);
-});
+routes.use(errorHandlerController.errorHandler);
 
 module.exports = routes;

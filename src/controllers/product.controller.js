@@ -1,7 +1,4 @@
 const Product = require('../models/product.model');
-const errorHandler = require('../utils/error-handler');
-const { ValidationError } = require('sequelize');
-const multer = require('multer');
 
 exports.validateProductDetail = async (req, res, next) => {
   const {
@@ -35,9 +32,6 @@ exports.validateProductDetail = async (req, res, next) => {
     next();
   } catch (e) {
     console.error(e);
-    if (e instanceof ValidationError) {
-      return res.status(400).json(errorHandler.parseValidationErrors(e));
-    }
     next(e);
   }
 };
