@@ -7,6 +7,12 @@ class Category extends Model {}
 
 Category.init(
   {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+    },
     name: {
       type: DataTypes.STRING,
       set(value) {

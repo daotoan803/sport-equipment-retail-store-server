@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const Account = require('../models/account.model');
+const bcrypt = require('bcrypt');
 
 const TOKEN_KEY = process.env.TOKEN_KEY;
 
@@ -21,13 +22,12 @@ exports.signin = async (req, res, next) => {
   }
 };
 
-exports.createAccessToken = (req, res, next) => {
+exports.createAccessToken = async (req, res) => {
   const { user } = req;
-  if (!user || !user.account)
-    return next(
-      new Error('Missing user or user account in create access token')
-    );
-  const token = jwt.sign({ userId: user.id }, TOKEN_KEY);
+  const token = jwt.sign(
+    { userId: user.id, userKey: user.account.userKey },
+    TOKEN_KEY
+  );
   if (user.account.role !== Account.role.customer) {
     const role = user.account.role;
     return res.json({ token, role });
@@ -35,12 +35,29 @@ exports.createAccessToken = (req, res, next) => {
   res.json({ token });
 };
 
-exports.validateAccessToken = (req, res, next) => {
-  const authorization = req.headers.authorization;
-  if (!authorization) return res.sendStatus(401);
-  const token = authorization.split('Bearer ')[1];
-  console.log(token);
-  const info = jwt.verify(token, TOKEN_KEY);
-  console.log(info);
+exports.validateAccessToken = async (req, res, next) => {
+  const authorization = req.headers?.authorization;
+  const token = authorization?.split('Bearer ')[1];
+  if (!token) return res.sendStatus(401);
+  const { userId, userKey } = jwt.verify(token, TOKEN_KEY);
+  const userAccount = await Account.findOne({ where: { userId } });
+  if (!userAccount || userKey !== userAccount.userKey)
+    return res.sendStatus(401);
+  req.userAccount = userAccount;
   next();
+};
+
+exports.logoutEveryWhere = async (req, res) => {
+  const userAccount = req.userAccount;
+  const { password } = req.body;
+
+  if (!password?.trim())
+    return res.status(400).json({ error: 'password is required' });
+
+  const isAuthorized = await bcrypt.compare(password, userAccount.password);
+  if (!isAuthorized) return res.status(400).json({ error: 'wrong password' });
+
+  userAccount.userKey = Account.generateUserKey();
+  await userAccount.save();
+  res.sendStatus(200);
 };

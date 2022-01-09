@@ -2,6 +2,7 @@ const { Model, DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
 
 const sequelizeConnection = require('./config/db');
+const uuid = require('uuid');
 
 class Account extends Model {
   static role = {
@@ -10,10 +11,25 @@ class Account extends Model {
     storage: 'storage',
     admin: 'admin',
   };
+
+  toJSON() {
+    /*not allow to return anything*/
+    return {};
+  }
+
+  static generateUserKey() {
+    return uuid.v4();
+  }
 }
 
 Account.init(
   {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -43,6 +59,12 @@ Account.init(
           msg: 'Invalid role',
         },
       },
+    },
+    userKey: {
+      //user key is use for validating access token
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
     },
   },
   {
