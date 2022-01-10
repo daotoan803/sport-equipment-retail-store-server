@@ -39,6 +39,7 @@ exports.validateAccessToken = async (req, res, next) => {
   const authorization = req.headers?.authorization;
   const token = authorization?.split('Bearer ')[1];
   if (!token) return res.sendStatus(401);
+  console.log('validate access token');
   const { userId, userKey } = jwt.verify(token, TOKEN_KEY);
   const userAccount = await Account.findOne({ where: { userId } });
   if (!userAccount || userKey !== userAccount.userKey)

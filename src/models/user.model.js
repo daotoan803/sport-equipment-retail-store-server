@@ -88,7 +88,7 @@ User.init(
     },
 
     phoneNumber: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(15),
       allowNull: true,
       unique: true,
       set(value) {

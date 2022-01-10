@@ -7,12 +7,6 @@ const upload = multer();
 
 const routes = express.Router();
 
-routes.post(
-  '/',
-  upload.none(),
-  productController.validateProductDetail,
-  uploadController.handleMultipleImagesUpload,
-  productController.addProduct
-);
+routes.post('/', productController.addProduct);
 
 module.exports = routes;
