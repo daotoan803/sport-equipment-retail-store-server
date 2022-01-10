@@ -9,7 +9,9 @@ const Brand = require('./brand.model');
 User.hasOne(Account);
 Account.belongsTo(User);
 
-Product.hasMany(ProductImage);
+Product.hasMany(ProductImage, {
+  onDelete: 'CASCADE',
+});
 ProductImage.belongsTo(Product);
 
 Product.belongsToMany(Category, { through: 'category_product' });

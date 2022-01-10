@@ -1,9 +1,19 @@
-const { Model, DataTypes } = require('sequelize');
+const { Model, DataTypes, Op } = require('sequelize');
 const _ = require('lodash');
 
 const sequelizeConnection = require('./config/db');
 
-class Category extends Model {}
+class Category extends Model {
+  static findAllWherePk(categoryIdList) {
+    return Category.findAll({
+      where: {
+        id: {
+          [Op.or]: categoryIdList,
+        },
+      },
+    });
+  }
+}
 
 Category.init(
   {

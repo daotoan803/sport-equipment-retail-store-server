@@ -1,20 +1,26 @@
 const Product = require('../models/product.model');
 const Brand = require('../models/brand.model');
 const Category = require('../models/category.model');
-const { Op } = require('sequelize');
+const fs = require('fs');
+const projectPath = require('../utils/project-path');
+const path = require('path');
+const ProductImages = require('../models/product-image.model');
+const { Transaction } = require('sequelize');
 
 exports.addProduct = async (req, res, next) => {
   const {
     title,
-    details,
+    detail,
     price,
     discountPrice,
     warrantyPeriodByDay,
     availableQuantity,
     state,
     brandId,
-    categories,
+    categories: categoryIdList,
   } = req.body;
+
+  const transaction = new Transaction();
 
   try {
     const isTitleExists = await Product.isTitleExists(title);
@@ -26,43 +32,60 @@ exports.addProduct = async (req, res, next) => {
     }
     const [brand, categoryList] = await Promise.all([
       Brand.findByPk(brandId),
-      Category.findAll({
-        where: {
-          id: {
-            [Op.or]: categories,
-          },
-        },
-      }),
+      Category.findAllWherePk(categoryIdList),
     ]);
 
     if (!brand) return res.status(400).json({ error: 'Brand not found' });
     if (categoryList.length === 0)
       return res.status(400).json({ error: 'Category not found' });
 
-    const product = await Product.create({
-      title,
-      details,
-      price,
-      discountPrice,
-      warrantyPeriodByDay,
-      availableQuantity,
-      state,
-    });
+    const product = await Product.create(
+      {
+        title,
+        detail,
+        price,
+        discountPrice,
+        warrantyPeriodByDay,
+        availableQuantity,
+        state,
+      },
+      { transaction }
+    );
 
     await Promise.all([
-      product.setBrand(brand),
-      product.setCategories(categoryList),
+      product.setBrand(brand, { transaction }),
+      product.setCategories(categoryList, { transaction }),
     ]);
-    return res.json({ ...product.dataValues, brand, categoryList });
+    await transaction.commit();
+    return res.json({ id: product.id });
   } catch (e) {
-    console.error(e);
+    transaction.rollback();
     next(e);
   }
 };
 
 exports.addProductImages = async (req, res, next) => {
   const images = req.files;
-  const product = req.product;
-  const { brandId, categoryIdList } = req.body;
-  product.brand = await product.setBrand({ id: brandId });
+  const { productId } = req.body;
+
+  const transaction = new Transaction();
+  try {
+    const product = await Product.findByPk(productId);
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    const imagesList = await ProductImages.bulkCreate(
+      images.map((image) => ({ url: `/images/${image.filename}` })),
+      { transaction }
+    );
+    await product.setProductImages(imagesList, { transaction });
+
+    await transaction.commit();
+    res.json(images);
+  } catch (e) {
+    transaction.rollback();
+    images.forEach((image) => {
+      fs.rm(path.join(projectPath.uploadedImageDirPath, image.filename));
+    });
+    next(e);
+  }
 };

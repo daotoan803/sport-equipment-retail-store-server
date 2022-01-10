@@ -36,16 +36,20 @@ exports.createAccessToken = async (req, res) => {
 };
 
 exports.validateAccessToken = async (req, res, next) => {
-  const authorization = req.headers?.authorization;
-  const token = authorization?.split('Bearer ')[1];
-  if (!token) return res.sendStatus(401);
-  console.log('validate access token');
-  const { userId, userKey } = jwt.verify(token, TOKEN_KEY);
-  const userAccount = await Account.findOne({ where: { userId } });
-  if (!userAccount || userKey !== userAccount.userKey)
-    return res.sendStatus(401);
-  req.userAccount = userAccount;
-  next();
+  try {
+    const authorization = req.headers?.authorization;
+    const token = authorization?.split('Bearer ')[1];
+    console.log(token);
+    if (!token) return res.sendStatus(401);
+    const { userId, userKey } = jwt.verify(token, TOKEN_KEY);
+    const userAccount = await Account.findOne({ where: { userId } });
+    if (!userAccount || userKey !== userAccount.userKey)
+      return res.sendStatus(401);
+    req.userAccount = userAccount;
+    next();
+  } catch (e) {
+    next(e);
+  }
 };
 
 exports.logoutEveryWhere = async (req, res) => {

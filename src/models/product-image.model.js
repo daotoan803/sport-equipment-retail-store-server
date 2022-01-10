@@ -13,7 +13,7 @@ ProductImage.init(
   },
   {
     sequelize: sequelizeConnection,
-    modelName: 'product_image',
+    modelName: 'productImage',
     timestamps: false,
   }
 );

@@ -16,10 +16,7 @@ class Product extends Model {
     return false;
   }
 
-  static createProduct = async () => {
-    
-  }
-
+  static createProduct = async () => {};
 }
 
 Product.init(
@@ -45,7 +42,7 @@ Product.init(
       },
     },
 
-    details: {
+    detail: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
