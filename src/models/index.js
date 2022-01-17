@@ -14,8 +14,12 @@ Product.hasMany(ProductImage, {
 });
 ProductImage.belongsTo(Product);
 
-Product.belongsToMany(Category, { through: 'category_product' });
-Category.belongsToMany(Product, { through: 'category_product' });
+Product.belongsToMany(Category, {
+  through: 'category_product',
+});
+Category.belongsToMany(Product, {
+  through: 'category_product',
+});
 
 Brand.hasMany(Product);
 Product.belongsTo(Brand);
