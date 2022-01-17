@@ -3,3 +3,4 @@ node_modules
 temp.js
 upload
 *.log
+src/__test__/data

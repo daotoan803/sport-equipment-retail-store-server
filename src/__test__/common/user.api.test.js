@@ -32,13 +32,15 @@ describe('User signup', () => {
       .send(validUsers[0])
       .expect('Content-Type', /json/)
       .expect(200)
-      .end(function (err, res) {
-        if (err) {
-          done();
-          throw err;
-        }
+      .then((res) => {
+        expect(res.body).toEqual(
+          expect.objectContaining({
+            token: expect.any(String),
+          })
+        );
         done();
-      });
+      })
+      .catch(done);
   });
 
   it('POST /api/user/signup --> Email should be already exists', function (done) {
@@ -108,7 +110,30 @@ describe('User signin', () => {
         done();
       })
       .catch((err) => {
-        console.log(user);
+        done(err);
+      });
+  });
+
+  it('POST /api/user/signin --> Signin should be fail', (done) => {
+    const user = {
+      email: validUsers[0].email,
+      password: 'falsdk;fjalsd',
+    };
+
+    request(app)
+      .post('/api/user/signin')
+      .send(user)
+      .expect('content-type', /json/)
+      .expect(400)
+      .then((res) => {
+        expect(res.body).toEqual(
+          expect.objectContaining({
+            error: expect.any(String),
+          })
+        );
+        done();
+      })
+      .catch((err) => {
         done(err);
       });
   });

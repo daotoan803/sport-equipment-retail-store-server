@@ -2,7 +2,13 @@ const { Model, DataTypes } = require('sequelize');
 
 const sequelizeConnection = require('./config/db');
 
-class Brand extends Model {}
+class Brand extends Model {
+  static async isNameAlreadyExists(name){
+    const brand = await Brand.findOne({where: {name}})
+    if(brand) return true;
+    return false;
+  }
+}
 
 Brand.init(
   {
