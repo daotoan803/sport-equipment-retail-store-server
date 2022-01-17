@@ -1,7 +1,7 @@
 const express = require('express');
 
 const productController = require('../../controllers/product.controller');
-const uploadController = require('../../controllers/upload.controller');
+const uploadController = require('../../middlewares/upload-handler');
 
 const routes = express.Router();
 

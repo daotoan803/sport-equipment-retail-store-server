@@ -1,5 +1,5 @@
 const BrandController = require('../../controllers/brand.controller');
-const uploadController = require('../../controllers/upload.controller');
+const uploadController = require('../../middlewares/upload-handler');
 
 const routes = require('express').Router();
 

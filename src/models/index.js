@@ -39,12 +39,12 @@ const createDefaultAdminAccount = async () => {
   return admin.account.save();
 };
 
-module.exports.initialize = async () => {
-  await sequelizeConnection.sync({ alter: true });
+exports.initialize = async () => {
+  await sequelizeConnection.sync({ force: true });
   await createDefaultAdminAccount();
   return;
 };
 
-module.exports.terminate = () => {
+exports.terminate = () => {
   return sequelizeConnection.close();
 };

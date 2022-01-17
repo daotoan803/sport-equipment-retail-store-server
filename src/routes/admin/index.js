@@ -1,6 +1,6 @@
 const express = require('express');
 
-const authController = require('../../controllers/auth.controller');
+const authController = require('../../middlewares/authentication');
 
 const productRoutes = require('./product.routes');
 const brandRoutes = require('./brand.routes');

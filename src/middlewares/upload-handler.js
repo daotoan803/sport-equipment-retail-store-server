@@ -14,6 +14,19 @@ const imageStorage = multer.diskStorage({
   },
 });
 
+const imageFilter = (req, file, cb) => {
+  if (!imageUtils.fileUploadingIsImage(file)) {
+    req.fileError = 'Only accept images in jpeg|jpg|png|gif ';
+    return cb(null, false);
+  }
+  cb(null, true);
+};
+
+const imageHandler = multer({
+  storage: imageStorage,
+  fileFilter: imageFilter,
+});
+
 const handleUploadError = (err, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_UNEXPECTED_FILE') {
@@ -29,26 +42,14 @@ const handleUploadError = (err, res, next) => {
   next();
 };
 
-const imageFilter = (req, file, cb) => {
-  if (!imageUtils.fileUploadingIsImage(file)) {
-    req.fileError = 'Only accept images in jpeg|jpg|png|gif ';
-    return cb(null, false);
-  }
-  cb(null, true);
-};
+module.exports = {
+  handleMultipleImagesUpload(req, res, next) {
+    const multipleImagesUpload = imageHandler.array('images');
+    multipleImagesUpload(req, res, (err) => handleUploadError(err, res, next));
+  },
 
-exports.handleMultipleImagesUpload = (req, res, next) => {
-  const multipleImagesUpload = multer({
-    storage: imageStorage,
-    fileFilter: imageFilter,
-  }).array('images');
-  multipleImagesUpload(req, res, (err) => handleUploadError(err, res, next));
-};
-
-exports.handleSingleImageUpload = (req, res, next) => {
-  const singleImageUpload = multer({
-    storage: imageStorage,
-    fileFilter: imageFilter,
-  }).single('image');
-  singleImageUpload(req, res, (err) => handleUploadError(err, res, next));
+  handleSingleImageUpload(req, res, next) {
+    const singleImageUpload = imageHandler.single('image');
+    singleImageUpload(req, res, (err) => handleUploadError(err, res, next));
+  },
 };
