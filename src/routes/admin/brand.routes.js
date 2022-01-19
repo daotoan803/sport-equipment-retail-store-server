@@ -3,6 +3,12 @@ const uploadController = require('../../middlewares/upload-handler');
 
 const routes = require('express').Router();
 
+
+/*------------------------------------------------------*/
+/*--------------------/api/admin/brands-----------------------*/
+/*------------------------------------------------------*/
+
+
 routes.post(
   '/',
   uploadController.handleSingleImageUpload,

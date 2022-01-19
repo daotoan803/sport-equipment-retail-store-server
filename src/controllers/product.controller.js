@@ -5,10 +5,45 @@ const fs = require('fs');
 const projectPath = require('../utils/project-path');
 const path = require('path');
 const ProductImages = require('../models/product-image.model');
-const { Transaction } = require('sequelize');
+const sequelizeConnection = require('../models/config/db');
+
+const deleteUploadedImages = (request) => {
+  const uploadedImages = request.files;
+  uploadedImages.forEach((image) => {
+    fs.rm(path.join(projectPath.uploadedImageDirPath, image.filename));
+  });
+};
 
 module.exports = {
-  async addProduct(req, res, next) {
+  responseIsTitleUnique(req, res) {
+    //product title already check in middlewares, if request come here mean title is valid
+    res.sendStatus(200);
+  },
+
+  responseProductDetail(req, res) {
+    res.json(req.product);
+  },
+
+  async findProduct(req, res, next) {
+    const { productId } = req.params;
+    console.log(productId);
+    try {
+      const product = await Product.findByPk(productId);
+
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+
+      req.product = product;
+      next();
+    } catch (e) {
+      next(e);
+    }
+  },
+
+  async getAllProductsPreview(req, res, next) {},
+
+  async createProduct(req, res, next) {
     const {
       title,
       detail,
@@ -21,16 +56,9 @@ module.exports = {
       categories: categoryIdList,
     } = req.body;
 
-    const transaction = new Transaction();
+    const transaction = await sequelizeConnection.transaction();
 
     try {
-      const isTitleExists = await Product.isTitleExists(title);
-      if (isTitleExists) {
-        return res.status(400).json({
-          title:
-            'Product title must be unique, another product already use that title',
-        });
-      }
       const [brand, categoryList] = await Promise.all([
         Brand.findByPk(brandId),
         Category.findAllWherePk(categoryIdList),
@@ -57,36 +85,50 @@ module.exports = {
         product.setBrand(brand, { transaction }),
         product.setCategories(categoryList, { transaction }),
       ]);
-      await transaction.commit();
-      return res.json({ id: product.id });
+      req.transaction = transaction;
+      req.product = product;
+      next();
     } catch (e) {
       transaction.rollback();
       next(e);
     }
   },
 
-  async addProductImages(req, res, next) {
-    const images = req.files;
-    const { productId } = req.body;
+  async createProductImages(req, res, next) {
+    const uploadedImages = req.files;
 
-    const transaction = new Transaction();
+    const transaction =
+      req.transaction || (await sequelizeConnection.transaction());
+
     try {
-      const product = await Product.findByPk(productId);
-      if (!product) return res.status(404).json({ error: 'Product not found' });
+      const images = uploadedImages.map((image) => ({
+        url: `/images/${image.filename}`,
+      }));
 
-      const imagesList = await ProductImages.bulkCreate(
-        images.map((image) => ({ url: `/images/${image.filename}` })),
-        { transaction }
-      );
-      await product.setProductImages(imagesList, { transaction });
+      const productImages = await ProductImages.bulkCreate(images, {
+        transaction,
+      });
 
-      await transaction.commit();
-      res.json(images);
+      req.transaction = transaction;
+      req.productImages = productImages;
+      next();
     } catch (e) {
       transaction.rollback();
-      images.forEach((image) => {
-        fs.rm(path.join(projectPath.uploadedImageDirPath, image.filename));
-      });
+      deleteUploadedImages(req);
+      next(e);
+    }
+  },
+
+  async setImagesToProduct(req, res, next) {
+    const { transaction, product, productImages } = req;
+
+    try {
+      await product.setProductImages(productImages, { transaction });
+      await transaction.commit();
+      res.json(product);
+    } catch (e) {
+      transaction.rollback();
+      deleteUploadedImages(req);
       next(e);
     }
   },

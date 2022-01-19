@@ -1,16 +1,11 @@
 const categoryController = require('../../controllers/category.controller');
-const uploadController = require('../../middlewares/upload-handler');
 
 const routes = require('express').Router();
 
 /*------------------------------------------------------*/
-/*--------------------/api/admin/categories-----------------------*/
+/*--------------------/api/categories-----------------------*/
 /*------------------------------------------------------*/
 
-routes.post(
-  '/',
-  uploadController.handleSingleImageUpload,
-  categoryController.addCategory
-);
+routes.get('/', categoryController.getCategories);
 
 module.exports = routes;

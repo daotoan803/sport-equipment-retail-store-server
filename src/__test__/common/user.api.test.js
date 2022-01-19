@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('../../../app');
 const User = require('../../models/user.model');
 const database = require('../../models');
-const res = require('express/lib/response');
 
 //this array contains all user that should be valid and save in database, so it can be clean up after test
 const validUsers = [

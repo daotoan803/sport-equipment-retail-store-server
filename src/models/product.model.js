@@ -36,8 +36,8 @@ Product.init(
       unique: true,
       validate: {
         len: {
-          args: [[4, 50]],
-          msg: 'Product title must be between 4 and 50 characters',
+          args: [[4, 100]],
+          msg: 'Product title must be between 4 and 100 characters',
         },
       },
     },

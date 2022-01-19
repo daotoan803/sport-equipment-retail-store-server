@@ -1,28 +1,22 @@
 const express = require('express');
 
 const userController = require('../../controllers/user.controller');
+const userValidator = require('../../middlewares/validations/user.validator');
 const authController = require('../../middlewares/authentication');
-const validator = require('../../middlewares/validator');
 
-/*----------------- /user/* -----------------*/
+/*------------------------------------------------------*/
+/*--------------------/api/user-----------------------*/
+/*------------------------------------------------------*/
 
 const routes = express.Router();
 
-// routes.use('/', (req, res, next) => {
-//   console.log('inside common/user routes');
-//   next();
-// });
 routes.post(
   '/signup',
-  validator.validateUserSignup,
+  userValidator.validateUserSignup,
   userController.signup,
   authController.createAccessToken
 );
-routes.post(
-  '/signin',
-  authController.signin,
-  authController.createAccessToken
-);
+routes.post('/signin', authController.signin, authController.createAccessToken);
 routes.post(
   '/logout/all',
   authController.validateAccessToken,

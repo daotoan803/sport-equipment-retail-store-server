@@ -6,6 +6,10 @@ const errorHandlerController = require('../controllers/error-handler.controller'
 
 const routes = express.Router();
 
+/*--------------------------------------------*/
+/*------------------/api----------------------*/
+/*--------------------------------------------*/
+
 routes.use('/', commonRoutes);
 routes.use('/admin',adminRoutes);
 

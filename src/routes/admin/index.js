@@ -8,13 +8,17 @@ const categoryRoutes = require('./category.routes');
 
 const routes = express.Router();
 
+/*-------------------------------------------------*/
+/*--------------------/api/admin-----------------------*/
+/*-------------------------------------------------*/
+
 routes.use(
   authController.validateAccessToken,
   authController.checkAdminAuthorization
 );
 
-routes.use('/product', productRoutes);
-routes.use('/brand', brandRoutes);
-routes.use('/category', categoryRoutes);
+routes.use('/products', productRoutes);
+routes.use('/brands', brandRoutes);
+routes.use('/categories', categoryRoutes);
 
 module.exports = routes;

@@ -4,8 +4,10 @@ module.exports = {
     const { name, email, dob, gender, password } = req.body;
     try {
       const isEmailExists = await User.isEmailAlreadyExist(email);
+      
       if (isEmailExists)
         return res.status(409).json({ error: 'Email already exists' });
+
       const user = await User.signupUser({
         name,
         email,
