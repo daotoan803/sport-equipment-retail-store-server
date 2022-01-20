@@ -1,10 +1,11 @@
+const sequelizeConnection = require('./config/db');
 const User = require('./user.model');
 const Account = require('./account.model');
-const sequelizeConnection = require('./config/db');
 const ProductImage = require('./product-image.model');
 const Product = require('./product.model');
 const Category = require('./category.model');
 const Brand = require('./brand.model');
+const dbUtils = require('../utils/database.utils');
 
 User.hasOne(Account);
 Account.belongsTo(User);
@@ -44,8 +45,12 @@ const createDefaultAdminAccount = async () => {
 };
 
 exports.initialize = async () => {
-  await sequelizeConnection.sync({ force: true });
-  await createDefaultAdminAccount();
+  await sequelizeConnection.sync({ alter: true });
+  await Promise.all([
+    createDefaultAdminAccount(),
+    dbUtils.createSampleDataForTesting(),
+  ]);
+
   return;
 };
 

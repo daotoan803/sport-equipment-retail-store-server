@@ -1,49 +1,20 @@
-const request = require('supertest');
-const app = require('../../../app');
-const database = require('../../models');
 const Product = require('../../models/product.model');
 const testUtils = require('../../utils/test.utils');
+const TestServer = require('../../utils/test-server');
+const Brand = require('../../models/brand.model');
+const Category = require('../../models/category.model');
+const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
 
-let adminToken = '';
-let brand = {};
-let categories = [];
+describe('Test admin functionality with product', () => {
+  const testServer = new TestServer();
+  let adminToken = '';
+  let proxy = '';
+  let uploadedImage = [];
 
-const createSampleBrand = () => {
-  return request(app)
-    .post('/api/admin/brands')
-    .set('authorization', 'Bearer ' + adminToken)
-    .field('name', Math.random())
-    .then((res) => res.body);
-};
-
-const createSampleCategory = (categoryName) => {
-  return request(app)
-    .post('/api/admin/categories')
-    .set('authorization', 'Bearer ' + adminToken)
-    .field('name', categoryName)
-    .then((res) => res.body);
-};
-
-beforeAll(async () => {
-  adminToken = await testUtils.getAdminToken(app);
-  [brand, categories] = await Promise.all([
-    createSampleBrand(),
-    Promise.all([
-      createSampleCategory(Math.random()),
-      createSampleCategory(Math.random()),
-      createSampleCategory(Math.random()),
-    ]),
-  ]);
-  return 'done';
-}, 15000);
-
-afterAll(() => {
-  database.terminate();
-});
-
-describe('Add new product', () => {
   const validProduct = {
-    title: 'This is a valid title',
+    title: Math.random(),
     detail: 'This is long detail, but it not really necessary',
     price: 12000000,
     discountPrice: 11000000,
@@ -52,32 +23,84 @@ describe('Add new product', () => {
     state: 'hidden',
   };
 
-  it('Should create new product', (done) => {
-    validProduct.brandId = brand.id;
+  beforeAll(async () => {
+    proxy = await testServer.startServer();
+    adminToken = await testUtils.getAdminToken(proxy);
+    let [brands, categories] = await Promise.all([
+      Brand.findAll(),
+      Category.findAll(),
+    ]);
+    validProduct.brandId = brands[0].id;
     validProduct.categories = categories.map((category) => category.id);
+    return 'done';
+  });
 
-    console.table(validProduct.brandId);
-    console.table(validProduct.categories);
-    request(app)
-      .post('/api/admin/products')
-      .set('authorization', 'bearer ' + adminToken)
-      .field('title', validProduct.title)
-      .field('detail', validProduct.detail)
-      .field('price', validProduct.price)
-      .field('discountPrice', validProduct.discountPrice)
-      .field('warrantyPeriodByDay', validProduct.warrantyPeriodByDay)
-      .field('availableQuantity', validProduct.availableQuantity)
-      .field('state', validProduct.state)
-      .field('brandId', validProduct.brandId)
-      .field('categories', validProduct.categories)
-      .attach(
-        'images',
-        './src/__test__/data/bang-tay-tap-gym-day-quan-co-tay-300x300.jpg'
-      )
-      .then((res) => {
-        console.log(res.status);
-        console.log(res.body);
-        done();
+  afterAll(() => {
+    testServer.shutDownServer();
+  });
+
+  describe('Add new product', () => {
+    afterAll(async () => {
+      const product = await Product.findOne({
+        where: {
+          title: validProduct.title,
+        },
       });
+      await product.destroy();
+    });
+
+    it('Should create new product', async () => {
+      const productData = new FormData();
+      productData.append('title', validProduct.title);
+      productData.append('detail', validProduct.detail);
+      productData.append('price', validProduct.price);
+      productData.append('discountPrice', validProduct.discountPrice);
+      productData.append(
+        'warrantyPeriodByDay',
+        validProduct.warrantyPeriodByDay
+      );
+      productData.append('availableQuantity', validProduct.availableQuantity);
+      productData.append('state', validProduct.state);
+      productData.append('brandId', validProduct.brandId);
+      productData.append('categories', validProduct.categories[0]);
+      productData.append('categories', validProduct.categories[1]);
+      productData.append(
+        'images',
+        fs.createReadStream('src/__test__/data/__test__5__test__.jpg')
+      );
+      productData.append(
+        'images',
+        fs.createReadStream('src/__test__/data/__test__3__test__.jpg')
+      );
+
+      let res = null;
+      try {
+        res = await axios.post(`${proxy}/api/admin/products`, productData, {
+          headers: {
+            ...productData.getHeaders(),
+            authorization: 'Bearer ' + adminToken,
+          },
+        });
+      } catch (err) {
+        if (err.response) {
+          res = err.response;
+          if (res.status === 400) console.log(res.data);
+        }
+      }
+
+      expect(res.status).toBe(200);
+      expect(res.data).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          title: expect.stringMatching(validProduct.title.toString()),
+          detail: expect.stringMatching(validProduct.detail),
+          price: validProduct.price,
+          discountPrice: validProduct.discountPrice,
+          warrantyPeriodByDay: validProduct.warrantyPeriodByDay,
+          availableQuantity: validProduct.availableQuantity,
+          state: expect.stringMatching(validProduct.state),
+        })
+      );
+    });
   });
 });

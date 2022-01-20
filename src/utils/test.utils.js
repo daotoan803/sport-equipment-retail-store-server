@@ -1,4 +1,7 @@
-const request = require('supertest');
+const fs = require('fs');
+const path = require('path');
+const projectPath = require('./project-path');
+const axios = require('axios');
 
 const adminAccount = {
   email: 'vnsport@vnsport.com',
@@ -6,11 +9,22 @@ const adminAccount = {
 };
 
 module.exports = {
-  async getAdminToken(app) {
-    const response = await request(app)
-      .post('/api/user/signin')
-      .send(adminAccount);
+  async getAdminToken(proxy) {
+    const response = await axios.post(`${proxy}/api/user/signin`, adminAccount);
 
-    return response.body.token;
+    return response.data.token;
+  },
+
+  async deleteUploadedTestImage(...images) {
+    for (let image of images) {
+      const imageName = image.split('/images/')[1];
+
+      fs.unlink(
+        path.join(projectPath.uploadedImageDirPath, imageName),
+        (err) => {
+          if (err) throw err;
+        }
+      );
+    }
   },
 };

@@ -1,7 +1,7 @@
-const { Model, DataTypes } = require('sequelize');
+const sequelize = require('sequelize');
+const { Model, DataTypes } = sequelize;
 
 const sequelizeConnection = require('./config/db');
-const _ = require('lodash');
 
 class Product extends Model {
   static state = {
@@ -11,12 +11,18 @@ class Product extends Model {
   };
 
   static async isTitleExists(title) {
-    const product = await Product.findOne({ where: { title } });
+    const product = await Product.findOne({
+      where: {
+        title: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('title')),
+          '=',
+          title.trim().toLowerCase()
+        ),
+      },
+    });
     if (product) return true;
     return false;
   }
-
-  static createProduct = async () => {};
 }
 
 Product.init(
@@ -31,7 +37,7 @@ Product.init(
       type: DataTypes.STRING,
       allowNull: false,
       set(value) {
-        this.setDataValue('title', _.capitalize(value.trim()));
+        this.setDataValue('title', value.trim());
       },
       unique: true,
       validate: {
@@ -44,7 +50,7 @@ Product.init(
 
     detail: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
 
     price: {

@@ -1,6 +1,8 @@
-const errorHandlerUtils = require('../utils/error-handler');
+const errorHandlerUtils = require('../utils/error-handler.utils');
 const Sequelize = require('sequelize');
 const jwt = require('jsonwebtoken');
+const UploadImagesRequestError = require('../errors/UploadImagesRequestError');
+const uploadUtils = require('../utils/upload.utils');
 
 module.exports = {
   routesNotExistsHandle(req, res) {
@@ -12,6 +14,10 @@ module.exports = {
     if (err instanceof Sequelize.ValidationError) {
       const errors = errorHandlerUtils.parseValidationErrors(err);
       return res.status(400).json(errors);
+    }
+
+    if (err instanceof UploadImagesRequestError) {
+      return uploadUtils.deleteUploadedImages(req.file || req.files);
     }
 
     if (err instanceof jwt.JsonWebTokenError) {
