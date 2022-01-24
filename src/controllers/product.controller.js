@@ -1,9 +1,15 @@
 const Product = require('../models/product.model');
 const Brand = require('../models/brand.model');
 const Category = require('../models/category.model');
-const ProductImages = require('../models/product-image.model');
+const ProductImage = require('../models/product-image.model');
 const sequelizeConnection = require('../models/config/db');
-const uploadUtils = require('../utils/upload.utils');
+const UploadImagesRequestError = require('../errors/UploadImagesRequestError');
+
+const convertUploadedImageToProductImage = (uploadImages) => {
+  return uploadImages.map((image) => ({
+    url: `/images/${image.filename}`,
+  }));
+};
 
 module.exports = {
   responseIsTitleUnique(req, res) {
@@ -19,7 +25,7 @@ module.exports = {
     const { productId } = req.params;
     try {
       const product = await Product.findByPk(productId, {
-        include: [Brand, Category, ProductImages],
+        include: [Brand, Category, ProductImage],
       });
 
       if (!product) {
@@ -42,23 +48,11 @@ module.exports = {
     }
   },
 
-  async createProduct(req, res, next) {
-    const {
-      title,
-      detail,
-      price,
-      discountPrice,
-      warrantyPeriodByDay,
-      availableQuantity,
-      state,
-      brandId,
-      categories: categoryIdList,
-    } = req.body;
-
-    const transaction = await sequelizeConnection.transaction();
+  async findBrandAndCategories(req, res, next) {
+    const { brandId, categories: categoryIdList } = req.body;
 
     try {
-      const [brand, categoryList] = await Promise.all([
+      const [brand, categories] = await Promise.all([
         Brand.findByPk(brandId),
         Category.findAll({
           where: {
@@ -68,14 +62,42 @@ module.exports = {
       ]);
 
       if (!brand) {
-        uploadUtils.deleteUploadedImages(req.files);
-        return res.status(400).json({ error: 'Brand not found' });
+        res.status(400).json({ error: 'Brand not found' });
+        return next(new UploadImagesRequestError());
       }
-      if (categoryList.length === 0) {
-        uploadUtils.deleteUploadedImages(req.files);
-        return res.status(400).json({ error: 'Category not found' });
+      if (categories.length === 0) {
+        res.status(400).json({ error: 'Category not found' });
+        return next(new UploadImagesRequestError());
       }
 
+      req.brand = brand;
+      req.categories = categories;
+      next();
+    } catch (e) {
+      req.transaction?.rollback();
+      next(new UploadImagesRequestError());
+      next(e);
+    }
+  },
+
+  async createProduct(req, res, next) {
+    const {
+      title,
+      detail,
+      price,
+      discountPrice,
+      warrantyPeriodByDay,
+      availableQuantity,
+      state,
+    } = req.body;
+
+    const { brand, categories } = req;
+
+    const images = convertUploadedImageToProductImage(req.files)
+
+    const transaction = await sequelizeConnection.transaction();
+
+    try {
       const product = await Product.create(
         {
           title,
@@ -85,66 +107,41 @@ module.exports = {
           warrantyPeriodByDay,
           availableQuantity,
           state,
+          brandId: brand.id,
+          productImages: images,
         },
-        { transaction }
+        { transaction, include: [ProductImage] }
       );
 
       await Promise.all([
+        product.setCategories(categories, { transaction }),
         product.setBrand(brand, { transaction }),
-        product.setCategories(categoryList, { transaction }),
       ]);
-
-      product.brand = brand;
-      product.categories = categoryList;
-
-      req.transaction = transaction;
-      req.product = product;
-      return next();
-    } catch (e) {
-      transaction.rollback();
-      uploadUtils.deleteUploadedImages(req.files);
-      next(e);
-    }
-  },
-
-  async createProductImages(req, res, next) {
-    const uploadedImages = req.files;
-    if (!uploadedImages)
-      return res.status(400).json({ error: 'Must have at least 1 image' });
-
-    const transaction =
-      req.transaction || (await sequelizeConnection.transaction());
-
-    try {
-      const images = uploadedImages.map((image) => ({
-        url: `/images/${image.filename}`,
-      }));
-
-      const productImages = await ProductImages.bulkCreate(images, {
-        transaction,
-      });
-
-      req.transaction = transaction;
-      req.productImages = productImages;
-      next();
-    } catch (e) {
-      transaction.rollback();
-      uploadUtils.deleteUploadedImages(req.files);
-      next(e);
-    }
-  },
-
-  async setImagesToProduct(req, res, next) {
-    const { transaction, product, productImages } = req;
-
-    try {
-      await product.setProductImages(productImages, { transaction });
       await transaction.commit();
-      product.productImages = productImages;
-      res.json(product);
+
+      res.json({
+        ...product.dataValues,
+        brand: brand,
+        categories: categories,
+        productImages: product.productImages,
+      });
     } catch (e) {
       transaction.rollback();
-      uploadUtils.deleteUploadedImages(req.files);
+      next(e);
+      next(new UploadImagesRequestError());
+    }
+  },
+
+  async addProductImages(req, res, next) {
+    const product = req.product;
+    const images = convertUploadedImageToProductImage(req.files)
+
+    try {
+      await Promise.all(
+        images.map((image) => product.createProductImage(image))
+      );
+      res.sendStatus(204);
+    } catch (e) {
       next(e);
     }
   },

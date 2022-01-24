@@ -13,6 +13,7 @@ const routes = express.Router();
 routes.post(
   '/signup',
   userValidator.validateUserSignup,
+  userValidator.checkIfEmailExists,
   userController.signup,
   authController.createAccessToken
 );

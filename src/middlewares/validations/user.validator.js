@@ -42,4 +42,18 @@ module.exports = {
     }
     next();
   },
+
+  async checkIfEmailExists(req, res, next) {
+    const { email } = req.body;
+    try {
+      const emailAlreadyExists = await User.isEmailAlreadyExist(email);
+      if (emailAlreadyExists)
+        return res.status(409).json({ error: 'Email already exists' });
+
+      next()
+    } catch (e) {
+      next(e);
+    }
+  },
+
 };

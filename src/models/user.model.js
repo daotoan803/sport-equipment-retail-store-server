@@ -19,12 +19,6 @@ class User extends Model {
     return false;
   }
 
-  static async isPhoneNumberAlreadyExist(phoneNumber) {
-    const user = await User.findOne({ where: { phoneNumber } });
-    if (user) return true;
-    return false;
-  }
-
   static async validateLoginAndGetUser(email, password) {
     const user = await User.findOne({
       where: { email },
@@ -90,7 +84,6 @@ User.init(
     phoneNumber: {
       type: DataTypes.STRING(15),
       allowNull: true,
-      unique: true,
       set(value) {
         this.setDataValue('phoneNumber', value.trim());
       },

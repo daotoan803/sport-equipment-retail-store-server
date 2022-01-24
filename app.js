@@ -19,7 +19,7 @@ if (require.main === module) {
   database.initialize().then(() => {
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {
-      console.log('port : http://localhost:' + PORT);
+      console.log(`\n\n\nport : http://localhost:${PORT}\n\n\n`);
     });
   });
 }

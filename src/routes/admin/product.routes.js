@@ -18,11 +18,10 @@ routes.get(
 );
 
 routes.post(
-  '/:productId/addImages',
+  '/:productId/images',
   uploadHandler.handleMultipleImagesUpload,
   productController.getProductDetailById,
-  productController.createProductImages,
-  productController.setImagesToProduct
+  productController.addProductImages
 );
 
 routes.post(
@@ -30,9 +29,8 @@ routes.post(
   uploadHandler.handleMultipleImagesUpload,
   productValidator.validateAddProductData,
   productValidator.checkIfProductTitleAlreadyExists,
-  productController.createProduct,
-  productController.createProductImages,
-  productController.setImagesToProduct
+  productController.findBrandAndCategories,
+  productController.createProduct
 );
 
 module.exports = routes;

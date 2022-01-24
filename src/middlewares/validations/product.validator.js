@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const UploadImagesRequestError = require('../../errors/UploadImagesRequestError');
 const Product = require('../../models/product.model');
 const uploadUtils = require('../../utils/upload.utils');
 
@@ -31,6 +32,9 @@ module.exports = {
       brandId: Joi.string()
         .required(),
       categories: Joi.array().required(),
+      images: Joi.array()
+        .min(1)
+        .required()
     });
 
     const {
@@ -44,6 +48,7 @@ module.exports = {
       brandId,
       categories,
     } = req.body;
+    const images = req.files;
 
     const result = productDetailSchema.validate({
       title: title.trim(),
@@ -55,10 +60,11 @@ module.exports = {
       state,
       brandId,
       categories,
+      images,
     });
 
     if (result.error) {
-      uploadUtils.deleteUploadedImages(req.files);
+      next(new UploadImagesRequestError());
       return responseValidationError(res, result.error);
     }
 
@@ -76,11 +82,12 @@ module.exports = {
     try {
       const titleIsAlreadyExists = await Product.isTitleExists(title);
       if (titleIsAlreadyExists) {
-        uploadUtils.deleteUploadedImages(req.files);
+        next(new UploadImagesRequestError());
         return res.status(409).json({ error: 'title already exists' });
       }
       return next();
     } catch (err) {
+      next(new UploadImagesRequestError());
       next(err);
     }
   },

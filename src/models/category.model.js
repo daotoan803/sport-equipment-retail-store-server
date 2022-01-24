@@ -13,6 +13,15 @@ class Category extends Model {
       },
     });
   }
+
+  static async isNameAlreadyExists(name) {
+    const existsCategoryName = await Category.findOne({
+      where: {
+        name,
+      },
+    });
+    return existsCategoryName !== null;
+  }
 }
 
 Category.init(

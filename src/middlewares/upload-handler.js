@@ -4,6 +4,8 @@ const imageUtils = require('../utils/image.util');
 const projectPath = require('../utils/project-path');
 const uuid = require('uuid');
 
+const invalidImageTypeError = 'invalid image type';
+
 const imageStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, projectPath.uploadedImageDirPath),
   filename: (req, file, cb) => {
@@ -16,8 +18,8 @@ const imageStorage = multer.diskStorage({
 
 const imageFilter = (req, file, cb) => {
   if (!imageUtils.fileUploadingIsImage(file)) {
-    req.fileError = 'Only accept images in jpeg|jpg|png|gif ';
-    return cb(null, false);
+    req.fileError = '';
+    return cb(new multer.MulterError(invalidImageTypeError), false);
   }
   cb(null, true);
 };
@@ -28,18 +30,21 @@ const imageHandler = multer({
 });
 
 const handleUploadError = (err, res, next) => {
+  if (!err) return next();
+
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_UNEXPECTED_FILE') {
       return res.status(400).json({ error: 'Only accept 1 image' });
     }
+    if (err.code === invalidImageTypeError) {
+      return res
+        .status(400)
+        .json({ error: 'Only accept images in jpeg|jpg|png|gif' });
+    }
     console.error(err);
     return res.status(400).json(err);
   }
-  if (err) {
-    return next(err);
-  }
-
-  next();
+  next(err);
 };
 
 module.exports = {

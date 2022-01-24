@@ -12,6 +12,7 @@ module.exports = {
   // eslint-disable-next-line no-unused-vars
   errorHandler(err, req, res, next) {
     if (err instanceof Sequelize.ValidationError) {
+      console.error(err);
       const errors = errorHandlerUtils.parseValidationErrors(err);
       return res.status(400).json(errors);
     }

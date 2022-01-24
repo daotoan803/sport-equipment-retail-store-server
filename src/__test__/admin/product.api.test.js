@@ -101,6 +101,18 @@ describe('Test admin functionality with product', () => {
           state: expect.stringMatching(validProduct.state),
         })
       );
+
+      expect(res.data.productImages).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            url: expect.any(String),
+            productId: res.data.id,
+          }),
+        ])
+      );
+
+      console.log(res.data);
     });
   });
 });
