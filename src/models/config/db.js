@@ -8,7 +8,7 @@ const sequelizeConnection = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   dialect: 'mysql',
   timezone: '+07:00',
   // logging: console.log,
-  // logging: false,
+  logging: false,
 });
 
 module.exports = sequelizeConnection;

@@ -1,16 +1,12 @@
 const Product = require('../../models/product.model');
 const testUtils = require('../../utils/test.utils');
-const TestServer = require('../../utils/test-server');
 const Brand = require('../../models/brand.model');
 const Category = require('../../models/category.model');
-const axios = require('axios');
-const FormData = require('form-data');
-const fs = require('fs');
+const app = require('../../../app');
+const supertest = require('supertest')(app);
 
 describe('Test admin functionality with product', () => {
-  const testServer = new TestServer();
   let adminToken = '';
-  let proxy = '';
   let uploadedImage = [];
 
   const validProduct = {
@@ -24,8 +20,7 @@ describe('Test admin functionality with product', () => {
   };
 
   beforeAll(async () => {
-    proxy = await testServer.startServer();
-    adminToken = await testUtils.getAdminToken(proxy);
+    adminToken = await testUtils.getAdminToken();
     let [brands, categories] = await Promise.all([
       Brand.findAll(),
       Category.findAll(),
@@ -36,7 +31,7 @@ describe('Test admin functionality with product', () => {
   });
 
   afterAll(() => {
-    testServer.shutDownServer();
+    testUtils.deleteUploadedTestImageByImageUrl(...uploadedImage);
   });
 
   describe('Add new product', () => {
@@ -50,46 +45,24 @@ describe('Test admin functionality with product', () => {
     });
 
     it('Should create new product', async () => {
-      const productData = new FormData();
-      productData.append('title', validProduct.title);
-      productData.append('detail', validProduct.detail);
-      productData.append('price', validProduct.price);
-      productData.append('discountPrice', validProduct.discountPrice);
-      productData.append(
-        'warrantyPeriodByDay',
-        validProduct.warrantyPeriodByDay
-      );
-      productData.append('availableQuantity', validProduct.availableQuantity);
-      productData.append('state', validProduct.state);
-      productData.append('brandId', validProduct.brandId);
-      productData.append('categories', validProduct.categories[0]);
-      productData.append('categories', validProduct.categories[1]);
-      productData.append(
-        'images',
-        fs.createReadStream('src/__test__/data/__test__5__test__.jpg')
-      );
-      productData.append(
-        'images',
-        fs.createReadStream('src/__test__/data/__test__3__test__.jpg')
-      );
-
-      let res = null;
-      try {
-        res = await axios.post(`${proxy}/api/admin/products`, productData, {
-          headers: {
-            ...productData.getHeaders(),
-            authorization: 'Bearer ' + adminToken,
-          },
-        });
-      } catch (err) {
-        if (err.response) {
-          res = err.response;
-          if (res.status === 400) console.log(res.data);
-        }
-      }
+      const res = await supertest
+        .post('/api/admin/products')
+        .set('authorization', 'Bearer ' + adminToken)
+        .field('title', validProduct.title)
+        .field('detail', validProduct.detail)
+        .field('price', validProduct.price)
+        .field('discountPrice', validProduct.discountPrice)
+        .field('warrantyPeriodByDay', validProduct.warrantyPeriodByDay)
+        .field('availableQuantity', validProduct.availableQuantity)
+        .field('state', validProduct.state)
+        .field('brandId', validProduct.brandId)
+        .field('categories', validProduct.categories[0])
+        .field('categories', validProduct.categories[1])
+        .attach('images', './src/__test__/data/__test__5__test__.jpg')
+        .attach('images', './src/__test__/data/__test__3__test__.jpg');
 
       expect(res.status).toBe(200);
-      expect(res.data).toEqual(
+      expect(res.body).toEqual(
         expect.objectContaining({
           id: expect.any(String),
           title: expect.stringMatching(validProduct.title.toString()),
@@ -102,17 +75,17 @@ describe('Test admin functionality with product', () => {
         })
       );
 
-      expect(res.data.productImages).toEqual(
+      expect(res.body.productImages).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(String),
             url: expect.any(String),
-            productId: res.data.id,
+            productId: res.body.id,
           }),
         ])
       );
 
-      console.log(res.data);
+      uploadedImage = res.body.productImages.map((image) => image.url);
     });
   });
 });

@@ -20,7 +20,7 @@ routes.get(
 routes.post(
   '/:productId/images',
   uploadHandler.handleMultipleImagesUpload,
-  productController.getProductDetailById,
+  productController.getProductById,
   productController.addProductImages
 );
 

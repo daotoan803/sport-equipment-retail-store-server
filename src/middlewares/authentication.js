@@ -34,19 +34,6 @@ module.exports = {
     }
   },
 
-  async createAccessToken(req, res) {
-    const { user } = req;
-    const token = jwt.sign(
-      { userId: user.id, userKey: user.account.userKey },
-      TOKEN_KEY
-    );
-    if (user.account.role !== Account.role.customer) {
-      const role = user.account.role;
-      return res.json({ token, role });
-    }
-    res.json({ token });
-  },
-
   async validateAccessToken(req, res, next) {
     try {
       const authorization = req.headers?.authorization;

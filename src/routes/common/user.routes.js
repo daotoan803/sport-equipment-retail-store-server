@@ -2,7 +2,8 @@ const express = require('express');
 
 const userController = require('../../controllers/user.controller');
 const userValidator = require('../../middlewares/validations/user.validator');
-const authController = require('../../middlewares/authentication');
+const authentication = require('../../middlewares/authentication');
+const authController = require('../../controllers/auth.controller');
 
 /*------------------------------------------------------*/
 /*--------------------/api/user-----------------------*/
@@ -17,11 +18,11 @@ routes.post(
   userController.signup,
   authController.createAccessToken
 );
-routes.post('/signin', authController.signin, authController.createAccessToken);
+routes.post('/signin', authentication.signin, authController.createAccessToken);
 routes.post(
   '/logout/all',
-  authController.validateAccessToken,
-  authController.logoutEveryWhere
+  authentication.validateAccessToken,
+  authentication.logoutEveryWhere
 );
 // routes.get('/reset-password', AuthController.sendOtpCode);
 

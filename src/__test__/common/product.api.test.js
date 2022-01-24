@@ -1,28 +1,14 @@
 const Product = require('../../models/product.model');
-const TestServer = require('../../utils/test-server');
-const axios = require('axios');
+const app = require('../../../app');
+const supertest = require('supertest')(app);
 
 describe('Test normal user functionality with product', () => {
-  const testServer = new TestServer();
-  let proxy = '';
-
-  beforeAll(async () => {
-    await testServer.startServer();
-    proxy = testServer.proxy;
-  });
-
   describe('Get all products', () => {
     it('Should get all products', async () => {
-      let res = null;
-      try {
-        res = await axios.get(proxy + '/api/products');
-      } catch (err) {
-        if (!err.response) throw err;
-        res = err.response;
-      }
+      let res = await supertest.get('/api/products');
       expect(res.status).toBe(200);
-      expect(res.data.length).toBeGreaterThan(0);
-      expect(res.data).toEqual(
+      expect(res.body.length).toBeGreaterThan(0);
+      expect(res.body).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(String),
@@ -50,13 +36,13 @@ describe('Test normal user functionality with product', () => {
     it('Should get a detailed product by id', async () => {
       let res = null;
       try {
-        res = await axios.get(`${proxy}/api/products/${productId}`);
+        res = await supertest.get(`/api/products/${productId}`);
       } catch (err) {
         if (!err.response) throw err;
         res = err.response;
       }
       expect(res.status).toBe(200);
-      expect(res.data).toEqual(
+      expect(res.body).toEqual(
         expect.objectContaining({
           id: expect.any(String),
           title: expect.any(String),
@@ -69,13 +55,13 @@ describe('Test normal user functionality with product', () => {
           brandId: expect.any(String),
         })
       );
-      expect(res.data.brand).toEqual(
+      expect(res.body.brand).toEqual(
         expect.objectContaining({
           id: expect.any(String),
           name: expect.any(String),
         })
       );
-      expect(res.data.categories).toEqual(
+      expect(res.body.categories).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(String),
@@ -83,12 +69,12 @@ describe('Test normal user functionality with product', () => {
           }),
         ])
       );
-      expect(res.data.productImages).toEqual(
+      expect(res.body.productImages).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(String),
             url: expect.any(String),
-            productId: expect.stringContaining(productId)
+            productId: expect.stringContaining(productId),
           }),
         ])
       );

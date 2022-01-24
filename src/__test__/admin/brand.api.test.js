@@ -1,37 +1,22 @@
-const path = require('path');
 const Brand = require('../../models/brand.model');
-const fs = require('fs');
-const axios = require('axios');
-const FormData = require('form-data');
 const testUtils = require('../../utils/test.utils');
-const TestServer = require('../../utils/test-server');
+const app = require('../../../app');
+const supertest = require('supertest')(app);
 
 describe('Test admin functionality with brand', () => {
   let adminToken = null;
   let uploadedImage = [];
-  let proxy = '';
-  const testServer = new TestServer();
 
   beforeAll(async () => {
-    await testServer.startServer();
-    proxy = testServer.proxy;
-    adminToken = await testUtils.getAdminToken(proxy);
-    return;
+    adminToken = await testUtils.getAdminToken();
   });
 
   afterAll(() => {
-    testUtils.deleteUploadedTestImage(...uploadedImage);
-    testServer.shutDownServer();
+    testUtils.deleteUploadedTestImageByImageUrl(...uploadedImage);
   });
 
   describe('Create new brand', () => {
     const brandName = 'Sample test brand';
-    const imagePath = path.join(
-      __dirname,
-      '..',
-      'data',
-      '__test__2__test__.jpg'
-    );
 
     afterAll((done) => {
       Brand.destroy({
@@ -41,66 +26,37 @@ describe('Test admin functionality with brand', () => {
       }).then(() => done());
     });
 
-    it('Should create a new brand', (done) => {
-      const brandData = new FormData();
-      brandData.append('name', brandName);
-      brandData.append('image', fs.createReadStream(imagePath));
-      axios
-        .post(`${proxy}/api/admin/brands/`, brandData, {
-          headers: {
-            ...brandData.getHeaders(),
-            authorization: 'Bearer ' + adminToken,
-          },
+    it('Should create a new brand', async () => {
+      const res = await supertest
+        .post('/api/admin/brands')
+        .set('authorization', 'Bearer ' + adminToken)
+        .field('name', brandName)
+        .attach('image', './src/__test__/data/__test__1__test__.jpg');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          name: expect.stringMatching(brandName),
+          logoUrl: expect.any(String),
         })
-        .then((res) => {
-          expect(res.status).toBe(200);
-          expect(res.data).toEqual(
-            expect.objectContaining({
-              id: expect.any(String),
-              name: expect.stringMatching(brandName),
-              logoUrl: expect.any(String),
-            })
-          );
-          uploadedImage.push(res.data.logoUrl);
-          done();
-        })
-        .catch(done);
+      );
+      uploadedImage.push(res.body.logoUrl);
     });
 
-    it("Should fail because brand's name already exists", (done) => {
-      const brandData = new FormData();
-      brandData.append('name', brandName);
-      brandData.append('image', fs.createReadStream(imagePath));
+    it("Should fail because brand's name already exists", async () => {
+      const res = await supertest
+        .post('/api/admin/brands')
+        .set('authorization', 'Bearer ' + adminToken)
+        .field('name', brandName)
+        .attach('image', './src/__test__/data/__test__1__test__.jpg');
 
-      axios
-        .post(`${proxy}/api/admin/brands`, brandData, {
-          headers: {
-            ...brandData.getHeaders(),
-            authorization: 'Bearer ' + adminToken,
-          },
+      expect(res.status).toBe(409);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          error: expect.any(String),
         })
-        .then((res) => {
-          expect(res.status).toBe(409);
-          done();
-        })
-        .catch((err) => {
-          if (err.response) {
-            const res = err.response;
-            try {
-              expect(res.status).toBe(409);
-              expect(res.data).toEqual(
-                expect.objectContaining({
-                  error: expect.any(String),
-                })
-              );
-              done();
-            } catch (error) {
-              done(error);
-            }
-          } else {
-            throw err;
-          }
-        });
+      );
     });
   });
 });

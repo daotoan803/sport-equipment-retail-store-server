@@ -8,7 +8,7 @@ const routes = require('express').Router();
 
 routes.get(
   '/:productId',
-  productController.getProductDetailById,
+  productController.getProductById,
   productController.responseProductDetail
 );
 

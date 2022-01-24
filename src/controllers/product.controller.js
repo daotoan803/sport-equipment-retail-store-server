@@ -4,10 +4,11 @@ const Category = require('../models/category.model');
 const ProductImage = require('../models/product-image.model');
 const sequelizeConnection = require('../models/config/db');
 const UploadImagesRequestError = require('../errors/UploadImagesRequestError');
+const imageUtils = require('../utils/image.util');
 
 const convertUploadedImageToProductImage = (uploadImages) => {
   return uploadImages.map((image) => ({
-    url: `/images/${image.filename}`,
+    url: imageUtils.createImageUrl(image.filename),
   }));
 };
 
@@ -17,21 +18,34 @@ module.exports = {
     res.sendStatus(200);
   },
 
-  responseProductDetail(req, res) {
-    res.json(req.product);
+  async responseProductDetail(req, res, next) {
+    const product = req.product;
+
+    try {
+      const [brand, categories, productImages] = await Promise.all([
+        product.getBrand(),
+        product.getCategories(),
+        product.getProductImages(),
+      ]);
+
+      res.json({
+        ...product.dataValues,
+        brand,
+        categories,
+        productImages,
+      });
+    } catch (e) {
+      next(e);
+    }
   },
 
-  async getProductDetailById(req, res, next) {
+  async getProductById(req, res, next) {
     const { productId } = req.params;
     try {
-      const product = await Product.findByPk(productId, {
-        include: [Brand, Category, ProductImage],
-      });
-
+      const product = await Product.findByPk(productId);
       if (!product) {
         return res.status(404).json({ error: 'Product not found' });
       }
-
       req.product = product;
       next();
     } catch (e) {
@@ -93,7 +107,7 @@ module.exports = {
 
     const { brand, categories } = req;
 
-    const images = convertUploadedImageToProductImage(req.files)
+    const images = convertUploadedImageToProductImage(req.files);
 
     const transaction = await sequelizeConnection.transaction();
 
@@ -134,7 +148,7 @@ module.exports = {
 
   async addProductImages(req, res, next) {
     const product = req.product;
-    const images = convertUploadedImageToProductImage(req.files)
+    const images = convertUploadedImageToProductImage(req.files);
 
     try {
       await Promise.all(

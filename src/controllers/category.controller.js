@@ -1,5 +1,6 @@
 const Category = require('../models/category.model');
 const UploadImagesRequestError = require('../errors/UploadImagesRequestError');
+const imageUtils = require('../utils/image.util');
 
 module.exports = {
   async addCategory(req, res, next) {
@@ -9,7 +10,7 @@ module.exports = {
     try {
       const category = await Category.create({
         name,
-        logoUrl: logo ? `images/${logo.filename}` : null,
+        logoUrl: logo ? imageUtils.createImageUrl(logo.filename) : null,
       });
       res.json(category);
     } catch (e) {

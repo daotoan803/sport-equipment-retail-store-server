@@ -1,6 +1,6 @@
 const Brand = require('../models/brand.model');
-const uploadUtils = require('../utils/upload.utils');
 const UploadImagesRequestError = require('../errors/UploadImagesRequestError');
+const imageUtils = require('../utils/image.util');
 
 module.exports = {
   async addBrand(req, res, next) {
@@ -9,11 +9,10 @@ module.exports = {
     try {
       const brand = await Brand.create({
         name,
-        logoUrl: logo ? `/images/${logo.filename}` : null,
+        logoUrl: logo ? imageUtils.createImageUrl(logo.filename) : null,
       });
       return res.json(brand);
     } catch (e) {
-      uploadUtils.deleteUploadedImages(logo);
       next(new UploadImagesRequestError());
       next(e);
     }

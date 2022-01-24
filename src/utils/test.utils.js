@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const projectPath = require('./project-path');
-const axios = require('axios');
+const User = require('../models/user.model');
+const authController = require('../controllers/auth.controller');
 
 const adminAccount = {
   email: 'vnsport@vnsport.com',
@@ -9,14 +10,26 @@ const adminAccount = {
 };
 
 module.exports = {
-  async getAdminToken(proxy) {
-    const response = await axios.post(`${proxy}/api/user/signin`, adminAccount);
+  async getAdminToken() {
+    const admin = await User.validateLoginAndGetUser(
+      adminAccount.email,
+      adminAccount.password
+    );
 
-    return response.data.token;
+    const req = {
+      user: admin,
+    };
+    const res = {
+      json: jest.fn(),
+    };
+
+    authController.createAccessToken(req, res);
+    const adminToken = res.json.mock.calls[0][0].token;
+    return adminToken;
   },
 
-  async deleteUploadedTestImage(...images) {
-    for (let image of images) {
+  async deleteUploadedTestImageByImageUrl(...imageUrls) {
+    for (let image of imageUrls) {
       const imageName = image.split('/images/')[1];
 
       fs.unlink(

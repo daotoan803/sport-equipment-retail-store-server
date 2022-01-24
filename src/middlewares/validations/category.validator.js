@@ -11,7 +11,7 @@ module.exports = {
 
     const { name } = req.body;
 
-    const validateResult = categorySchema.validate({ name });
+    const validateResult = categorySchema.validate({ name: name.trim() });
 
     if (validateResult.error) {
       next(new UploadImagesRequestError());

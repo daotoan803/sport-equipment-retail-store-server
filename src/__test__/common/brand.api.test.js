@@ -1,14 +1,9 @@
-const request = require('supertest');
 const app = require('../../../app');
-const database = require('../../models');
-
-afterAll(() => {
-  database.terminate();
-});
+const supertest = require('supertest')(app);
 
 describe('Get brand', () => {
   it('GET /api/brands', (done) => {
-    request(app)
+    supertest
       .get('/api/brands')
       .expect('content-type', /json/)
       .expect(200)

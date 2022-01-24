@@ -1,5 +1,4 @@
 const { Model, DataTypes, Op } = require('sequelize');
-const _ = require('lodash');
 
 const sequelizeConnection = require('./config/db');
 
@@ -34,13 +33,6 @@ Category.init(
     },
     name: {
       type: DataTypes.STRING,
-      set(value) {
-        const name = value
-          .split(' ')
-          .map((word) => _.capitalize(word))
-          .join(' ');
-        this.setDataValue('name', name);
-      },
       unique: true,
       allowNull: false,
       validate: {
