@@ -7,7 +7,7 @@ const Category = require('./category.model');
 const Brand = require('./brand.model');
 const dbUtils = require('../utils/database.utils');
 
-User.hasOne(Account);
+User.hasOne(Account, { onDelete: 'CASCADE' });
 Account.belongsTo(User);
 
 Product.hasMany(ProductImage, {
@@ -45,7 +45,7 @@ const createDefaultAdminAccount = async () => {
 };
 
 exports.initialize = async () => {
-  await sequelizeConnection.sync({ false: true });
+  await sequelizeConnection.sync({ alter: true });
   await Promise.all([
     createDefaultAdminAccount(),
     dbUtils.createSampleDataForTesting(),

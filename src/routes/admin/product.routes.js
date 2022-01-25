@@ -11,11 +11,7 @@ const routes = express.Router();
 /*--------------------/api/admin/products-----------------------*/
 /*------------------------------------------------------*/
 
-routes.get(
-  '/isTitleUnique',
-  productValidator.checkIfProductTitleAlreadyExists,
-  productController.responseIsTitleUnique
-);
+routes.post('/is-title-unique', productController.responseIsTitleUnique);
 
 routes.post(
   '/:productId/images',

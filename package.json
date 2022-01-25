@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest --testPathPattern=\"src/__test__\" --watch --detectOpenHandles"
+    "test": "jest --testPathPattern=\"src/__test__\" --detectOpenHandles"
   },
   "keywords": [],
   "author": "Đào Đình Toàn",

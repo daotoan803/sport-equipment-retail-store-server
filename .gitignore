@@ -4,3 +4,5 @@ temp.js
 upload
 *.log
 src/__test__/data
+coverage
+*.txt

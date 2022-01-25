@@ -13,9 +13,19 @@ const convertUploadedImageToProductImage = (uploadImages) => {
 };
 
 module.exports = {
-  responseIsTitleUnique(req, res) {
-    //product title already check in middlewares, if request come here mean title is valid
-    res.sendStatus(200);
+  async responseIsTitleUnique(req, res, next) {
+    let { title } = req.body;
+    title += '';
+    if (!title || title.trim() === 0) return res.sendStatus(400);
+
+    try {
+      const productIsAlreadyExists = await Product.isTitleExists(title);
+      if (productIsAlreadyExists) return res.sendStatus(409);
+
+      res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
   },
 
   async responseProductDetail(req, res, next) {
@@ -55,7 +65,18 @@ module.exports = {
 
   async getAllProductsPreview(req, res, next) {
     try {
-      const products = await Product.findAll();
+      const products = await Product.findAll({
+        attributes: [
+          'id',
+          'title',
+          'price',
+          'discountPrice',
+          'warrantyPeriodByDay',
+          'availableQuantity',
+          'state',
+          'brandId',
+        ],
+      });
       return res.json(products);
     } catch (error) {
       next(error);
@@ -88,7 +109,6 @@ module.exports = {
       req.categories = categories;
       next();
     } catch (e) {
-      req.transaction?.rollback();
       next(new UploadImagesRequestError());
       next(e);
     }

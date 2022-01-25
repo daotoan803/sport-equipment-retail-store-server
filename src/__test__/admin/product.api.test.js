@@ -10,8 +10,8 @@ describe('Test admin functionality with product', () => {
   let uploadedImage = [];
 
   const validProduct = {
-    title: Math.random(),
-    detail: 'This is long detail, but it not really necessary',
+    title: 'This is a test product',
+    detail: 'This is long detail, ',
     price: 12000000,
     discountPrice: 11000000,
     warrantyPeriodByDay: 120,
@@ -30,20 +30,17 @@ describe('Test admin functionality with product', () => {
     return 'done';
   });
 
-  afterAll(() => {
-    testUtils.deleteUploadedTestImageByImageUrl(...uploadedImage);
+  afterAll(async () => {
+    const product = await Product.findOne({
+      where: {
+        title: validProduct.title,
+      },
+    });
+    await product?.destroy({ force: true });
+    await testUtils.deleteUploadedTestImageByImageUrl(...uploadedImage);
   });
 
-  describe('Add new product', () => {
-    afterAll(async () => {
-      const product = await Product.findOne({
-        where: {
-          title: validProduct.title,
-        },
-      });
-      await product.destroy();
-    });
-
+  describe('Create new product', () => {
     it('Should create new product', async () => {
       const res = await supertest
         .post('/api/admin/products')
@@ -84,8 +81,67 @@ describe('Test admin functionality with product', () => {
           }),
         ])
       );
-
       uploadedImage = res.body.productImages.map((image) => image.url);
+    });
+
+    it('Should not create new product because title conflict', async () => {
+      const res = await supertest
+        .post('/api/admin/products')
+        .set('authorization', 'Bearer ' + adminToken)
+        .field('title', validProduct.title)
+        .field('detail', validProduct.detail)
+        .field('price', validProduct.price)
+        .field('discountPrice', validProduct.discountPrice)
+        .field('warrantyPeriodByDay', validProduct.warrantyPeriodByDay)
+        .field('availableQuantity', validProduct.availableQuantity)
+        .field('state', validProduct.state)
+        .field('brandId', validProduct.brandId)
+        .field('categories', validProduct.categories[0])
+        .field('categories', validProduct.categories[1])
+        .attach('images', './src/__test__/data/__test__5__test__.jpg')
+        .attach('images', './src/__test__/data/__test__3__test__.jpg');
+
+      expect(res.status).toBe(409);
+      expect(res.body.error).toEqual(expect.any(String));
+    });
+  });
+
+  describe('Test product title is exists', () => {
+    it('Product title should be exists', async () => {
+      const res = await supertest
+        .post('/api/admin/products/is-title-unique')
+        .set('authorization', 'Bearer ' + adminToken)
+        .send({ title: validProduct.title });
+
+      expect(res.status).toBe(409);
+    });
+
+    it('This title should not be exists', async () => {
+      const res = await supertest
+        .post('/api/admin/products/is-title-unique')
+        .set('authorization', 'Bearer ' + adminToken)
+        .send({ title: 'haf;ljksdfb34875q9fabnlkdufhbaiusdkfnah' });
+
+      expect(res.status).toBe(200);
+    });
+  });
+
+  describe('Test add product images', () => {
+    let uploadedProduct = null;
+
+    beforeAll(async () => {
+      const products = await Product.findAll();
+      uploadedProduct = products[0];
+    });
+
+    it('Should add new image to product', async () => {
+      const res = await supertest
+        .post(`/api/admin/products/${uploadedProduct.id}/images`)
+        .set('authorization', 'Bearer ' + adminToken)
+        .attach('images', './src/__test__/data/__test__2__test__.jpg')
+        .attach('images', './src/__test__/data/__test__3__test__.jpg');
+
+      expect(res.status).toBe(204);
     });
   });
 });

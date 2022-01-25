@@ -28,16 +28,16 @@ module.exports = {
     return adminToken;
   },
 
-  async deleteUploadedTestImageByImageUrl(...imageUrls) {
+  deleteUploadedTestImageByImageUrl(...imageUrls) {
+    const async = [];
     for (let image of imageUrls) {
       const imageName = image.split('/images/')[1];
-
-      fs.unlink(
-        path.join(projectPath.uploadedImageDirPath, imageName),
-        (err) => {
-          if (err) throw err;
-        }
+      async.push(
+        fs.promises.unlink(
+          path.join(projectPath.uploadedImageDirPath, imageName)
+        )
       );
     }
+    return Promise.all(async);
   },
 };

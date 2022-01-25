@@ -14,9 +14,11 @@ describe('Test admin functionality with category', () => {
     adminToken = await testUtils.getAdminToken();
   });
 
-  afterAll(() => {
-    Category.destroy({ where: { name: validCategory.name } });
-    testUtils.deleteUploadedTestImageByImageUrl(...uploadedImages);
+  afterAll(async () => {
+    await Promise.all([
+      Category.destroy({ where: { name: validCategory.name } }),
+      testUtils.deleteUploadedTestImageByImageUrl(...uploadedImages),
+    ]);
   });
 
   describe('Create new category', () => {
@@ -67,13 +69,5 @@ describe('Test admin functionality with category', () => {
         ])
       );
     });
-
-    // it("Should not create new category because user don't have authorization", (done) => {
-    //   supertest
-    //     .post('/api/admin/categories')
-    //     .field('name', validCategory.name)
-    //     .attach('image', './src/__test__/data/__test__0__test__.jpg')
-    //     .expect(401, done);
-    // });
   });
 });

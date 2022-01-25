@@ -6,26 +6,24 @@ const supertest = require('supertest')(app);
 describe('Test admin functionality with brand', () => {
   let adminToken = null;
   let uploadedImage = [];
+  const brandName = 'Sample test brand';
 
   beforeAll(async () => {
     adminToken = await testUtils.getAdminToken();
   });
 
-  afterAll(() => {
-    testUtils.deleteUploadedTestImageByImageUrl(...uploadedImage);
-  });
-
-  describe('Create new brand', () => {
-    const brandName = 'Sample test brand';
-
-    afterAll((done) => {
+  afterAll(async () => {
+    await Promise.all([
+      testUtils.deleteUploadedTestImageByImageUrl(...uploadedImage),
       Brand.destroy({
         where: {
           name: brandName,
         },
-      }).then(() => done());
-    });
+      }),
+    ]);
+  });
 
+  describe('Create new brand', () => {
     it('Should create a new brand', async () => {
       const res = await supertest
         .post('/api/admin/brands')

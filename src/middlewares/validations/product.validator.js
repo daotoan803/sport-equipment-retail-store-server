@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const UploadImagesRequestError = require('../../errors/UploadImagesRequestError');
 const Product = require('../../models/product.model');
-const uploadUtils = require('../../utils/upload.utils');
 
 const { responseValidationError } = require('../../utils/validator.util');
 
@@ -75,7 +74,7 @@ module.exports = {
     const { title } = req.body;
 
     if (!title || title.trim().length === 0) {
-      uploadUtils.deleteUploadedImages(req.files);
+      next(new UploadImagesRequestError());
       return res.status(400).json({ error: 'title is required' });
     }
 
