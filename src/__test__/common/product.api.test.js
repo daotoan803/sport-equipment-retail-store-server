@@ -13,12 +13,13 @@ describe('Test normal user functionality with product', () => {
           expect.objectContaining({
             id: expect.any(String),
             title: expect.any(String),
-            detail: expect.any(String),
             price: expect.any(Number),
             discountPrice: expect.any(Number),
             warrantyPeriodByDay: expect.any(Number),
             availableQuantity: expect.any(Number),
             state: expect.any(String),
+            mainImageUrl: expect.any(String),
+            brandId: expect.any(String),
           }),
         ])
       );

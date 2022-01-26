@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest --testPathPattern=\"src/__test__\" --detectOpenHandles"
+    "test": "jest --testPathPattern=\"src/__test__\" --detectOpenHandles",
+    "craw": "node ./data-crawler/crawler.js"
   },
   "keywords": [],
   "author": "Đào Đình Toàn",
@@ -32,6 +33,7 @@
     "@types/jest": "^27.4.0",
     "eslint": "^8.5.0",
     "jest": "^27.4.5",
+    "puppeteer": "^13.1.2",
     "supertest": "^6.2.1"
   }
 }

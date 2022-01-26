@@ -69,6 +69,7 @@ describe('Test admin functionality with product', () => {
           warrantyPeriodByDay: validProduct.warrantyPeriodByDay,
           availableQuantity: validProduct.availableQuantity,
           state: expect.stringMatching(validProduct.state),
+          mainImageUrl: expect.any(String),
         })
       );
 

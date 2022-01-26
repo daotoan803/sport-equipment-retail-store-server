@@ -12,6 +12,6 @@ routes.get(
   productController.responseProductDetail
 );
 
-routes.get('/', productController.getAllProductsPreview);
+routes.get('/', productController.getProductsPreview);
 
 module.exports = routes;

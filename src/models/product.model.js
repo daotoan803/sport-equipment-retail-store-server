@@ -136,6 +136,11 @@ Product.init(
         },
       },
     },
+
+    mainImageUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
 
   {

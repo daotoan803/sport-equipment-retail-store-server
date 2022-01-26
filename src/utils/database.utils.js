@@ -12,6 +12,7 @@ const createSampleProduct = async () => {
     warrantyPeriodByDay: 120,
     availableQuantity: 100,
     state: Product.state.hidden,
+    mainImageUrl: '/images/image___test__do__not__delete__5_.jpg',
   };
   const existsProduct = await Product.findOne({
     where: {
@@ -25,9 +26,9 @@ const createSampleProduct = async () => {
 
 const createSampleProductImages = async () => {
   const productImages = [
-    { url: '/images/image___test__do__not__delete__2_' },
-    { url: '/images/image___test__do__not__delete__3_' },
-    { url: '/images/image___test__do__not__delete__4_' },
+    { url: '/images/image___test__do__not__delete__2_.jpg' },
+    { url: '/images/image___test__do__not__delete__3_.jpg' },
+    { url: '/images/image___test__do__not__delete__4_.jpg' },
   ];
 
   const existsProductImages = await ProductImage.findAll({

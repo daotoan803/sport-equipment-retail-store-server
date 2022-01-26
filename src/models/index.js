@@ -45,7 +45,7 @@ const createDefaultAdminAccount = async () => {
 };
 
 exports.initialize = async () => {
-  await sequelizeConnection.sync({ alter: true });
+  await sequelizeConnection.sync({ force: true });
   await Promise.all([
     createDefaultAdminAccount(),
     dbUtils.createSampleDataForTesting(),

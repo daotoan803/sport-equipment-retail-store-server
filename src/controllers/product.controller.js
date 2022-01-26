@@ -63,7 +63,9 @@ module.exports = {
     }
   },
 
-  async getAllProductsPreview(req, res, next) {
+  async getProductsPreview(req, res, next) {
+    const { page = 1, limit = 20 } = req.query;
+
     try {
       const products = await Product.findAll({
         attributes: [
@@ -75,8 +77,11 @@ module.exports = {
           'availableQuantity',
           'state',
           'brandId',
+          'mainImageUrl',
         ],
-      });
+      })
+        .skip((page - 1) * limit)
+        .limit(limit);
       return res.json(products);
     } catch (error) {
       next(error);
@@ -142,7 +147,8 @@ module.exports = {
           availableQuantity,
           state,
           brandId: brand.id,
-          productImages: images,
+          mainImageUrl: images[0].url,
+          productImages: images.slice(1),
         },
         { transaction, include: [ProductImage] }
       );
