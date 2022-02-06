@@ -91,30 +91,26 @@ module.exports = {
     }
   },
 
-  async findBrandAndCategories(req, res, next) {
-    const { brandId, categories: categoryIdList } = req.body;
+  async findBrandAndCategory(req, res, next) {
+    const { brandId, categoryId } = req.body;
 
     try {
-      const [brand, categories] = await Promise.all([
+      const [brand, category] = await Promise.all([
         Brand.findByPk(brandId),
-        Category.findAll({
-          where: {
-            id: categoryIdList,
-          },
-        }),
+        Category.findByPk(categoryId),
       ]);
 
       if (!brand) {
         res.status(400).json({ error: 'Brand not found' });
         return next(new UploadImagesRequestError());
       }
-      if (categories.length === 0) {
+      if (!category) {
         res.status(400).json({ error: 'Category not found' });
         return next(new UploadImagesRequestError());
       }
 
       req.brand = brand;
-      req.categories = categories;
+      req.category = category;
       next();
     } catch (e) {
       next(new UploadImagesRequestError());
@@ -133,7 +129,7 @@ module.exports = {
       state,
     } = req.body;
 
-    const { brand, categories } = req;
+    const { brand, category } = req;
 
     const images = convertUploadedImageToProductImage(req.files);
 
@@ -150,22 +146,17 @@ module.exports = {
           availableQuantity,
           state,
           brandId: brand.id,
+          categoryId: category.id,
           mainImageUrl: images[0].url,
           productImages: images.slice(1),
         },
         { transaction, include: [ProductImage] }
       );
 
-      await Promise.all([
-        product.setCategories(categories, { transaction }),
-        product.setBrand(brand, { transaction }),
-      ]);
       await transaction.commit();
 
       res.json({
         ...product.dataValues,
-        brand: brand,
-        categories: categories,
         productImages: product.productImages,
       });
     } catch (e) {

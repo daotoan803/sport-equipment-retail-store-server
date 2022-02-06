@@ -25,7 +25,7 @@ routes.post(
   uploadHandler.handleMultipleImagesUpload,
   productValidator.validateAddProductData,
   productValidator.checkIfProductTitleAlreadyExists,
-  productController.findBrandAndCategories,
+  productController.findBrandAndCategory,
   productController.createProduct
 );
 

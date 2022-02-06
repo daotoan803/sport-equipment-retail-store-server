@@ -30,7 +30,7 @@ module.exports = {
         .equal(...Object.values(Product.state)),
       brandId: Joi.string()
         .required(),
-      categories: Joi.array().required(),
+      categoryId: Joi.string().required(),
       images: Joi.array()
         .min(1)
         .required()
@@ -45,7 +45,7 @@ module.exports = {
       availableQuantity,
       state,
       brandId,
-      categories,
+      categoryId,
     } = req.body;
     const images = req.files;
 
@@ -58,7 +58,7 @@ module.exports = {
       availableQuantity: Number(availableQuantity),
       state,
       brandId,
-      categories,
+      categoryId,
       images,
     };
 
@@ -68,19 +68,6 @@ module.exports = {
       next(new UploadImagesRequestError());
       return responseValidationError(res, result.error);
     }
-    // if (product.discountPrice) {
-    //   const error = { field: 'discountPrice', received: product.discountPrice };
-    //   if (Number.isNaN(product.discountPrice)) {
-    //     error.message = 'discountPrice must be a number';
-    //   } else if (product.discountPrice < 0) {
-    //     error.message = 'discountPrice can not be negative';
-    //   } else if (product.discountPrice < product.price) {
-    //     error.message = 'discountPrice can not be smaller than price';
-    //   }
-
-    //   next(new UploadImagesRequestError());
-    //   return res.status(400).json(error);
-    // }
 
     next();
   },

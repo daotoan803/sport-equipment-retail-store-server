@@ -17,8 +17,6 @@ describe('Test normal user functionality with product', () => {
         expect(product.price).toEqual(expect.any(Number));
         expect(product.state).toEqual(expect.any(String));
         expect(product.mainImageUrl).toEqual(expect.any(String));
-        expect(product.brandId).toEqual(expect.anything());
-        expect(product.categoryId).toEqual(expect.anything());
       });
     });
   });
@@ -60,9 +58,9 @@ describe('Test normal user functionality with product', () => {
       expect(res.body.category.id).toBe(res.body.categoryId);
       expect(res.body.category.name).toEqual(expect.any(String));
 
-      expect(res.body.productsImages).toEqual(expect.any(Array));
-      res.body.productsImages.forEach((image) => {
-        expect(image.id).toEqual(expect.any(String));
+      expect(res.body.productImages).toEqual(expect.any(Array));
+      res.body.productImages.forEach((image) => {
+        expect(image.id).toEqual(expect.anything());
         expect(image.url).toEqual(expect.any(String));
         expect(image.productId).toBe(productId);
       });
