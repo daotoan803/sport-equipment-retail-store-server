@@ -11,12 +11,6 @@ class Brand extends Model {
 
 Brand.init(
   {
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      allowNull: false,
-      defaultValue: DataTypes.UUIDV4,
-    },
     name: {
       type: DataTypes.STRING,
       unique: true,
@@ -32,11 +26,6 @@ Brand.init(
           msg: 'Brand name is required',
         },
       },
-    },
-
-    logoUrl: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
   },
   {

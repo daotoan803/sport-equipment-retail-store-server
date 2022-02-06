@@ -5,7 +5,6 @@ const supertest = require('supertest')(app);
 
 describe('Test admin functionality with brand', () => {
   let adminToken = null;
-  let uploadedImage = [];
   const brandName = 'Sample test brand';
 
   beforeAll(async () => {
@@ -14,7 +13,6 @@ describe('Test admin functionality with brand', () => {
 
   afterAll(async () => {
     await Promise.all([
-      testUtils.deleteUploadedTestImageByImageUrl(...uploadedImage),
       Brand.destroy({
         where: {
           name: brandName,
@@ -28,33 +26,21 @@ describe('Test admin functionality with brand', () => {
       const res = await supertest
         .post('/api/admin/brands')
         .set('authorization', 'Bearer ' + adminToken)
-        .field('name', brandName)
-        .attach('image', './src/__test__/data/__test__1__test__.jpg');
+        .send({ name: brandName });
 
       expect(res.status).toBe(200);
-      expect(res.body).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          name: expect.stringMatching(brandName),
-          logoUrl: expect.any(String),
-        })
-      );
-      uploadedImage.push(res.body.logoUrl);
+      expect(res.body.id).toEqual(expect.anything());
+      expect(res.body.name).toBe(brandName);
     });
 
     it("Should fail because brand's name already exists", async () => {
       const res = await supertest
         .post('/api/admin/brands')
         .set('authorization', 'Bearer ' + adminToken)
-        .field('name', brandName)
-        .attach('image', './src/__test__/data/__test__1__test__.jpg');
+        .send({ name: brandName });
 
       expect(res.status).toBe(409);
-      expect(res.body).toEqual(
-        expect.objectContaining({
-          error: expect.any(String),
-        })
-      );
+      expect(res.body.error).toEqual(expect.any(String));
     });
   });
 });

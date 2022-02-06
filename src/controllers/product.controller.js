@@ -32,16 +32,16 @@ module.exports = {
     const product = req.product;
 
     try {
-      const [brand, categories, productImages] = await Promise.all([
+      const [brand, category, productImages] = await Promise.all([
         product.getBrand(),
-        product.getCategories(),
+        product.getCategory(),
         product.getProductImages(),
       ]);
 
       res.json({
         ...product.dataValues,
         brand,
-        categories,
+        category,
         productImages,
       });
     } catch (e) {
@@ -64,7 +64,13 @@ module.exports = {
   },
 
   async getProductsPreview(req, res, next) {
-    const { page = 1, limit = 20 } = req.query;
+    let { page = 1, limit = 20 } = req.query;
+
+    page = Number(page);
+    limit = Number(limit);
+    if (Number.isNaN(page) || Number.isNaN(limit)) {
+      return res.sendStatus(400);
+    }
 
     try {
       const products = await Product.findAll({
@@ -73,15 +79,12 @@ module.exports = {
           'title',
           'price',
           'discountPrice',
-          'warrantyPeriodByDay',
-          'availableQuantity',
           'state',
-          'brandId',
           'mainImageUrl',
         ],
-      })
-        .skip((page - 1) * limit)
-        .limit(limit);
+        offset: (page - 1) * limit,
+        limit,
+      });
       return res.json(products);
     } catch (error) {
       next(error);

@@ -2,9 +2,9 @@ const { Model, DataTypes } = require('sequelize');
 
 const sequelizeConnection = require('./config/db');
 
-class Category extends Model {
+class CategoryGroup extends Model {
   static findAllWherePk(categoryIdList) {
-    return Category.findAll({
+    return CategoryGroup.findAll({
       where: {
         id: categoryIdList,
       },
@@ -12,7 +12,7 @@ class Category extends Model {
   }
 
   static async isNameAlreadyExists(name) {
-    const existsCategoryName = await Category.findOne({
+    const existsCategoryName = await CategoryGroup.findOne({
       where: {
         name,
       },
@@ -21,7 +21,7 @@ class Category extends Model {
   }
 }
 
-Category.init(
+CategoryGroup.init(
   {
     name: {
       type: DataTypes.STRING,
@@ -29,19 +29,19 @@ Category.init(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Category name can't be empty",
+          msg: "CategoryGroup name can't be empty",
         },
         notNull: {
-          msg: 'Category name is required',
+          msg: 'CategoryGroup name is required',
         },
       },
     },
   },
   {
     sequelize: sequelizeConnection,
-    modelName: 'category',
+    modelName: 'category_group',
     timestamps: false,
   }
 );
 
-module.exports = Category;
+module.exports = CategoryGroup;

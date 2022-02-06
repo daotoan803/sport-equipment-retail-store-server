@@ -7,22 +7,19 @@ describe('Test normal user functionality with product', () => {
     it('Should get all products', async () => {
       let res = await supertest.get('/api/products');
       expect(res.status).toBe(200);
+      expect(res.body).toEqual(expect.any(Array));
       expect(res.body.length).toBeGreaterThan(0);
-      expect(res.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.any(String),
-            title: expect.any(String),
-            price: expect.any(Number),
-            discountPrice: expect.any(Number),
-            warrantyPeriodByDay: expect.any(Number),
-            availableQuantity: expect.any(Number),
-            state: expect.any(String),
-            mainImageUrl: expect.any(String),
-            brandId: expect.any(String),
-          }),
-        ])
-      );
+      const products = res.body;
+      products.forEach((product) => {
+        expect(product).toEqual(expect.any(Object));
+        expect(product.id).toEqual(expect.any(String));
+        expect(product.title).toEqual(expect.any(String));
+        expect(product.price).toEqual(expect.any(Number));
+        expect(product.state).toEqual(expect.any(String));
+        expect(product.mainImageUrl).toEqual(expect.any(String));
+        expect(product.brandId).toEqual(expect.anything());
+        expect(product.categoryId).toEqual(expect.anything());
+      });
     });
   });
 
@@ -43,42 +40,32 @@ describe('Test normal user functionality with product', () => {
         res = err.response;
       }
       expect(res.status).toBe(200);
-      expect(res.body).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          title: expect.any(String),
-          detail: expect.any(String),
-          price: expect.any(Number),
-          discountPrice: expect.any(Number),
-          warrantyPeriodByDay: expect.any(Number),
-          availableQuantity: expect.any(Number),
-          state: expect.any(String),
-          brandId: expect.any(String),
-        })
-      );
-      expect(res.body.brand).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          name: expect.any(String),
-        })
-      );
-      expect(res.body.categories).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.any(String),
-            name: expect.any(String),
-          }),
-        ])
-      );
-      expect(res.body.productImages).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.any(String),
-            url: expect.any(String),
-            productId: expect.stringContaining(productId),
-          }),
-        ])
-      );
+      expect(res.body).toEqual(expect.any(Object));
+
+      expect(res.body.id).toEqual(expect.any(String));
+      expect(res.body.title).toEqual(expect.any(String));
+      expect(res.body.detail).toEqual(expect.any(String));
+      expect(res.body.price).toEqual(expect.any(Number));
+      expect(res.body.warrantyPeriodByDay).toEqual(expect.any(Number));
+      expect(res.body.availableQuantity).toEqual(expect.any(Number));
+      expect(res.body.state).toEqual(expect.any(String));
+      expect(res.body.brandId).toEqual(expect.anything());
+      expect(res.body.categoryId).toEqual(expect.anything());
+
+      expect(res.body.brand).toEqual(expect.any(Object));
+      expect(res.body.brand.id).toBe(res.body.brandId);
+      expect(res.body.brand.name).toEqual(expect.any(String));
+
+      expect(res.body.category).toEqual(expect.any(Object));
+      expect(res.body.category.id).toBe(res.body.categoryId);
+      expect(res.body.category.name).toEqual(expect.any(String));
+
+      expect(res.body.productsImages).toEqual(expect.any(Array));
+      res.body.productsImages.forEach((image) => {
+        expect(image.id).toEqual(expect.any(String));
+        expect(image.url).toEqual(expect.any(String));
+        expect(image.productId).toBe(productId);
+      });
     });
   });
 });

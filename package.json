@@ -7,7 +7,8 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "jest --testPathPattern=\"src/__test__\" --detectOpenHandles",
-    "craw": "node ./data-crawler/crawler.js"
+    "craw": "node ./data-crawler/crawler.js",
+    "upload": "node ./data-crawler/upload-data.js"
   },
   "keywords": [],
   "author": "Đào Đình Toàn",
@@ -31,7 +32,9 @@
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "axios": "^0.25.0",
     "eslint": "^8.5.0",
+    "form-data": "^4.0.0",
     "jest": "^27.4.5",
     "puppeteer": "^13.1.2",
     "supertest": "^6.2.1"

@@ -26,7 +26,7 @@ describe('Test admin functionality with product', () => {
       Category.findAll(),
     ]);
     validProduct.brandId = brands[0].id;
-    validProduct.categories = categories.map((category) => category.id);
+    validProduct.categoryId = categories[0].id;
     return 'done';
   });
 
@@ -53,35 +53,32 @@ describe('Test admin functionality with product', () => {
         .field('availableQuantity', validProduct.availableQuantity)
         .field('state', validProduct.state)
         .field('brandId', validProduct.brandId)
-        .field('categories', validProduct.categories[0])
-        .field('categories', validProduct.categories[1])
+        .field('categoryId', validProduct.categoryId)
         .attach('images', './src/__test__/data/__test__5__test__.jpg')
         .attach('images', './src/__test__/data/__test__3__test__.jpg');
 
       expect(res.status).toBe(200);
-      expect(res.body).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          title: expect.stringMatching(validProduct.title.toString()),
-          detail: expect.stringMatching(validProduct.detail),
-          price: validProduct.price,
-          discountPrice: validProduct.discountPrice,
-          warrantyPeriodByDay: validProduct.warrantyPeriodByDay,
-          availableQuantity: validProduct.availableQuantity,
-          state: expect.stringMatching(validProduct.state),
-          mainImageUrl: expect.any(String),
-        })
-      );
+      expect(res.body).toEqual(expect.any(Object));
 
-      expect(res.body.productImages).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.any(String),
-            url: expect.any(String),
-            productId: res.body.id,
-          }),
-        ])
+      expect(res.body.id).toEqual(expect.any(String));
+      expect(res.body.title).toBe(validProduct.title.toString());
+      expect(res.body.detail).toBe(validProduct.detail);
+      expect(res.body.price).toBe(validProduct.price);
+      expect(res.body.discountPrice).toBe(validProduct.discountPrice);
+      expect(res.body.warrantyPeriodByDay).toBe(
+        validProduct.warrantyPeriodByDay
       );
+      expect(res.body.availableQuantity).toBe(validProduct.availableQuantity);
+      expect(res.body.state).toBe(validProduct.state);
+      expect(res.body.mainImageUrl).toEqual(expect.any(String));
+
+      expect(res.body.productImages).toEqual(expect.any(Array))
+      res.body.productImages.forEach(images => {
+        expect(images.id).toEqual(expect.anything())
+        expect(images.url).toEqual(expect.any(String))
+        expect(images.productId).toBe(res.body.id)
+      })
+      
       uploadedImage = res.body.productImages.map((image) => image.url);
     });
 
@@ -97,8 +94,7 @@ describe('Test admin functionality with product', () => {
         .field('availableQuantity', validProduct.availableQuantity)
         .field('state', validProduct.state)
         .field('brandId', validProduct.brandId)
-        .field('categories', validProduct.categories[0])
-        .field('categories', validProduct.categories[1])
+        .field('categoryId', validProduct.categoryId)
         .attach('images', './src/__test__/data/__test__5__test__.jpg')
         .attach('images', './src/__test__/data/__test__3__test__.jpg');
 

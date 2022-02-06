@@ -8,14 +8,13 @@ describe('Test client functionality with category', () => {
       const res = await supertest.get('/api/categories');
 
       expect(res.status).toBe(200);
-      expect(res.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.any(String),
-            name: expect.any(String),
-          }),
-        ])
-      );
+      expect(res.body).toEqual(expect.any(Array));
+      if (res.body.length > 0) {
+        res.body.forEach((category) => {
+          expect(category.id).toEqual(expect.anything())
+          expect(category.name).toEqual(expect.any(String))
+        });
+      }
     });
   });
 });

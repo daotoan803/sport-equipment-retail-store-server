@@ -49,23 +49,38 @@ module.exports = {
     } = req.body;
     const images = req.files;
 
-    const result = productDetailSchema.validate({
+    const product = {
       title: title.trim(),
       detail,
       price: Number(price),
-      discountPrice: Number(discountPrice),
+      ...(discountPrice ? { discountPrice: Number(discountPrice) } : {}),
       warrantyPeriodByDay: Number(warrantyPeriodByDay),
       availableQuantity: Number(availableQuantity),
       state,
       brandId,
       categories,
       images,
-    });
+    };
+
+    const result = productDetailSchema.validate(product, { abortEarly: false });
 
     if (result.error) {
       next(new UploadImagesRequestError());
       return responseValidationError(res, result.error);
     }
+    // if (product.discountPrice) {
+    //   const error = { field: 'discountPrice', received: product.discountPrice };
+    //   if (Number.isNaN(product.discountPrice)) {
+    //     error.message = 'discountPrice must be a number';
+    //   } else if (product.discountPrice < 0) {
+    //     error.message = 'discountPrice can not be negative';
+    //   } else if (product.discountPrice < product.price) {
+    //     error.message = 'discountPrice can not be smaller than price';
+    //   }
+
+    //   next(new UploadImagesRequestError());
+    //   return res.status(400).json(error);
+    // }
 
     next();
   },

@@ -50,10 +50,9 @@ module.exports = {
       if (emailAlreadyExists)
         return res.status(409).json({ error: 'Email already exists' });
 
-      next()
+      next();
     } catch (e) {
       next(e);
     }
   },
-
 };

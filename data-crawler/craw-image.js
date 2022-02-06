@@ -52,21 +52,23 @@ const main = async () => {
     const dest = path.join(__dirname, 'images', imageName);
     product.imageName = imageName;
     async.push(download(product.imageLink, dest));
-    if (async.length === 20) {
-      await Promise.all(async);
-      async = [];
-    }
+    // if (async.length === 20) {
+    //   await Promise.all(async);
+    //   async = [];
+    // }
     writer.write(JSON.stringify(product));
     writer.write(',');
   }
+  await Promise.all(async);
   writer.write(']');
   writer.end();
   writer.close();
 };
 
 const t0 = performance.now();
-main();
-const t1 = performance.now();
-console.log(
-  `Time to finish ${Math.floor((t1 - t0) * 1000) / 1000} milliseconds.`
-);
+main().then(() => {
+  const t1 = performance.now();
+  console.log(
+    `Time to finish ${Math.floor((t1 - t0) * 1000) / 1000} milliseconds.`
+  );
+});

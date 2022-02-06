@@ -9,6 +9,7 @@ const deleteImage = (path) => {
 
 module.exports = {
   deleteUploadedImages: (uploadedImages) => {
+    if (!uploadedImages || uploadedImages?.length === 0) return;
     if (uploadedImages instanceof Array) {
       return uploadedImages.forEach((image) => deleteImage(image.path));
     }

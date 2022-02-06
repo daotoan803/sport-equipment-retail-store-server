@@ -2,6 +2,8 @@ const Product = require('../models/product.model');
 const ProductImage = require('../models/product-image.model');
 const Brand = require('../models/brand.model');
 const Category = require('../models/category.model');
+const User = require('../models/user.model');
+const Account = require('../models/account.model');
 
 const createSampleProduct = async () => {
   const product = {
@@ -52,46 +54,58 @@ const createSampleBrand = async () => {
   return Brand.create(brand);
 };
 
-const createSampleCategories = async () => {
-  const categories = [
-    {
-      name: 'Basketball __test__',
-      logoUrl: '/images/image___test__do__not__delete__1_',
-    },
-    {
-      name: 'Baseball __test__',
-      logoUrl: '/images/image___test__do__not__delete__1_',
-    },
-  ];
+const createSampleCategory = async () => {
+  const category = {
+    name: 'Basketball __test__',
+  };
 
-  const existsCategories = await Category.findAll({
+  const existsCategory = await Category.findOne({
     where: {
-      name: categories.map((category) => category.name),
+      name: category.name,
     },
   });
-  if (existsCategories.length > 0) return existsCategories;
+  if (existsCategory) return existsCategory;
 
-  return Category.bulkCreate(categories);
+  return Category.create(category);
 };
 
 module.exports = {
+  async createDefaultAdminAccount() {
+    const defaultAdminAccount = {
+      name: 'admin',
+      email: 'vnsport@vnsport.com',
+      dob: '01-01-2000',
+      gender: User.gender.other,
+      password: 'admin',
+    };
+    const alreadyCreate = await User.isEmailAlreadyExist(
+      defaultAdminAccount.email
+    );
+    if (alreadyCreate) return;
+
+    const admin = await User.signupUser(defaultAdminAccount);
+    admin.account = await admin.getAccount();
+    admin.account.role = Account.role.admin;
+    return admin.account.save();
+  },
+
   async createSampleDataForTesting() {
-    const [brand, categories, product, productImages] = await Promise.all([
+    const [brand, category, product, productImages] = await Promise.all([
       createSampleBrand(),
-      createSampleCategories(),
+      createSampleCategory(),
       createSampleProduct(),
       createSampleProductImages(),
     ]);
 
-    const [productBrand, productCategories, productPreviewImages] =
+    const [productBrand, productCategory, productPreviewImages] =
       await Promise.all([
         product.getBrand(),
-        product.getCategories(),
+        product.getCategory(),
         product.getProductImages(),
       ]);
 
     if (!productBrand) await product.setBrand(brand);
-    if (productCategories.length === 0) await product.setCategories(categories);
+    if (!productCategory) await product.setCategory(category);
     if (productPreviewImages.length === 0)
       await product.setProductImages(productImages);
 

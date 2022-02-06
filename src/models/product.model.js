@@ -56,9 +56,6 @@ Product.init(
     price: {
       type: DataTypes.DOUBLE,
       allowNull: false,
-      set(value) {
-        this.setDataValue('price', Number(value));
-      },
       validate: {
         isDecimal: {
           msg: 'Product price must be a number',
@@ -73,9 +70,6 @@ Product.init(
     discountPrice: {
       type: DataTypes.DOUBLE,
       allowNull: true,
-      set(value) {
-        this.setDataValue('discountPrice', Number(value));
-      },
       validate: {
         isDecimal: {
           msg: 'Product discount price must be a number',
@@ -91,9 +85,6 @@ Product.init(
       type: DataTypes.INTEGER,
       allowNull: false,
 
-      set(value) {
-        this.setDataValue('warrantyPeriodByDay', Number(value));
-      },
       validate: {
         isInt: {
           msg: 'Invalid warranty period by day value, must be an integer and greater than 0',
@@ -109,9 +100,6 @@ Product.init(
       type: DataTypes.INTEGER,
       defaultValue: 0,
       allowNull: true,
-      set(value) {
-        this.setDataValue('availableQuantity', Number(value));
-      },
       validate: {
         min: {
           args: [0],

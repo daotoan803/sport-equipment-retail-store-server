@@ -7,7 +7,6 @@ describe('Test admin functionality with category', () => {
   const validCategory = {
     name: '__test__ category',
   };
-  const uploadedImages = [];
   let adminToken = null;
 
   beforeAll(async () => {
@@ -17,7 +16,6 @@ describe('Test admin functionality with category', () => {
   afterAll(async () => {
     await Promise.all([
       Category.destroy({ where: { name: validCategory.name } }),
-      testUtils.deleteUploadedTestImageByImageUrl(...uploadedImages),
     ]);
   });
 
@@ -26,48 +24,35 @@ describe('Test admin functionality with category', () => {
       const res = await supertest
         .post('/api/admin/categories')
         .set('authorization', 'Bearer ' + adminToken)
-        .field('name', validCategory.name)
-        .attach('image', './src/__test__/data/__test__0__test__.jpg');
+        .send({ name: validCategory.name });
 
       expect(res.status).toBe(200);
-      expect(res.body.id).toEqual(expect.any(String));
-      expect(res.body.logoUrl).toEqual(expect.stringContaining('/images/'));
+      expect(res.body.id).toEqual(expect.anything());
       expect(res.body.name).toBe(validCategory.name);
-
-      uploadedImages.push(res.body.logoUrl);
     });
 
     it('Should not create a new category because of name conflict', async () => {
       const res = await supertest
         .post('/api/admin/categories')
         .set('authorization', 'Bearer ' + adminToken)
-        .field('name', validCategory.name)
-        .attach('image', './src/__test__/data/__test__0__test__.jpg');
+        .send({ name: validCategory.name });
 
       expect(res.status).toBe(409);
-      expect(res.body).toEqual(
-        expect.objectContaining({
-          error: expect.any(String),
-        })
-      );
+      expect(res.body.error).toEqual(expect.any(String));
     });
 
     it('Should not create a new category because of invalid field ', async () => {
       const res = await supertest
         .post('/api/admin/categories')
         .set('authorization', 'Bearer ' + adminToken)
-        .field('name', '      ')
-        .attach('image', './src/__test__/data/__test__0__test__.jpg');
+        .send({ name: '      ' });
 
       expect(res.status).toBe(400);
-      expect(res.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            field: expect.stringMatching('name'),
-            message: expect.any(String),
-          }),
-        ])
-      );
+      expect(res.body).toEqual(expect.any(Array));
+      res.body.forEach((obj) => {
+        expect(obj.field).toEqual(expect.any(String));
+        expect(obj.message).toEqual(expect.any(String));
+      });
     });
   });
 });
