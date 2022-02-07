@@ -168,25 +168,6 @@ const main = async () => {
   }
 };
 
-// model.initialize().then(() =>
-//   app.listen(4000, () => {
-//     main().then(() => {
-//       const t0 = performance.now();
-//       const t1 = performance.now();
-//       console.log(
-//         `Time to finish ${Math.floor((t1 - t0) * 1000) / 1000} milliseconds.`
-//       );
-//     });
-//   })
-// );
-
-model.initialize().then(() => {
-  const t0 = performance.now();
-  main().then(() => {
-    const t1 = performance.now();
-    console.log(
-      `Time to finish ${Math.floor((t1 - t0) * 1000) / 1000} milliseconds.`
-    );
-    process.exit();
-  });
+model.initialize().then(main).then(() => {
+  process.exit();
 });
