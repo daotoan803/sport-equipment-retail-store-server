@@ -6,13 +6,18 @@ const Category = require('../src/models/category.model');
 const Brand = require('../src/models/brand.model');
 const model = require('../src/models');
 const axios = require('axios');
-const FormData = require("form-data")
+const FormData = require('form-data');
+const Product = require('../src/models/product.model');
+const { threadPool } = require('./crawler.utils');
 
 const PORT = 9999;
 const proxy = `http://localhost:${PORT}`;
 const startServer = () => {
   return new Promise((res) => {
-    app.listen(PORT, res);
+    app.listen(PORT, () => {
+      console.log('server running on ' + proxy);
+      res();
+    });
   });
 };
 
@@ -41,9 +46,9 @@ const createBrands = async (brands) => {
   return Brand.bulkCreate(brands.map((brand) => ({ name: brand })));
 };
 
-const createProduct = async (product, categories, brands, token) => {
+const createProduct = async (product, token) => {
   const images = fs.createReadStream(
-    path.join(__dirname, 'images', product.imageName)
+    path.join(__dirname, 'images', product.mainImageName)
   );
 
   const formData = new FormData();
@@ -53,8 +58,8 @@ const createProduct = async (product, categories, brands, token) => {
   formData.append('warrantyPeriodByDay', product.warrantyPeriodByDay);
   formData.append('availableQuantity', product.availableQuantity);
   formData.append('state', product.state);
-  formData.append('categories[]', categories[product.category].id);
-  formData.append('brandId', brands[product.brand].id);
+  formData.append('categoryId', product.categoryId);
+  formData.append('brandId', product.brandId);
   formData.append('images', images);
 
   if (product.discountPrice) {
@@ -64,22 +69,20 @@ const createProduct = async (product, categories, brands, token) => {
   let res = null;
 
   try {
-    res = await axios.post(
-      `http://localhost:${serverPost}/api/admin/products`,
-      formData,
-      {
-        headers: {
-          ...formData.getHeaders(),
-          authorization: 'Bearer ' + token,
-        },
-      }
-    );
+    res = await axios.post(proxy + `/api/admin/products`, formData, {
+      headers: {
+        ...formData.getHeaders(),
+        authorization: 'Bearer ' + token,
+      },
+    });
   } catch (e) {
     if (e.response) {
       res = e.response;
     } else {
-      console.error(e);
+      throw new Error(e.message);
     }
+  } finally {
+    images.close();
   }
 
   if (res.status !== 200 && res.status !== 409) {
@@ -105,28 +108,44 @@ const getAdminToken = async () => {
 };
 
 const main = async () => {
-  let categories = JSON.parse(
+  const categories = JSON.parse(
     await fs.promises.readFile(path.join(__dirname, 'category.json'))
   );
   const products = JSON.parse(
     await fs.promises.readFile(path.join(__dirname, 'products.json'))
   );
-  let brands = [...new Set(products.map((product) => product.brand))];
 
-  let [categoryModels, brandModels] = await Promise.all([
+  const brands = [...new Set(products.map((product) => product.brand))];
+
+  let [categoryModelsList, brandModelsList] = await Promise.all([
     createCategoryGroupAndCategories(categories),
     createBrands(brands),
   ]);
 
-  categories = {};
-  categoryModels.forEach((category) => (categories[category.name] = category));
-  brands = {};
-  brandModels.forEach((brand) => (brands[brand.name] = brand));
+  const categoryModels = {};
+  categoryModelsList.forEach(
+    (categoryModel) => (categoryModels[categoryModel.name] = categoryModel)
+  );
+  const brandModels = {};
+  brandModelsList.forEach(
+    (brandModel) => (brandModels[brandModel.name] = brandModel)
+  );
 
   const adminToken = await getAdminToken();
-  products.forEach(product => {
-
-  })
+  return threadPool(
+    products.map((product) => {
+      return async () => {
+        product.categoryId = categoryModels[product.category].id;
+        product.brandId = brandModels[product.brand].id;
+        product.state =
+          product.availableQuantity === 0
+            ? Product.state.outStock
+            : Product.state.available;
+        return createProduct(product, adminToken);
+      };
+    }),
+    5
+  );
 };
 
 model
@@ -136,7 +155,6 @@ model
   .then(model.terminate)
   .then(process.exit);
 
-
-  // doing : 
-  // craw image
-  // upload product
+// doing :
+// craw image
+// upload product

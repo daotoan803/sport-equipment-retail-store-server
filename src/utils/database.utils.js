@@ -4,6 +4,9 @@ const Brand = require('../models/brand.model');
 const Category = require('../models/category.model');
 const User = require('../models/user.model');
 const Account = require('../models/account.model');
+const fs = require('fs');
+const path = require('path');
+const projectPath = require('./project-path');
 
 const createSampleProduct = async () => {
   const product = {
@@ -70,6 +73,15 @@ const createSampleCategory = async () => {
 };
 
 module.exports = {
+  async cleanImageUploadFolder() {
+    const images = await fs.promises.readdir(projectPath.uploadedImageDirPath);
+    return Promise.all(
+      images.map((image) =>
+        fs.promises.unlink(path.join(projectPath.uploadedImageDirPath, image))
+      )
+    );
+  },
+
   async createDefaultAdminAccount() {
     const defaultAdminAccount = {
       name: 'admin',

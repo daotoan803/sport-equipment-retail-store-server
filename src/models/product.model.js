@@ -74,7 +74,7 @@ Product.init(
       type: DataTypes.DOUBLE,
       allowNull: true,
       set(value) {
-        this.setDataValue('discountPrice', Number(value));
+        this.setDataValue('discountPrice', value ? Number(value) : null);
       },
       validate: {
         isDecimal: {

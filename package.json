@@ -7,8 +7,8 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "jest --testPathPattern=\"src/__test__\" --detectOpenHandles",
-    "craw": "node ./data-crawler/crawler.js",
-    "upload": "node ./data-crawler/upload-data.js"
+    "craw": "node ./data-crawler/main.craw.js",
+    "upload": "node ./data-crawler/upload.js"
   },
   "keywords": [],
   "author": "Đào Đình Toàn",

@@ -27,7 +27,11 @@ Brand.hasMany(Product);
 Product.belongsTo(Brand);
 
 exports.initialize = async () => {
-  await sequelizeConnection.sync({ force: true });
+  const syncOptions = { force: true };
+  if (syncOptions.force) {
+    dbUtils.cleanImageUploadFolder();
+  }
+  await sequelizeConnection.sync(syncOptions);
   await Promise.all([
     dbUtils.createDefaultAdminAccount(),
     dbUtils.createSampleDataForTesting(),

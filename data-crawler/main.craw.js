@@ -2,22 +2,13 @@ require('dotenv').config();
 
 const productCrawler = require('./product.craw');
 const categoryCrawler = require('./category.craw');
+const imageCrawler = require('./image.craw');
 
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 
-const threadPool = async (tasks = [async () => {}], maxThread = 5) => {
-  let async = [];
-  while (tasks.length !== 0) {
-    const task = tasks.pop();
-    async.push(task());
-    if (async.length >= Math.min(maxThread, tasks.length)) {
-      await Promise.all(async);
-      async = [];
-    }
-  }
-};
+const { threadPool } = require('./crawler.utils');
 
 const main = async () => {
   const browser = await puppeteer.launch({ headless: true });
@@ -69,9 +60,21 @@ const main = async () => {
     );
   }
 
-  await fs.promises.writeFile(
+  fs.promises.writeFile(
     path.join(__dirname, 'products.json'),
     JSON.stringify(products)
+  );
+
+  //download product image
+  await imageCrawler.cleanImageFolder();
+  await threadPool(
+    products.map((product) => {
+      return async () => {
+        console.log(`downloading ${product.mainImageName} image`);
+        await imageCrawler.download(product.imageLink, product.mainImageName);
+      };
+    }),
+    10
   );
 };
 

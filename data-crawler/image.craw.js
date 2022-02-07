@@ -5,11 +5,10 @@ const https = require('https');
 exports.cleanImageFolder = async () => {
   const imageDir = path.join(__dirname, 'images');
   const files = await fs.promises.readdir(imageDir);
-  const async = [];
-  files.forEach((file) =>
-    async.push(fs.promises.unlink(path.join(imageDir, file)))
+  await Promise.all(
+    files.map((file) => fs.promises.unlink(path.join(imageDir, file)))
   );
-  return Promise.all(async);
+  return;
 };
 
 exports.download = (imageUrl, imageName) => {
