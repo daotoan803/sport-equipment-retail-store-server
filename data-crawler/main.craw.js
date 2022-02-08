@@ -74,7 +74,7 @@ const main = async () => {
         await imageCrawler.download(product.imageLink, product.mainImageName);
       };
     }),
-    10
+    10 
   );
 };
 

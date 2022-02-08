@@ -5,6 +5,7 @@ const ProductImage = require('../models/product-image.model');
 const sequelizeConnection = require('../models/config/db');
 const UploadImagesRequestError = require('../errors/UploadImagesRequestError');
 const imageUtils = require('../utils/image.util');
+const CategoryGroup = require('../models/category-group.model');
 
 const convertUploadedImageToProductImage = (uploadImages) => {
   return uploadImages.map((image) => ({
@@ -12,7 +13,51 @@ const convertUploadedImageToProductImage = (uploadImages) => {
   }));
 };
 
+const productPreviewAttributes = [
+  'id',
+  'title',
+  'price',
+  'discountPrice',
+  'state',
+  'mainImageUrl',
+];
+
 module.exports = {
+  async getProductsByCategoryGroup(req, res, next) {
+    const { categoryGroupId } = req.params;
+    console.log(categoryGroupId);
+    let { page, limit } = req.query;
+    page = Number(page);
+    limit = Number(limit);
+    try {
+      let limitOption = {};
+
+      if (page >= 1 && limit >= 0) {
+        limitOption = {
+          offset: (page - 1) * limit,
+          limit: limit,
+        };
+      }
+
+      const categoryGroup = await CategoryGroup.findByPk(categoryGroupId, {
+        include: Category,
+      });
+      const categoryIdList = categoryGroup.categories.map(
+        (category) => category.id
+      );
+      const products = await Product.findAndCountAll({
+        attributes: productPreviewAttributes,
+        where: { categoryId: categoryIdList },
+        ...limitOption,
+      });
+
+      const maxPage = limit ? Math.ceil(products.count / limit) : 1;
+      return res.json({ maxPage, ...products });
+    } catch (e) {
+      next(e);
+    }
+  },
+
   async responseIsTitleUnique(req, res, next) {
     let { title } = req.body;
     title += '';
@@ -74,14 +119,7 @@ module.exports = {
 
     try {
       const products = await Product.findAll({
-        attributes: [
-          'id',
-          'title',
-          'price',
-          'discountPrice',
-          'state',
-          'mainImageUrl',
-        ],
+        attributes: productPreviewAttributes,
         offset: (page - 1) * limit,
         limit,
       });

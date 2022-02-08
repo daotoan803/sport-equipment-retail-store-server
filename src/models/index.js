@@ -27,7 +27,7 @@ Brand.hasMany(Product);
 Product.belongsTo(Brand);
 
 exports.initialize = async () => {
-  const syncOptions = { force: true };
+  const syncOptions = { force: false, alter: true };
   if (syncOptions.force) {
     dbUtils.cleanImageUploadFolder();
   }

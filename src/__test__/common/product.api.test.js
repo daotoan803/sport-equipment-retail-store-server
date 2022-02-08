@@ -1,5 +1,5 @@
-const Product = require('../../models/product.model');
 const app = require('../../../app');
+const Product = require('../../models/product.model');
 const supertest = require('supertest')(app);
 
 describe('Test normal user functionality with product', () => {

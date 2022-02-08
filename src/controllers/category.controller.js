@@ -1,6 +1,7 @@
 const Category = require('../models/category.model');
 const UploadImagesRequestError = require('../errors/UploadImagesRequestError');
 const imageUtils = require('../utils/image.util');
+const CategoryGroup = require('../models/category-group.model');
 
 module.exports = {
   async addCategory(req, res, next) {
@@ -22,5 +23,10 @@ module.exports = {
   async getCategories(req, res) {
     const categories = await Category.findAll();
     res.json(categories);
+  },
+
+  async getCategoriesGroup(req, res) {
+    const categoryGroups = await CategoryGroup.findAll({ include: Category });
+    res.json(categoryGroups);
   },
 };

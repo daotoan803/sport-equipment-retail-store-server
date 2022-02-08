@@ -12,6 +12,10 @@ routes.get(
   productController.responseProductDetail
 );
 
+routes.get('/group/:categoryGroupId', 
+  productController.getProductsByCategoryGroup,
+)
+
 routes.get('/', productController.getProductsPreview);
 
 module.exports = routes;

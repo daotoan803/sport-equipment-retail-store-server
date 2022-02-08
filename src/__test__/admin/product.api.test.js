@@ -1,8 +1,8 @@
+const app = require('../../../app');
 const Product = require('../../models/product.model');
 const testUtils = require('../../utils/test.utils');
 const Brand = require('../../models/brand.model');
 const Category = require('../../models/category.model');
-const app = require('../../../app');
 const supertest = require('supertest')(app);
 
 describe('Test admin functionality with product', () => {
