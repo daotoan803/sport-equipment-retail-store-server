@@ -1,4 +1,5 @@
-const productController = require('../../controllers/product.controller');
+const productController = require('../../controllers/common/product.controller');
+const productMiddleware = require('../../middlewares/product.middleware');
 
 const routes = require('express').Router();
 
@@ -8,13 +9,14 @@ const routes = require('express').Router();
 
 routes.get(
   '/:productId',
-  productController.getProductById,
+  productMiddleware.getProductById,
   productController.responseProductDetail
 );
 
-routes.get('/group/:categoryGroupId', 
-  productController.getProductsByCategoryGroup,
-)
+routes.get(
+  '/group/:categoryGroupId',
+  productController.getProductsByCategoryGroup
+);
 
 routes.get('/', productController.getProductsPreview);
 

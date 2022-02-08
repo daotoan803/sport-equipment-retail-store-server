@@ -1,4 +1,4 @@
-const BrandController = require('../../controllers/brand.controller');
+const adminBrandController = require('../../controllers/admin/brand.controller');
 const brandValidator = require('../../middlewares/validations/brand.validator');
 
 const routes = require('express').Router();
@@ -11,7 +11,7 @@ routes.post(
   '/',
   brandValidator.validateBrandData,
   brandValidator.checkIfBrandNameExists,
-  BrandController.addBrand
+  adminBrandController.addBrand
 );
 
 module.exports = routes;

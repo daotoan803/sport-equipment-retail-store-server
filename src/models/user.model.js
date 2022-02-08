@@ -4,7 +4,7 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const Account = require('./account.model');
 
-const sequelizeConnection = require('./config/db');
+const sequelizeConnection = require('../../config/database.config');
 
 class User extends Model {
   static gender = {

@@ -1,4 +1,4 @@
-const sequelizeConnection = require('./config/db');
+const sequelizeConnection = require('../../config/database.config');
 const User = require('./user.model');
 const Account = require('./account.model');
 const ProductImage = require('./product-image.model');

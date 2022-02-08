@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
 
-const sequelizeConnection = require('./config/db');
+const sequelizeConnection = require('../../config/database.config');
 const uuid = require('uuid');
 
 class Account extends Model {

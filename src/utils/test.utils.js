@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const projectPath = require('./project-path');
 const User = require('../models/user.model');
-const authController = require('../controllers/auth.controller');
+const authController = require('../controllers/common/auth.controller');
 
 const adminAccount = {
   email: 'vnsport@vnsport.com',

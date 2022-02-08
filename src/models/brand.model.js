@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 
-const sequelizeConnection = require('./config/db');
+const sequelizeConnection = require('../../config/database.config');
 
 class Brand extends Model {
   static async isNameAlreadyExists(name) {

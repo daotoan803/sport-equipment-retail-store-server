@@ -1,3 +1,3 @@
 {
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*", "config/database.config.js"]
 }

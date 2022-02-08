@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Account = require('../models/account.model');
+const Account = require('../../models/account.model');
 
 module.exports = {
   createAccessToken(req, res) {
@@ -14,5 +14,13 @@ module.exports = {
       return res.json({ token, role });
     }
     res.json({ token });
+  },
+
+  async logoutEveryWhere(req, res) {
+    const userAccount = req.userAccount;
+
+    userAccount.userKey = Account.generateUserKey();
+    await userAccount.save();
+    res.sendStatus(200);
   },
 };

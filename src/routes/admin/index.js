@@ -1,6 +1,6 @@
 const express = require('express');
 
-const authController = require('../../middlewares/authentication');
+const authController = require('../../middlewares/auth.middleware');
 
 const productRoutes = require('./product.routes');
 const brandRoutes = require('./brand.routes');
@@ -13,7 +13,7 @@ const routes = express.Router();
 /*-------------------------------------------------*/
 
 routes.use(
-  authController.validateAccessToken,
+  authController.validateAccessTokenAndGetUserAccount,
   authController.checkAdminAuthorization
 );
 

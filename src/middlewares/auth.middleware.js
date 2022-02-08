@@ -15,18 +15,19 @@ const generateAuthorizationFunction = (role) => {
 };
 
 module.exports = {
-  async signin(req, res, next) {
-    const { email, password } = req.body;
-    if (!email || !password)
+  async getUserAndUserAccountByEmail(req, res, next) {
+    const { email } = req.body;
+    if (!email)
       return res.status(400).json({
-        error: "Email and password can't be empty",
+        error: "Email can't be empty",
       });
 
     try {
-      const user = await User.validateLoginAndGetUser(email, password);
+      const user = await User.findOne({ where: { email }, include: Account });
       if (!user)
         return res.status(400).json({ error: 'invalid email or password' });
 
+      req.userAccount = user.account;
       req.user = user;
       next();
     } catch (e) {
@@ -34,7 +35,23 @@ module.exports = {
     }
   },
 
-  async validateAccessToken(req, res, next) {
+  async validateUserAccountPassword(req, res, next) {
+    const { userAccount } = req;
+    const { password } = req.body;
+
+    const passwordIsCorrect = await bcrypt.compare(
+      password,
+      userAccount.password
+    );
+
+    if (!passwordIsCorrect) {
+      return res.status(400).json({ error: 'invalid email or password' });
+    }
+
+    next();
+  },
+
+  async validateAccessTokenAndGetUserAccount(req, res, next) {
     try {
       const authorization = req.headers?.authorization;
       const token = authorization?.split(/^(Bearer )/i)[2];
@@ -43,8 +60,9 @@ module.exports = {
       const userAccount = await Account.findOne({
         where: { userId },
       });
-      if (!userAccount || userKey !== userAccount.userKey)
+      if (!userAccount || userKey !== userAccount.userKey) {
         return res.sendStatus(401);
+      }
       req.userAccount = userAccount;
       next();
     } catch (e) {
@@ -52,19 +70,5 @@ module.exports = {
     }
   },
 
-  async logoutEveryWhere(req, res) {
-    const userAccount = req.userAccount;
-    const { password } = req.body;
-
-    if (!password?.trim())
-      return res.status(400).json({ error: 'password is required' });
-
-    const isAuthorized = await bcrypt.compare(password, userAccount.password);
-    if (!isAuthorized) return res.status(400).json({ error: 'wrong password' });
-
-    userAccount.userKey = Account.generateUserKey();
-    await userAccount.save();
-    res.sendStatus(200);
-  },
   checkAdminAuthorization: generateAuthorizationFunction(Account.role.admin),
 };

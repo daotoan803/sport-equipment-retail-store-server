@@ -1,9 +1,9 @@
 const express = require('express');
 
-const userController = require('../../controllers/user.controller');
+const userController = require('../../controllers/common/user.controller');
 const userValidator = require('../../middlewares/validations/user.validator');
-const authentication = require('../../middlewares/authentication');
-const authController = require('../../controllers/auth.controller');
+const authMiddleware = require('../../middlewares/auth.middleware');
+const authController = require('../../controllers/common/auth.controller');
 
 /*------------------------------------------------------*/
 /*--------------------/api/user-----------------------*/
@@ -18,11 +18,17 @@ routes.post(
   userController.signup,
   authController.createAccessToken
 );
-routes.post('/signin', authentication.signin, authController.createAccessToken);
+routes.post(
+  '/signin',
+  authMiddleware.getUserAndUserAccountByEmail,
+  authMiddleware.validateUserAccountPassword,
+  authController.createAccessToken
+);
 routes.post(
   '/logout/all',
-  authentication.validateAccessToken,
-  authentication.logoutEveryWhere
+  authMiddleware.validateAccessTokenAndGetUserAccount,
+  authMiddleware.validateUserAccountPassword,
+  authController.logoutEveryWhere
 );
 // routes.get('/reset-password', AuthController.sendOtpCode);
 

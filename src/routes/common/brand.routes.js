@@ -1,4 +1,4 @@
-const brandController = require('../../controllers/brand.controller');
+const brandController = require('../../controllers/common/brand.controller');
 
 const routes = require('express').Router();
 

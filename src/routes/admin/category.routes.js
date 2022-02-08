@@ -1,4 +1,4 @@
-const categoryController = require('../../controllers/category.controller');
+const adminCategoryController = require('../../controllers/admin/category.controller');
 const categoryValidator = require('../../middlewares/validations/category.validator');
 
 const routes = require('express').Router();
@@ -11,7 +11,7 @@ routes.post(
   '/',
   categoryValidator.validateCategoryData,
   categoryValidator.checkIfCategoryNameExists,
-  categoryController.addCategory
+  adminCategoryController.addCategory
 );
 
 module.exports = routes;
