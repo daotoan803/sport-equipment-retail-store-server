@@ -2,7 +2,6 @@ const Product = require('../../models/product.model');
 const Category = require('../../models/category.model');
 const CategoryGroup = require('../../models/category-group.model');
 
-
 const productPreviewAttributes = [
   'id',
   'title',
@@ -15,7 +14,7 @@ const productPreviewAttributes = [
 module.exports = {
   async getProductsByCategoryGroup(req, res, next) {
     const { categoryGroupId } = req.params;
-    
+
     let { page, limit } = req.query;
     page = Number(page);
     limit = Number(limit);
@@ -42,12 +41,14 @@ module.exports = {
       });
 
       const maxPage = limit ? Math.ceil(products.count / limit) : 1;
+      products.products = products.rows;
+      delete products.rows;
+
       return res.json({ maxPage, ...products });
     } catch (e) {
       next(e);
     }
   },
-
 
   async responseProductDetail(req, res, next) {
     const product = req.product;
@@ -69,7 +70,6 @@ module.exports = {
       next(e);
     }
   },
-
 
   async getProductsPreview(req, res, next) {
     let { page = 1, limit = 20 } = req.query;

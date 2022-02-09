@@ -3,6 +3,7 @@ const express = require('express');
 const adminProductController = require('../../controllers/admin/product.controller');
 const productValidator = require('../../middlewares/validations/product.validator');
 const productMiddleware = require('../../middlewares/product.middleware');
+const categoryBrandController = require('../../controllers/admin/category_brand.controller');
 
 const uploadHandler = require('../../middlewares/upload-handler');
 
@@ -27,7 +28,8 @@ routes.post(
   productValidator.validateAddProductData,
   productValidator.checkIfProductTitleAlreadyExists,
   productMiddleware.findBrandAndCategory,
-  adminProductController.createProduct
+  adminProductController.createProduct,
+  categoryBrandController.addBrandToCategory
 );
 
 module.exports = routes;

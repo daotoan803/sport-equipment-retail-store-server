@@ -39,7 +39,6 @@ CategoryGroup.init(
   },
   {
     sequelize: sequelizeConnection,
-    modelName: 'category_group',
     timestamps: false,
   }
 );

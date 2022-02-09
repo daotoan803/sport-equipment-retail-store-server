@@ -12,8 +12,8 @@ ProductImage.init(
     },
   },
   {
+    modelName: 'productImages',
     sequelize: sequelizeConnection,
-    modelName: 'productImage',
     timestamps: false,
   }
 );

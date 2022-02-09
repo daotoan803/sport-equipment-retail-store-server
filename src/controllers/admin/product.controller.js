@@ -57,7 +57,7 @@ module.exports = {
           mainImageUrl: images[0].url,
           productImages: images.slice(1),
         },
-        { transaction, include: [ProductImage] }
+        { transaction, include: ProductImage }
       );
 
       await transaction.commit();
@@ -66,6 +66,8 @@ module.exports = {
         ...product.dataValues,
         productImages: product.productImages,
       });
+
+      next();
     } catch (e) {
       transaction.rollback();
       next(e);

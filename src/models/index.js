@@ -6,6 +6,7 @@ const Product = require('./product.model');
 const Category = require('./category.model');
 const Brand = require('./brand.model');
 const CategoryGroup = require('./category-group.model');
+const ProductReview = require('./product-review.model');
 
 const dbUtils = require('../utils/database.utils');
 
@@ -26,8 +27,18 @@ Product.belongsTo(Category);
 Brand.hasMany(Product);
 Product.belongsTo(Brand);
 
+Category.belongsToMany(Brand, { through: 'category-brand', timestamps: false });
+Brand.belongsToMany(Category, { through: 'category-brand', timestamps: false });
+
+Product.hasMany(ProductReview, { as: 'review' });
+ProductReview.belongsTo(Product);
+
+User.hasMany(ProductReview);
+ProductReview.belongsTo(User);
+
 exports.initialize = async () => {
-  const syncOptions = { force: false, alter: true };
+  const force = false;
+  const syncOptions = { force, alter: !force };
   if (syncOptions.force) {
     dbUtils.cleanImageUploadFolder();
   }

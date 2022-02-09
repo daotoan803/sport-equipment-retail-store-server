@@ -7,5 +7,6 @@ const routes = require('express').Router();
 /*----------------------------------------------------*/
 
 routes.get('/', brandController.getBrands);
+routes.get("/group/:categoryGroupId", brandController.getBrandsByCategoryGroup)
 
 module.exports = routes;
