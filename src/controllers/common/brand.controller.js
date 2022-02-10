@@ -13,9 +13,12 @@ module.exports = {
   },
 
   async getBrandsByCategoryGroup(req, res, next) {
-    const { categoryGroupId } = req.params;
+    const { categoryGroupCode } = req.params;
     try {
-      const categoryGroups = await CategoryGroup.findByPk(categoryGroupId, {
+      const categoryGroups = await CategoryGroup.findOne({
+        where: {
+          code: categoryGroupCode,
+        },
         include: {
           model: Category,
           include: Brand,

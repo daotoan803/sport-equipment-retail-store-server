@@ -69,8 +69,21 @@ const createPriceRangeFilterOption = (minPrice, maxPrice) => {
   return priceFilter;
 };
 
-const getMemberCategoryIdListFromCategoryGroupId = async (categoryGroupId) => {
-  const categoryGroup = await CategoryGroup.findByPk(categoryGroupId, {
+const createSortOption = (sortBy) => {
+  if (Object.keys(Product.sortOptions).includes(sortBy)) {
+    return {
+      order: [Product.sortOptions[sortBy]],
+    };
+  }
+
+  return { order: [Product.sortOptions.name] };
+};
+
+const getMemberCategoryIdListFromCategoryGroupCode = async (
+  categoryGroupCode
+) => {
+  const categoryGroup = await CategoryGroup.findOne({
+    where: { code: categoryGroupCode },
     include: Category,
   });
 
@@ -92,9 +105,9 @@ module.exports = {
   },
 
   async getProductsByCategoryGroup(req, res, next) {
-    const { categoryGroupId } = req.params;
+    const { categoryGroupCode } = req.params;
 
-    let { page, limit, brand: brandId, minPrice, maxPrice } = req.query;
+    let { page, limit, brand: brandId, minPrice, maxPrice, sortBy } = req.query;
     page = Number(page);
     limit = Number(limit);
     minPrice = Number(minPrice);
@@ -104,14 +117,17 @@ module.exports = {
       const limitOption = createPageLimitOption(page, limit);
       const brandFilter = createBrandFilterOption(brandId);
       const priceFilter = createPriceRangeFilterOption(minPrice, maxPrice);
+      const sortOption = createSortOption(sortBy);
 
-      const categoryIdList = await getMemberCategoryIdListFromCategoryGroupId(
-        categoryGroupId
+      const categoryIdList = await getMemberCategoryIdListFromCategoryGroupCode(
+        categoryGroupCode
       );
 
       const products = await Product.findAndCountAll({
         attributes: productPreviewAttributes,
         ...limitOption,
+        ...sortOption,
+        logging: console.log,
         where: {
           categoryId: categoryIdList,
           ...brandFilter,
@@ -153,20 +169,18 @@ module.exports = {
     }
   },
 
-  async getProductsPreview(req, res, next) {
-    let { page = 1, limit = 20 } = req.query;
+  async getAllProductPreviews(req, res, next) {
+    let { page, limit } = req.query;
 
     page = Number(page);
     limit = Number(limit);
-    if (Number.isNaN(page) || Number.isNaN(limit)) {
-      return res.sendStatus(400);
-    }
+
+    const limitOption = createPageLimitOption(page, limit);
 
     try {
       const products = await Product.findAll({
         attributes: productPreviewAttributes,
-        offset: (page - 1) * limit,
-        limit,
+        ...limitOption,
       });
       return res.json(products);
     } catch (error) {

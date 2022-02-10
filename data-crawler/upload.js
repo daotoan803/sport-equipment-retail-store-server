@@ -29,10 +29,10 @@ const createCategoryGroupAndCategories = async (categories) => {
       name: categoryGroupName,
     });
 
-    const childCategories = await Category.bulkCreate(
-      categories[categoryGroupName].map((childCategory) => ({
-        name: childCategory.name,
-      }))
+    const childCategories = await Promise.all(
+      categories[categoryGroupName].map((category) =>
+        Category.create({ name: category.name })
+      )
     );
 
     categoryGroup.addCategories(childCategories);

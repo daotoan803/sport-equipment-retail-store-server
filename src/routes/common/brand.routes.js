@@ -8,7 +8,7 @@ const routes = require('express').Router();
 
 routes.get('/', brandController.getBrands);
 routes.get(
-  '/category-group/:categoryGroupId',
+  '/category-group/:categoryGroupCode',
   brandController.getBrandsByCategoryGroup
 );
 routes.get('/category/:categoryId', brandController.getBrandByCategory);

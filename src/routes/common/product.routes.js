@@ -15,10 +15,10 @@ routes.get(
 );
 
 routes.get(
-  '/category-group/:categoryGroupId',
+  '/category-group/:categoryGroupCode',
   productController.getProductsByCategoryGroup
 );
 
-routes.get('/', productController.getProductsPreview);
+routes.get('/', productController.getAllProductPreviews);
 
 module.exports = routes;

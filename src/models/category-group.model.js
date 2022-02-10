@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
+const { createCodeName } = require('../utils/model.util');
 
 const sequelizeConnection = require('../../config/database.config');
 
@@ -27,6 +28,9 @@ CategoryGroup.init(
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
+      set(value) {
+        this.setDataValue('name', value?.trim());
+      },
       validate: {
         notEmpty: {
           msg: "CategoryGroup name can't be empty",
@@ -36,10 +40,30 @@ CategoryGroup.init(
         },
       },
     },
+
+    code: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: true,
+    },
   },
   {
     sequelize: sequelizeConnection,
     timestamps: false,
+    hooks: {
+      async beforeCreate(categoryGroup) {
+        let code = createCodeName(categoryGroup.name);
+
+        console.log('before create group');
+        let i = 1;
+        while (await CategoryGroup.findOne({ where: { code } })) {
+          code = code + i;
+          i++;
+        }
+
+        categoryGroup.code = code;
+      },
+    },
   }
 );
 

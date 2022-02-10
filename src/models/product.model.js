@@ -10,6 +10,28 @@ class Product extends Model {
     hidden: 'hidden',
   };
 
+  static sortOptions = {
+    name: ['title', 'ASC'],
+    priceAsc: [
+      sequelize.fn(
+        'IFNULL',
+        sequelize.col('discountPrice'),
+        sequelize.col('price')
+      ),
+      'ASC',
+    ],
+    priceDesc: [
+      sequelize.fn(
+        'IFNULL',
+        sequelize.col('discountPrice'),
+        sequelize.col('price')
+      ),
+      'DESC',
+    ],
+    mostVisited: ['visitedCount', 'DESC'],
+    mostSold: ['soldCount', 'DESC'],
+  };
+
   static async isTitleExists(title) {
     const product = await Product.findOne({
       where: {
