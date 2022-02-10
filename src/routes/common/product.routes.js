@@ -10,11 +10,12 @@ const routes = require('express').Router();
 routes.get(
   '/:productId',
   productMiddleware.getProductById,
-  productController.responseProductDetail
+  productController.responseProductDetail,
+  productController.increaseProductDetailVisitedCount
 );
 
 routes.get(
-  '/group/:categoryGroupId',
+  '/category-group/:categoryGroupId',
   productController.getProductsByCategoryGroup
 );
 

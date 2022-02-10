@@ -3,10 +3,14 @@ const brandController = require('../../controllers/common/brand.controller');
 const routes = require('express').Router();
 
 /*----------------------------------------------------*/
-/*--------------------/api/products-----------------------*/
+/*--------------------/api/brands-----------------------*/
 /*----------------------------------------------------*/
 
 routes.get('/', brandController.getBrands);
-routes.get("/group/:categoryGroupId", brandController.getBrandsByCategoryGroup)
+routes.get(
+  '/category-group/:categoryGroupId',
+  brandController.getBrandsByCategoryGroup
+);
+routes.get('/category/:categoryId', brandController.getBrandByCategory);
 
 module.exports = routes;

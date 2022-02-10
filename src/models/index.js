@@ -43,6 +43,7 @@ exports.initialize = async () => {
     dbUtils.cleanImageUploadFolder();
   }
   await sequelizeConnection.sync(syncOptions);
+
   await Promise.all([
     dbUtils.createDefaultAdminAccount(),
     dbUtils.createSampleDataForTesting(),

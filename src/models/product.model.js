@@ -123,6 +123,18 @@ Product.init(
       },
     },
 
+    soldCount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
+
+    visitedCount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
+
     state: {
       type: DataTypes.STRING,
       allowNull: true,
