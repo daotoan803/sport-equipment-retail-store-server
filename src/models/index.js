@@ -30,7 +30,7 @@ Product.belongsTo(Brand);
 Category.belongsToMany(Brand, { through: 'category-brand', timestamps: false });
 Brand.belongsToMany(Category, { through: 'category-brand', timestamps: false });
 
-Product.hasMany(ProductReview, { as: 'review' });
+Product.hasMany(ProductReview);
 ProductReview.belongsTo(Product);
 
 User.hasMany(ProductReview);

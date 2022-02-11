@@ -14,6 +14,11 @@ module.exports = {
         point,
         review,
       });
+
+      await Product.increment('reviewCount', {
+        by: 1,
+        where: { id: product.id },
+      });
       res.json(newReview);
     } catch (e) {
       next(e);

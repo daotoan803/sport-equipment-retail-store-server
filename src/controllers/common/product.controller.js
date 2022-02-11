@@ -2,6 +2,9 @@ const { Op } = require('sequelize');
 const Product = require('../../models/product.model');
 const Category = require('../../models/category.model');
 const CategoryGroup = require('../../models/category-group.model');
+const ProductImage = require('../../models/product-image.model');
+const ProductReview = require('../../models/product-review.model');
+const Brand = require('../../models/brand.model');
 
 const productPreviewAttributes = [
   'id',
@@ -12,6 +15,7 @@ const productPreviewAttributes = [
   'mainImageUrl',
   'soldCount',
   'visitedCount',
+  'reviewCount',
 ];
 
 const createPageLimitOption = (page, limit) => {
@@ -69,6 +73,41 @@ const createPriceRangeFilterOption = (minPrice, maxPrice) => {
   return priceFilter;
 };
 
+const createStateFilterOption = (state) => {
+  return state === Product.state.available
+    ? { state: Product.state.available }
+    : {
+        state: {
+          [Op.not]: Product.state.hidden,
+        },
+      };
+};
+
+const createCategoryFilterOption = async ({
+  categoryGroupCodeOrId,
+  categoryCodeOrId,
+}) => {
+  if (categoryCodeOrId) {
+    const category = await Category.findOne({
+      where: {
+        [Op.or]: [{ id: categoryCodeOrId }, { code: categoryCodeOrId }],
+      },
+    });
+    if (!category) return {};
+    return { categoryId: category.id };
+  }
+
+  if (categoryGroupCodeOrId) {
+    const listOfCategoryInCategoryGroup =
+      await getMemberCategoryIdListFromCategoryGroupCode(categoryGroupCodeOrId);
+
+    if (listOfCategoryInCategoryGroup.length === 0) return {};
+    return { categoryId: listOfCategoryInCategoryGroup };
+  }
+
+  return {};
+};
+
 const createSortOption = (sortBy) => {
   if (Object.keys(Product.sortOptions).includes(sortBy)) {
     return {
@@ -80,12 +119,16 @@ const createSortOption = (sortBy) => {
 };
 
 const getMemberCategoryIdListFromCategoryGroupCode = async (
-  categoryGroupCode
+  categoryGroupCodeOrId
 ) => {
   const categoryGroup = await CategoryGroup.findOne({
-    where: { code: categoryGroupCode },
+    where: {
+      [Op.or]: [{ code: categoryGroupCodeOrId }, { id: categoryGroupCodeOrId }],
+    },
     include: Category,
   });
+
+  if (!categoryGroup) return [];
 
   const categoryIdList = categoryGroup.categories.map(
     (category) => category.id
@@ -104,34 +147,45 @@ module.exports = {
     }
   },
 
-  async getProductsByCategoryGroup(req, res, next) {
-    const { categoryGroupCode } = req.params;
+  async getProductPreviews(req, res, next) {
+    let {
+      page,
+      limit,
+      categoryGroup: categoryGroupCodeOrId,
+      category: categoryCodeOrId,
+      brand: brandId,
+      minPrice,
+      maxPrice,
+      sortBy,
+      state,
+    } = req.query;
 
-    let { page, limit, brand: brandId, minPrice, maxPrice, sortBy } = req.query;
     page = Number(page);
     limit = Number(limit);
     minPrice = Number(minPrice);
     maxPrice = Number(maxPrice);
 
     try {
+      const categoryFilter = await createCategoryFilterOption({
+        categoryGroupCodeOrId,
+        categoryCodeOrId,
+      });
       const limitOption = createPageLimitOption(page, limit);
       const brandFilter = createBrandFilterOption(brandId);
       const priceFilter = createPriceRangeFilterOption(minPrice, maxPrice);
       const sortOption = createSortOption(sortBy);
 
-      const categoryIdList = await getMemberCategoryIdListFromCategoryGroupCode(
-        categoryGroupCode
-      );
+      const stateFilter = createStateFilterOption(state);
 
       const products = await Product.findAndCountAll({
         attributes: productPreviewAttributes,
         ...limitOption,
         ...sortOption,
-        logging: console.log,
         where: {
-          categoryId: categoryIdList,
+          ...categoryFilter,
           ...brandFilter,
           ...priceFilter,
+          ...stateFilter,
         },
       });
 
@@ -145,46 +199,21 @@ module.exports = {
     }
   },
 
-  async responseProductDetail(req, res, next) {
-    const product = req.product;
+  async getProductDetail(req, res, next) {
+    const { productId } = req.params;
 
     try {
-      const [brand, category, productImages] = await Promise.all([
-        product.getBrand(),
-        product.getCategory(),
-        product.getProductImages(),
-      ]);
-
-      res.json({
-        ...product.dataValues,
-        brand,
-        category,
-        productImages,
+      const product = await Product.findByPk(productId, {
+        include: [ProductImage, ProductReview, Category, Brand],
       });
+      if (!product) return res.sendStatus(404);
+
+      res.json(product);
 
       req.product = product;
       next();
     } catch (e) {
       next(e);
-    }
-  },
-
-  async getAllProductPreviews(req, res, next) {
-    let { page, limit } = req.query;
-
-    page = Number(page);
-    limit = Number(limit);
-
-    const limitOption = createPageLimitOption(page, limit);
-
-    try {
-      const products = await Product.findAll({
-        attributes: productPreviewAttributes,
-        ...limitOption,
-      });
-      return res.json(products);
-    } catch (error) {
-      next(error);
     }
   },
 };

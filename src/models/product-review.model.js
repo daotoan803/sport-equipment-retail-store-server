@@ -27,6 +27,7 @@ ProductReview.init(
   },
   {
     sequelize: sequelizeConnection,
+    modelName: 'productReview',
   }
 );
 

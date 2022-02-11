@@ -1,5 +1,4 @@
 const productController = require('../../controllers/common/product.controller');
-const productMiddleware = require('../../middlewares/product.middleware');
 
 const routes = require('express').Router();
 
@@ -9,16 +8,10 @@ const routes = require('express').Router();
 
 routes.get(
   '/:productId',
-  productMiddleware.getProductById,
-  productController.responseProductDetail,
+  productController.getProductDetail,
   productController.increaseProductDetailVisitedCount
 );
 
-routes.get(
-  '/category-group/:categoryGroupCode',
-  productController.getProductsByCategoryGroup
-);
-
-routes.get('/', productController.getAllProductPreviews);
+routes.get('/', productController.getProductPreviews);
 
 module.exports = routes;

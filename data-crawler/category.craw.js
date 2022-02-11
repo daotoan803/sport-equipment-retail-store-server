@@ -1,4 +1,4 @@
-const getCategoriesLink = () => {
+const getAllCategoriesLink = () => {
   const categories = { others: [] };
   const parentCategories = [];
 
@@ -38,13 +38,11 @@ exports.crawCategories = async (browser) => {
   page.setDefaultNavigationTimeout(0);
   await page.goto('https://dungcutheduc.vn/');
 
-  const categories = await page.evaluate(getCategoriesLink);
+  const categories = await page.evaluate(getAllCategoriesLink);
   page.close();
   return categories;
 };
 
 exports.mapCategoriesLink = (categories) => {
-  return Object.values(categories)
-    .flat()
-    .flat()
+  return Object.values(categories).flat().flat();
 };

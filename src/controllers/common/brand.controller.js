@@ -2,41 +2,43 @@ const Brand = require('../../models/brand.model');
 const CategoryGroup = require('../../models/category-group.model');
 const Category = require('../../models/category.model');
 
+const findBrandByCategoryGroup = async (categoryGroupCodeOrId) => {
+  const categoryGroups = await CategoryGroup.findOneWhereCodeOrId(
+    categoryGroupCodeOrId,
+    {
+      include: {
+        model: Category,
+        include: Brand,
+      },
+    }
+  );
+
+  const brands = {};
+  const categories = categoryGroups.categories;
+  categories.forEach((category) => {
+    category.brands.forEach((brand) => {
+      if (!brands[brand.id]) {
+        delete brand['category-brand'];
+        brands[brand.id] = { id: brand.id, name: brand.name };
+      }
+    });
+  });
+
+  return Object.values(brands);
+};
+
 module.exports = {
   async getBrands(req, res, next) {
+    const { categoryGroup: categoryGroupCodeOrId } = req.query;
+
     try {
+      if (categoryGroupCodeOrId) {
+        const brands = await findBrandByCategoryGroup(categoryGroupCodeOrId);
+        return res.json(brands);
+      }
+
       const brands = await Brand.findAll();
       res.json(brands);
-    } catch (e) {
-      next(e);
-    }
-  },
-
-  async getBrandsByCategoryGroup(req, res, next) {
-    const { categoryGroupCode } = req.params;
-    try {
-      const categoryGroups = await CategoryGroup.findOne({
-        where: {
-          code: categoryGroupCode,
-        },
-        include: {
-          model: Category,
-          include: Brand,
-        },
-      });
-
-      const brands = {};
-      const categories = categoryGroups.categories;
-      categories.forEach((category) => {
-        category.brands.forEach((brand) => {
-          if (!brands[brand.id]) {
-            delete brand['category-brand'];
-            brands[brand.id] = { id: brand.id, name: brand.name };
-          }
-        });
-      });
-
-      res.json(Object.values(brands));
     } catch (e) {
       next(e);
     }

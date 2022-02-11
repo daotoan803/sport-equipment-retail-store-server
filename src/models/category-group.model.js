@@ -1,15 +1,21 @@
-const { Model, DataTypes } = require('sequelize');
+const { Model, DataTypes, Op } = require('sequelize');
 const { createCodeName } = require('../utils/model.util');
 
 const sequelizeConnection = require('../../config/database.config');
 
 class CategoryGroup extends Model {
-  static findAllWherePk(categoryIdList) {
-    return CategoryGroup.findAll({
+  static async findOneWhereCodeOrId(categoryGroupCodeOrId, option = {}) {
+    const categoryGroup = await CategoryGroup.findOne({
       where: {
-        id: categoryIdList,
+        [Op.or]: [
+          { id: categoryGroupCodeOrId },
+          { code: categoryGroupCodeOrId },
+        ],
       },
+      ...option,
     });
+
+    return categoryGroup;
   }
 
   static async isNameAlreadyExists(name) {

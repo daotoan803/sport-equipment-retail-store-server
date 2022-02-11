@@ -157,6 +157,12 @@ Product.init(
       defaultValue: 0,
     },
 
+    reviewCount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0,
+    },
+
     state: {
       type: DataTypes.STRING,
       allowNull: true,
