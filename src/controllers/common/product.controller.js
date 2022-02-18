@@ -5,6 +5,7 @@ const CategoryGroup = require('../../models/category-group.model');
 const ProductImage = require('../../models/product-image.model');
 const ProductReview = require('../../models/product-review.model');
 const Brand = require('../../models/brand.model');
+const { createPageLimitOption } = require('../../utils/request-query.utils');
 
 const productPreviewAttributes = [
   'id',
@@ -17,24 +18,6 @@ const productPreviewAttributes = [
   'visitedCount',
   'reviewCount',
 ];
-
-const createPageLimitOption = (page, limit) => {
-  let limitOption = {};
-
-  page = Number(page);
-  limit = Number(limit);
-
-  page = page >= 1 ? page : 1;
-
-  if (limit >= 0) {
-    limitOption = {
-      offset: (page - 1) * limit,
-      limit: limit,
-    };
-  }
-
-  return limitOption;
-};
 
 const createBrandFilterOption = (brandId) => {
   const brandFilter = {};

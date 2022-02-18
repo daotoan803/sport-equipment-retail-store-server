@@ -1,25 +1,38 @@
-const uuid = require('uuid');
+const User = require('../models/user.model');
+const ChatRoom = require('../models/chat-room.model');
+const ChatMessage = require('../models/chat-message.model');
+const { createPageLimitOption } = require('../utils/request-query.utils');
 
-const initializeRealtimeChat = (io) => {
-  io.on('connection', (socket) => {
-    console.log('new user connected');
+module.exports = {
+  async getUserChatMessage(req, res, next) {
+    const { userAccount } = req;
+    const { page, limit } = req.query;
 
-    socket.on('join-chat', (data) => {
-      const room = uuid.v4();
-      console.log(data);
-      socket.emit('new-room', room);
-    });
+    const pageLimitOption = createPageLimitOption(page, limit);
 
-    socket.on('send-message', (data) => {
-      console.log(data);
+    const userId = userAccount.userId;
 
-      socket.emit('new-message', data);
-    });
+    try {
+      const user = await User.findByPk(userId, {
+        include: ChatRoom,
+        logging: console.log,
+      });
 
-    socket.on('disconnect', () => {
-      console.log('user disconnected');
-    });
-  });
+      const messages = await ChatMessage.findAndCountAll({
+        where: {
+          chatRoomId: user.chatRoom.id,
+        },
+        ...pageLimitOption,
+        order: [['createdAt', 'DESC']],
+      });
+
+      const maxPage = limit ? Math.ceil(messages.count / limit) : 1;
+      messages.messages = messages.rows;
+      delete messages.rows;
+
+      res.json({ maxPage, messages });
+    } catch (e) {
+      next(e);
+    }
+  },
 };
-
-module.exports = initializeRealtimeChat;

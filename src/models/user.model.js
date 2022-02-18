@@ -40,6 +40,7 @@ class User extends Model {
         { transaction: t }
       );
       user.account = await user.createAccount({ password }, { transaction: t });
+      await user.createChatRoom({}, { transaction: t, logging: console.log });
       await t.commit();
       return user;
     } catch (e) {

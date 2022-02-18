@@ -7,7 +7,7 @@ const { Server } = require('socket.io');
 
 const routes = require('./src/routes/index.js');
 const database = require('./src/models/index.js');
-const initializeRealtimeChat = require('./src/controllers/chat.controller');
+const registerChatHandler = require('./src/realtime_handler/ChatHandler');
 
 const app = express();
 
@@ -26,7 +26,7 @@ app.use('/api', routes);
 
 const server = http.createServer(app);
 const io = new Server(server);
-initializeRealtimeChat(io);
+registerChatHandler(io);
 
 if (require.main === module) {
   database.initialize().then(() => {
