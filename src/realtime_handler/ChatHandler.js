@@ -1,36 +1,52 @@
-const uuid = require('uuid');
-const jwt = require('jsonwebtoken');
+const User = require('../models/user.model');
+const ChatMessage = require('../models/chat-message.model');
 
 const initializeRealtimeChat = (io) => {
   io.of('/chat').use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     if (!token) return next('Missing auth token');
 
-    const TOKEN_KEY = process.env.TOKEN_KEY;
-    const data = await jwt.verify(token, TOKEN_KEY);
-    socket.userId = data.userId;
+    const user = await User.validateTokenAndGetUser(token);
+    socket.user = user;
     next();
   });
 
   io.of('/chat').on('connection', (socket) => {
-    console.log('new user connected');
     socket.on('test-connection', (data) => {
       console.log('test-connection ok', socket.id);
       console.log(data);
       socket.emit('connection-result', 'ok');
     });
 
-    socket.on('join-support-chat', () => {
-      const room = uuid.v4();
-      console.log(socket.userId);
+    socket.on('join-support-chat', async (roomId) => {
+      if (roomId) {
+        return socket.join(roomId);
+      }
 
-      socket.emit('new-room', room);
+      const user = socket.user;
+      const chatRoom = await user.getChatRoom();
+      socket.join(chatRoom.id);
     });
 
-    socket.on('send-message', (data) => {
+    socket.on('send-message', async (newMessage, cb) => {
+      const user = socket.user;
+
+      const chatRoom = await user.getChatRoom();
+      const message = await ChatMessage.create({
+        message: newMessage,
+        messageType: ChatMessage.messageType.message,
+        chatRoomId: chatRoom.id,
+        userId: user.id,
+      });
+
+      const data = {
+        ...message.dataValues,
+        sender: user.name,
+      };
       console.log(data);
 
-      socket.emit('new-message', data);
+      cb(data);
+      socket.to(chatRoom.id).emit('new-message', data);
     });
 
     socket.on('disconnecting', () => {

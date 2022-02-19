@@ -3,6 +3,7 @@ const _ = require('lodash');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const Account = require('./account.model');
+const jwt = require('jsonwebtoken');
 
 const sequelizeConnection = require('../../config/database.config');
 
@@ -17,6 +18,16 @@ class User extends Model {
     const user = await User.findOne({ where: { email } });
     if (user) return true;
     return false;
+  }
+
+  static async validateTokenAndGetUser(token) {
+    const TOKEN_KEY = process.env.TOKEN_KEY;
+    const { userId, userKey } = jwt.verify(token, TOKEN_KEY);
+    const user = await User.findByPk(userId, { include: Account });
+    if (!user || userKey !== user.account.userKey) {
+      return null;
+    }
+    return user;
   }
 
   static async validateLoginAndGetUser(email, password) {
@@ -40,7 +51,7 @@ class User extends Model {
         { transaction: t }
       );
       user.account = await user.createAccount({ password }, { transaction: t });
-      await user.createChatRoom({}, { transaction: t, logging: console.log });
+      await user.createChatRoom({}, { transaction: t, });
       await t.commit();
       return user;
     } catch (e) {

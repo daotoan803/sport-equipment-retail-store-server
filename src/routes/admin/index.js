@@ -5,6 +5,7 @@ const authController = require('../../middlewares/auth.middleware');
 const productRoutes = require('./product.routes');
 const brandRoutes = require('./brand.routes');
 const categoryRoutes = require('./category.routes');
+const chatRoutes = require('./chat.routes');
 
 const routes = express.Router();
 
@@ -20,5 +21,6 @@ routes.use(
 routes.use('/products', productRoutes);
 routes.use('/brands', brandRoutes);
 routes.use('/categories', categoryRoutes);
+routes.use('/chat', chatRoutes);
 
 module.exports = routes;

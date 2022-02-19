@@ -69,6 +69,7 @@ exports.initialize = async () => {
   await Promise.all([
     dbUtils.createDefaultAdminAccount(),
     dbUtils.createSampleDataForTesting(),
+    dbUtils.createDummyUsers(),
   ]);
 
   return;

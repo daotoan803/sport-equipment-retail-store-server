@@ -126,4 +126,24 @@ module.exports = {
     //   paranoid: false,
     // });
   },
+
+  async createDummyUsers() {
+    const async = [];
+    for (let i = 0; i < 20; i++) {
+      const randomGender = Object.values(User.gender)[
+        Math.floor(Math.random() * Object.values(User.gender).length)
+      ];
+
+      const user = {
+        name: 'user' + i,
+        dob: new Date('10/10/2000'),
+        gender: randomGender,
+        email: `user${i}@test.com`,
+        password: `test`,
+      };
+
+      async.push(User.signupUser(user).catch(() => {}));
+    }
+    return Promise.all(async);
+  },
 };

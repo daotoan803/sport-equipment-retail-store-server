@@ -11,9 +11,16 @@ module.exports = {
     );
     if (user.account.role !== Account.role.customer) {
       const role = user.account.role;
-      return res.json({ token, role });
+      return res.json({
+        token,
+        role,
+        user: { id: user.id, name: user.name, avatarUrl: user.avatarUrl },
+      });
     }
-    res.json({ token });
+    res.json({
+      token,
+      user: { id: user.id, name: user.name, avatarUrl: user.avatarUrl },
+    });
   },
 
   async logoutEveryWhere(req, res) {

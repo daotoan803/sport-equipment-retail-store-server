@@ -2,8 +2,40 @@ const User = require('../models/user.model');
 const ChatRoom = require('../models/chat-room.model');
 const ChatMessage = require('../models/chat-message.model');
 const { createPageLimitOption } = require('../utils/request-query.utils');
+const { Sequelize } = require('sequelize');
 
 module.exports = {
+  async getUserPreviewInfoByNewestChat(req, res, next) {
+    const { page, limit } = req.query;
+    const pageLimitOption = createPageLimitOption(page, limit);
+
+    try {
+      const newestChatIdOfEachChatRoomList = await ChatMessage.findAll({
+        attributes: [[Sequelize.fn('MAX', Sequelize.col('id')), 'id']],
+        group: 'chatRoomId',
+        logging: console.log,
+      });
+
+      const idList = newestChatIdOfEachChatRoomList.map((id) => id.id);
+
+      const chatMessages = await ChatMessage.findAll({
+        where: {
+          id: idList,
+        },
+        include: {
+          model: User,
+          attributes: ['name', 'avatarUrl'],
+        },
+        logging: console.log,
+        ...pageLimitOption,
+      });
+
+      res.json(chatMessages);
+    } catch (e) {
+      next(e);
+    }
+  },
+
   async getUserChatMessage(req, res, next) {
     const { userAccount } = req;
     const { page, limit } = req.query;
@@ -15,7 +47,6 @@ module.exports = {
     try {
       const user = await User.findByPk(userId, {
         include: ChatRoom,
-        logging: console.log,
       });
 
       const messages = await ChatMessage.findAndCountAll({

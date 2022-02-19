@@ -56,14 +56,12 @@ module.exports = {
       const authorization = req.headers?.authorization;
       const token = authorization?.split(/^(Bearer )/i)[2];
       if (!token) return res.sendStatus(401);
-      const { userId, userKey } = jwt.verify(token, TOKEN_KEY);
-      const userAccount = await Account.findOne({
-        where: { userId },
-      });
-      if (!userAccount || userKey !== userAccount.userKey) {
-        return res.sendStatus(401);
-      }
-      req.userAccount = userAccount;
+
+      const user = await User.validateTokenAndGetUser(token);
+      if (!user) return res.sendStatus(401);
+
+      req.user = user;
+      req.userAccount = user.account;
       next();
     } catch (e) {
       next(e);
