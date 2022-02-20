@@ -1,9 +1,6 @@
 const User = require('../models/user.model');
-const jwt = require('jsonwebtoken');
 const Account = require('../models/account.model');
 const bcrypt = require('bcrypt');
-
-const TOKEN_KEY = process.env.TOKEN_KEY;
 
 const generateAuthorizationFunction = (role) => {
   return async (req, res, next) => {

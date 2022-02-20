@@ -7,7 +7,7 @@ const { Server } = require('socket.io');
 
 const routes = require('./src/routes/index.js');
 const database = require('./src/models/index.js');
-const registerChatHandler = require('./src/realtime_handler/ChatHandler');
+const registerChatHandler = require('./src/realtime_handler/chat.handler');
 
 const app = express();
 

@@ -1,12 +1,29 @@
 const { Model, DataTypes } = require('sequelize');
 
 const sequelizeConnection = require('../../config/database.config');
+const User = require('./user.model');
 
 class ChatMessage extends Model {
   static messageType = {
     message: 'message',
     event: 'event',
   };
+
+  static async findByRoomId(roomId, { option = {} }) {
+    const messages = await ChatMessage.findAndCountAll({
+      where: {
+        chatRoomId: roomId,
+      },
+      include: {
+        model: User,
+        attributes: ['id', 'name', 'avatarUrl'],
+      },
+      ...option,
+      order: [['createdAt', 'DESC']],
+    });
+
+    return messages;
+  }
 }
 
 ChatMessage.init(

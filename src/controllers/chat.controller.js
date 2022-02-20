@@ -2,18 +2,31 @@ const User = require('../models/user.model');
 const ChatRoom = require('../models/chat-room.model');
 const ChatMessage = require('../models/chat-message.model');
 const { createPageLimitOption } = require('../utils/request-query.utils');
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
+
+const formatGetChatMessageResult = (messages, limit) => {
+  const maxPage = limit ? Math.ceil(messages.count / limit) : 1;
+  messages.messages = messages.rows;
+  delete messages.rows;
+
+  return { maxPage, messages };
+};
 
 module.exports = {
   async getUserPreviewInfoByNewestChat(req, res, next) {
     const { page, limit } = req.query;
     const pageLimitOption = createPageLimitOption(page, limit);
+    const userAccount = req.userAccount;
 
     try {
       const newestChatIdOfEachChatRoomList = await ChatMessage.findAll({
         attributes: [[Sequelize.fn('MAX', Sequelize.col('id')), 'id']],
+        where: {
+          userId: {
+            [Op.not]: [userAccount.userId],
+          },
+        },
         group: 'chatRoomId',
-        logging: console.log,
       });
 
       const idList = newestChatIdOfEachChatRoomList.map((id) => id.id);
@@ -24,11 +37,11 @@ module.exports = {
         },
         include: {
           model: User,
-          attributes: ['name', 'avatarUrl'],
+          attributes: ['id', 'name', 'avatarUrl'],
         },
-        logging: console.log,
         ...pageLimitOption,
       });
+      
 
       res.json(chatMessages);
     } catch (e) {
@@ -39,29 +52,44 @@ module.exports = {
   async getUserChatMessage(req, res, next) {
     const { userAccount } = req;
     const { page, limit } = req.query;
-
     const pageLimitOption = createPageLimitOption(page, limit);
 
     const userId = userAccount.userId;
 
     try {
       const user = await User.findByPk(userId, {
+        attributes: ['id'],
         include: ChatRoom,
       });
 
-      const messages = await ChatMessage.findAndCountAll({
-        where: {
-          chatRoomId: user.chatRoom.id,
-        },
+      const roomId = user.chatRoom.id;
+
+      const messages = await ChatMessage.findByRoomId(roomId, {
         ...pageLimitOption,
-        order: [['createdAt', 'DESC']],
       });
 
-      const maxPage = limit ? Math.ceil(messages.count / limit) : 1;
-      messages.messages = messages.rows;
-      delete messages.rows;
+      const result = formatGetChatMessageResult(messages, limit);
 
-      res.json({ maxPage, messages });
+      res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  },
+
+  async getChatMessageByRoomId(req, res, next) {
+    const { page, limit } = req.query;
+    const { chatRoomId } = req.params;
+
+    const pageLimitOption = createPageLimitOption(page, limit);
+
+    try {
+      const messages = await ChatMessage.findByRoomId(chatRoomId, {
+        ...pageLimitOption,
+      });
+
+      const result = formatGetChatMessageResult(messages, limit);
+
+      res.json(result);
     } catch (e) {
       next(e);
     }

@@ -1,4 +1,4 @@
-const { Model } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 
 const sequelizeConnection = require('../../config/database.config');
 
@@ -10,7 +10,11 @@ class ChatRoom extends Model {
 }
 
 ChatRoom.init(
-  {},
+  {
+    haveNewMessage: {
+      type: DataTypes.BOOLEAN,
+    },
+  },
   {
     sequelize: sequelizeConnection,
     modelName: 'chatRoom',
