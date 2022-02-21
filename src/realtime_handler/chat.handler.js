@@ -2,22 +2,19 @@ const User = require('../models/user.model');
 const ChatMessage = require('../models/chat-message.model');
 const ChatRoom = require('../models/chat-room.model');
 
-const initializeRealtimeChat = (io) => {
-  io.of('/chat').use(async (socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (!token) return next('Missing auth token');
+const validateUser = async (socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) return next('Missing auth token');
 
-    const user = await User.validateTokenAndGetUser(token);
-    socket.user = user;
-    next();
-  });
+  const user = await User.validateTokenAndGetUser(token);
+  socket.user = user;
+  next();
+};
+
+const initializeRealtimeChat = (io) => {
+  io.of('/chat').use(validateUser);
 
   io.of('/chat').on('connection', (socket) => {
-    socket.on('test-connection', () => {
-      console.log('test-connection ok', socket.id);
-      socket.emit('connection-result', 'ok');
-    });
-
     socket.on('join-support-room', async (roomId, cb = () => {}) => {
       const user = socket.user;
 
@@ -26,9 +23,10 @@ const initializeRealtimeChat = (io) => {
         roomId = chatRoom.id;
       }
 
-      console.log(user.name + ' joining room ' + roomId);
       socket.join(roomId);
+      console.log(user.name + ' joining room ' + roomId);
       cb(null);
+      socket.to(roomId).emit('user-join-room');
     });
 
     socket.on('leave-support-room', async (roomId, cb = () => {}) => {
@@ -49,11 +47,15 @@ const initializeRealtimeChat = (io) => {
         const user = socket.user;
 
         let chatRoom = null;
-
         if (!chatRoomId) {
-          chatRoom = await ChatRoom.findOne({ where: { userId: user.id } });
+          chatRoom = await ChatRoom.findOne({
+            where: { userId: user.id },
+            attributes: ['id', 'haveNewMessage'],
+          });
         } else {
-          chatRoom = await ChatRoom.findByPk(chatRoomId);
+          chatRoom = await ChatRoom.findByPk(chatRoomId, {
+            attributes: ['id', 'haveNewMessage'],
+          });
         }
 
         if (!chatRoom) {
@@ -70,20 +72,23 @@ const initializeRealtimeChat = (io) => {
           userId: user.id,
         });
 
-        newMessage.user = await newMessage.getUser({
+        chatRoom.haveNewMessage = true;
+        chatRoom.save();
+
+        const sender = await newMessage.getUser({
           attributes: ['id', 'name', 'avatarUrl'],
         });
 
         const data = {
           ...newMessage.dataValues,
-          user: newMessage.user,
+          user: sender,
+          chatRoom: { ...chatRoom.dataValues },
         };
 
-        chatRoom.haveNewMessage = true;
-        chatRoom.save();
+        console.log(data);
 
         cb(data);
-        socket.to(chatRoomId).emit('new-message', data);
+        socket.to(chatRoom.id).emit('new-message', data);
         socket.broadcast.emit('new-broadcast-message', data);
       }
     );

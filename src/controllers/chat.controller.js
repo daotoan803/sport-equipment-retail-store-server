@@ -27,6 +27,7 @@ module.exports = {
           },
         },
         group: 'chatRoomId',
+        ...pageLimitOption,
       });
 
       const idList = newestChatIdOfEachChatRoomList.map((id) => id.id);
@@ -35,13 +36,18 @@ module.exports = {
         where: {
           id: idList,
         },
-        include: {
-          model: User,
-          attributes: ['id', 'name', 'avatarUrl'],
-        },
-        ...pageLimitOption,
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'name', 'avatarUrl'],
+          },
+          {
+            model: ChatRoom,
+            attributes: ['id', 'haveNewMessage']
+          }
+        ],
+        order: [['createdAt', 'DESC']],
       });
-      
 
       res.json(chatMessages);
     } catch (e) {
