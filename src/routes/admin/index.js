@@ -6,6 +6,7 @@ const productRoutes = require('./product.routes');
 const brandRoutes = require('./brand.routes');
 const categoryRoutes = require('./category.routes');
 const chatRoutes = require('./chat.routes');
+const userRoutes = require('./user.routes')
 
 const routes = express.Router();
 
@@ -18,6 +19,7 @@ routes.use(
   authController.checkAdminAuthorization
 );
 
+routes.use('/users', userRoutes )
 routes.use('/products', productRoutes);
 routes.use('/brands', brandRoutes);
 routes.use('/categories', categoryRoutes);

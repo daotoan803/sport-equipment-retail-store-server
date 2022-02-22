@@ -7,6 +7,7 @@ class ChatMessage extends Model {
   static messageType = {
     message: 'message',
     event: 'event',
+    image: 'image',
   };
 
   static async findByRoomId(roomId, { option = {} }) {

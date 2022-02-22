@@ -10,7 +10,6 @@ const authController = require('../../controllers/common/auth.controller');
 /*------------------------------------------------------*/
 
 const routes = express.Router();
-
 routes.post(
   '/signup',
   userValidator.validateUserSignup,

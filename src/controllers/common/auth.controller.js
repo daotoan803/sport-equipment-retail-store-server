@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 const Account = require('../../models/account.model');
 
 module.exports = {
+  checkTokenStillValid(req, res) {
+    return res.sendStatus(200);
+  },
+
   createAccessToken(req, res) {
     const { user } = req;
     const TOKEN_KEY = process.env.TOKEN_KEY;

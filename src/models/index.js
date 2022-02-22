@@ -59,7 +59,7 @@ User.hasMany(ChatMessage);
 ChatMessage.belongsTo(User);
 
 exports.initialize = async () => {
-  const force = false;
+  const force = !false;
   const syncOptions = { force, alter: !force };
   if (syncOptions.force) {
     dbUtils.cleanImageUploadFolder();

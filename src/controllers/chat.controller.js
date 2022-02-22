@@ -16,16 +16,17 @@ module.exports = {
   async getUserPreviewInfoByNewestChat(req, res, next) {
     const { page, limit } = req.query;
     const pageLimitOption = createPageLimitOption(page, limit);
-    const userAccount = req.userAccount;
+    const { user } = req;
 
     try {
       const newestChatIdOfEachChatRoomList = await ChatMessage.findAll({
         attributes: [[Sequelize.fn('MAX', Sequelize.col('id')), 'id']],
         where: {
           userId: {
-            [Op.not]: [userAccount.userId],
+            [Op.not]: [user.id],
           },
         },
+        order: [['id', 'DESC']],
         group: 'chatRoomId',
         ...pageLimitOption,
       });
@@ -43,8 +44,8 @@ module.exports = {
           },
           {
             model: ChatRoom,
-            attributes: ['id', 'haveNewMessage']
-          }
+            attributes: ['id', 'haveNewMessage'],
+          },
         ],
         order: [['createdAt', 'DESC']],
       });
