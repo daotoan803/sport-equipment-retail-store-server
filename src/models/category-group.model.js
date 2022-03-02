@@ -1,7 +1,7 @@
 const { Model, DataTypes, Op } = require('sequelize');
 const { createCodeName } = require('../utils/model.util');
 
-const sequelizeConnection = require('../../config/database.config');
+const sequelizeConnection = require('../config/database.config');
 
 class CategoryGroup extends Model {
   static async findOneWhereCodeOrId(categoryGroupCodeOrId, option = {}) {

@@ -1,6 +1,7 @@
 const Brand = require('../../models/brand.model');
 const CategoryGroup = require('../../models/category-group.model');
 const Category = require('../../models/category.model');
+const { Op } = require('sequelize');
 
 const findBrandByCategoryGroup = async (categoryGroupCodeOrId) => {
   const categoryGroups = await CategoryGroup.findOneWhereCodeOrId(
@@ -29,15 +30,24 @@ const findBrandByCategoryGroup = async (categoryGroupCodeOrId) => {
 
 module.exports = {
   async getBrands(req, res, next) {
-    const { categoryGroup: categoryGroupCodeOrId } = req.query;
+    const { categoryGroupCodeOrId, categoryCodeOrId } = req.query;
 
     try {
+      let brands = null;
       if (categoryGroupCodeOrId) {
-        const brands = await findBrandByCategoryGroup(categoryGroupCodeOrId);
-        return res.json(brands);
+        brands = await findBrandByCategoryGroup(categoryGroupCodeOrId);
+      } else if (categoryCodeOrId) {
+        const category = await category.findOne({
+          where: {
+            [Op.or]: [{ id: categoryCodeOrId }, { code: categoryCodeOrId }],
+          },
+          include: Brand,
+        });
+        brands = category.brands;
+      } else {
+        brands = await Brand.findAll();
       }
 
-      const brands = await Brand.findAll();
       res.json(brands);
     } catch (e) {
       next(e);

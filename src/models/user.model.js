@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const Account = require('./account.model');
 const jwt = require('jsonwebtoken');
 
-const sequelizeConnection = require('../../config/database.config');
+const sequelizeConnection = require('../config/database.config');
 
 class User extends Model {
   static gender = {

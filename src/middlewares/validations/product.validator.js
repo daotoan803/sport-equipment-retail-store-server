@@ -10,7 +10,7 @@ module.exports = {
     const productDetailSchema = Joi.object({
       title: Joi.string()
         .min(4)
-        .max(100)
+        .max(101)
         .required(),
       detail: Joi.string()
         .min(1)

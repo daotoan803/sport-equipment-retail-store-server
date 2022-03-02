@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 const { createCodeName } = require('../utils/model.util');
 
-const sequelizeConnection = require('../../config/database.config');
+const sequelizeConnection = require('../config/database.config');
 
 class Category extends Model {
   static findAllWherePk(categoryIdList) {

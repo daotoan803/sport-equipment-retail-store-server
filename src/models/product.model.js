@@ -1,7 +1,7 @@
 const sequelize = require('sequelize');
 const { Model, DataTypes } = sequelize;
 
-const sequelizeConnection = require('../../config/database.config');
+const sequelizeConnection = require('../config/database.config');
 
 class Product extends Model {
   static state = {

@@ -1,4 +1,4 @@
-const sequelizeConnection = require('../../config/database.config');
+const sequelizeConnection = require('../config/database.config');
 const User = require('./user.model');
 const Account = require('./account.model');
 const ProductImage = require('./product-image.model');
@@ -59,7 +59,7 @@ User.hasMany(ChatMessage);
 ChatMessage.belongsTo(User);
 
 exports.initialize = async () => {
-  const force = !false;
+  const force = false;
   const syncOptions = { force, alter: !force };
   if (syncOptions.force) {
     dbUtils.cleanImageUploadFolder();

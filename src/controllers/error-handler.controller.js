@@ -22,7 +22,7 @@ module.exports = {
     }
 
     if (err instanceof jwt.JsonWebTokenError) {
-      return res.status(400).json({ error: 'invalid token' });
+      return res.status(401).json({ error: 'invalid token' });
     }
     res.sendStatus(500);
     console.error(err);

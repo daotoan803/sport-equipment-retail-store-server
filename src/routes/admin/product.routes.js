@@ -5,7 +5,7 @@ const productValidator = require('../../middlewares/validations/product.validato
 const productMiddleware = require('../../middlewares/product.middleware');
 
 const uploadHandler = require('../../middlewares/upload-handler');
-const categoryController = require('../../controllers/admin/category.controller');
+const adminCategoryController = require('../../controllers/admin/category.controller');
 
 const routes = express.Router();
 
@@ -14,6 +14,8 @@ const routes = express.Router();
 /*------------------------------------------------------*/
 
 routes.post('/is-title-unique', adminProductController.responseIsTitleUnique);
+
+routes.get('/', adminProductController.getProductsForAdmin);
 
 routes.post(
   '/:productId/images',
@@ -29,7 +31,7 @@ routes.post(
   productValidator.checkIfProductTitleAlreadyExists,
   productMiddleware.findBrandAndCategory,
   adminProductController.createProduct,
-  categoryController.addBrandToCategory
+  adminCategoryController.addBrandToCategory
 );
 
 module.exports = routes;
