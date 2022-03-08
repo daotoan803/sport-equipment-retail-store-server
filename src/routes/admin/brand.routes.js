@@ -3,6 +3,15 @@ const validate = require('../../middlewares/validate');
 const brandValidation = require('../../validations/brand.validation');
 const brandController = require('../../controllers/brand.controller');
 
+routes.post('/', validate(brandValidation.addBrand), brandController.addBrand);
+
+routes
+  .route('/:brandId')
+  .put(validate(brandValidation.updateBrand), brandController.updateBrand)
+  .delete(brandController.deleteBrand);
+
+module.exports = routes;
+
 /**
  * @openapi
  * tags: Admin Brand
@@ -49,7 +58,6 @@ const brandController = require('../../controllers/brand.controller');
  *      403:
  *        $ref: '#components/responses/Forbidden'
  */
-routes.post('/', validate(brandValidation.addBrand), brandController.addBrand);
 
 /**
  * @openapi
@@ -111,9 +119,3 @@ routes.post('/', validate(brandValidation.addBrand), brandController.addBrand);
  *        $ref: '#components/responses/NotFound'
  *
  */
-routes
-  .route('/:brandId')
-  .put(validate(brandValidation.updateBrand), brandController.updateBrand)
-  .delete(brandController.deleteBrand);
-
-module.exports = routes;

@@ -3,6 +3,20 @@ const cartController = require('../../controllers/cart.controller');
 const validate = require('../../middlewares/validate');
 const cartValidation = require('../../validations/cart.validation');
 
+routes
+  .route('/cart')
+  .get(cartController.getProductsInCart)
+  .post(
+    validate(cartValidation.addProductToCart),
+    cartController.addProductToCartOrUpdateQuantity
+  )
+  .put(
+    validate(cartValidation.updateQuantity),
+    cartController.updateProductInCartQuantity
+  );
+
+module.exports = routes;
+
 /**
  * @openapi
  * tags: Cart
@@ -115,17 +129,3 @@ const cartValidation = require('../../validations/cart.validation');
  *        description: Product id not exists
  *        $ref: '#components/responses/NotFound'
  */
-
-routes
-  .route('/cart')
-  .get(cartController.getProductsInCart)
-  .post(
-    validate(cartValidation.addProductToCart),
-    cartController.addProductToCartOrUpdateQuantity
-  )
-  .put(
-    validate(cartValidation.updateQuantity),
-    cartController.updateProductInCartQuantity
-  );
-
-module.exports = routes;

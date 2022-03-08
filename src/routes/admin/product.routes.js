@@ -4,6 +4,34 @@ const validate = require('../../middlewares/validate');
 const productValidation = require('../../validations/product.validation');
 const upload = require('../../middlewares/upload');
 
+routes.post(
+  '/',
+  upload.handleMixedImageUpload([
+    { name: 'images' },
+    { name: 'mainImage', maxCount: 1 },
+  ]),
+  validate(productValidation.addProduct),
+  productController.addProduct
+);
+
+routes.post(
+  '/check-title',
+  validate(productValidation.checkProductTitleIsUnique),
+  productController.checkProductTitleIsUnique
+);
+
+routes.put(
+  '/:productId',
+  upload.handleMixedImageUpload([
+    { name: 'images' },
+    { name: 'mainImage', maxCount: 1 },
+  ]),
+  validate(productValidation.updateProduct),
+  productController.updateProduct
+);
+
+module.exports = routes;
+
 /**
  * @openapi
  * tags: Admin Product
@@ -93,16 +121,6 @@ const upload = require('../../middlewares/upload');
  *        $ref: '#components/responses/Unauthorized'
  */
 
-routes.post(
-  '/',
-  upload.handleMixedImageUpload([
-    { name: 'images' },
-    { name: 'mainImage', maxCount: 1 },
-  ]),
-  validate(productValidation.addProduct),
-  productController.addProduct
-);
-
 /**
  * @openapi
  * /api/admin/products/check-title:
@@ -135,12 +153,6 @@ routes.post(
  *      401:
  *        $ref: '#components/responses/Unauthorized'
  */
-
-routes.post(
-  '/check-title',
-  validate(productValidation.checkProductTitleIsUnique),
-  productController.checkProductTitleIsUnique
-);
 
 /**
  * @openapi
@@ -228,15 +240,3 @@ routes.post(
  *        $ref: '#components/responses/NotFound'
  *
  */
-
-routes.put(
-  '/:productId',
-  upload.handleMixedImageUpload([
-    { name: 'images' },
-    { name: 'mainImage', maxCount: 1 },
-  ]),
-  validate(productValidation.updateProduct),
-  productController.updateProduct
-);
-
-module.exports = routes;

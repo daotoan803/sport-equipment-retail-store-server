@@ -4,11 +4,34 @@ const userValidation = require('../../validations/user.validation');
 const userController = require('../../controllers/user.controller');
 const authMiddleware = require('../../middlewares/authentication');
 const cartRoutes = require('./cart.routes');
-const orderRoutes = require("./order.routes")
+const orderRoutes = require('./order.routes');
 
 /*------------------------------------------------------*/
 /*--------------------/api/user-----------------------*/
 /*------------------------------------------------------*/
+
+routes.post('/signup', validate(userValidation.signup), userController.signup);
+
+routes.post('/signin', validate(userValidation.login), userController.login);
+
+routes.post(
+  '/logout-all',
+  authMiddleware.verifyToken,
+  userController.logoutAll
+);
+
+routes.post(
+  '/check-token',
+  authMiddleware.verifyToken,
+  userController.checkToken
+);
+
+routes.get('/', authMiddleware.verifyToken, userController.getUserDetail);
+
+routes.use('/cart', authMiddleware.verifyToken, cartRoutes);
+routes.use('/order', authMiddleware.verifyToken, orderRoutes);
+
+module.exports = routes;
 
 /**
  * @openapi
@@ -76,8 +99,6 @@ const orderRoutes = require("./order.routes")
  *        description: Invalid parameters
  */
 
-routes.post('/signup', validate(userValidation.signup), userController.signup);
-
 /**
  * @openapi
  * /api/user/signin:
@@ -122,8 +143,6 @@ routes.post('/signup', validate(userValidation.signup), userController.signup);
  *        description: Wrong password
  */
 
-routes.post('/signin', validate(userValidation.login), userController.login);
-
 /**
  * @openapi
  * /api/user/logout-all:
@@ -149,12 +168,6 @@ routes.post('/signin', validate(userValidation.login), userController.login);
  *        $ref: '#/components/responses/Forbidden'
  */
 
-routes.post(
-  '/logout-all',
-  authMiddleware.verifyToken,
-  userController.logoutAll
-);
-
 /**
  * @openapi
  * /api/user/check-token:
@@ -179,12 +192,6 @@ routes.post(
  *      "403":
  *        $ref: '#/components/responses/Forbidden'
  */
-
-routes.post(
-  '/check-token',
-  authMiddleware.verifyToken,
-  userController.checkToken
-);
 
 /**
  * @openapi
@@ -217,10 +224,3 @@ routes.post(
  *      "403":
  *        $ref: '#/components/responses/Forbidden'
  */
-
-routes.get('/', authMiddleware.verifyToken, userController.getUserDetail);
-
-routes.use('/cart', authMiddleware.verifyToken, cartRoutes);
-routes.use("/order", authMiddleware.verifyToken, orderRoutes);
-
-module.exports = routes;

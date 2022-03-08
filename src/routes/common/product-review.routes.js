@@ -17,7 +17,7 @@ routes
   );
   
 routes
-  .route('/:commentId')
+  .route('/:reviewId')
   .put(
     validate(productReviewValidation.editReview),
     productReviewController.editReview

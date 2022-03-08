@@ -1,8 +1,25 @@
 const routes = require('express').Router();
+const productReviewRoutes = require('./product-review.routes');
+
 const validate = require('../../middlewares/validate');
 const productValidation = require('../../validations/product.validation');
 
 const productController = require('../../controllers/product.controller');
+
+routes.get(
+  '/',
+  validate(productValidation.getProducts),
+  productController.getProducts
+);
+routes.get(
+  '/:productId',
+  validate(productValidation.getProductDetail),
+  productController.getProduct
+);
+
+routes.use('/:productId/review', productReviewRoutes);
+
+module.exports = routes;
 
 /**
  * @openapi
@@ -52,15 +69,6 @@ const productController = require('../../controllers/product.controller');
  *                  items:
  *                    $ref: '#components/schemas/ProductPreview'
  *
- */
-routes.get(
-  '/',
-  validate(productValidation.getProducts),
-  productController.getProducts
-);
-
-/**
- * @openapi
  * /api/products/{id}:
  *  get:
  *    tags: [Product]
@@ -88,10 +96,3 @@ routes.get(
  *      400:
  *        $ref: '#components/responses/NotFound'
  */
-routes.get(
-  '/:productId',
-  validate(productValidation.getProductDetail),
-  productController.getProduct
-);
-
-module.exports = routes;
