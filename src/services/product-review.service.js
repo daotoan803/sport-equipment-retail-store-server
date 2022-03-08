@@ -3,9 +3,15 @@ const ProductReview = require('../models/product-review.model');
 const productService = require('./product.service');
 const ApiError = require('../errors/ApiError');
 
-const generateProductReviewFilterOption = ({ point, page, limit }) => {
+const generateProductReviewFilterOption = ({
+  productId,
+  point,
+  page,
+  limit,
+}) => {
   const option = {};
-  if (point) option.where = { point };
+  option.where = { productId };
+  if (point) option.where.point = point;
   if (page && limit) {
     option.offset = page * limit;
     option.limit = limit;
@@ -30,7 +36,12 @@ const checkProductReviewBelongToUser = (productReview, userId) => {
 };
 
 const getProductReviews = async (productId, { point, page, limit }) => {
-  const option = generateProductReviewFilterOption({ point, page, limit });
+  const option = generateProductReviewFilterOption({
+    productId,
+    point,
+    page,
+    limit,
+  });
   const reviews = await ProductReview.findAll(option);
   if (!reviews) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product id not exists');
@@ -40,7 +51,11 @@ const getProductReviews = async (productId, { point, page, limit }) => {
 
 const createReview = async (userId, productId, { point, review }) => {
   const product = await productService.findProductById(productId);
-  const productReview = await product.createProductReview({ point, review });
+  const productReview = await product.createProductReview({
+    userId,
+    point,
+    review,
+  });
   return productReview;
 };
 

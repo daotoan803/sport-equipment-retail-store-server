@@ -3,10 +3,31 @@ const httpStatus = require('http-status');
 const { JsonWebTokenError } = require('jsonwebtoken');
 const { ValidationError } = require('sequelize');
 
-const errorParser = require('../utils/error-parser');
+const errorUtil = require('../utils/error.util');
+
+const deleteUploadedFiles = (req) => {
+  const filesNeedToBeDelete = [];
+  if (req.files) {
+    if (Array.isArray(req.files)) {
+      filesNeedToBeDelete.push(...req.files);
+      return;
+    } else if (typeof req.files === 'object') {
+      Object.values(req.files).forEach((entry) => {
+        if (Array.isArray(entry)) return filesNeedToBeDelete.push(...entry);
+        filesNeedToBeDelete.push(entry);
+      });
+    }
+  }
+  if (req.file) filesNeedToBeDelete.push(req.file);
+  errorUtil.deleteUploadedFiles(filesNeedToBeDelete);
+};
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
+  if (req.files || req.file) {
+    deleteUploadedFiles(req);
+  }
+
   if (err instanceof ApiError) {
     if (err.message)
       return res.status(err.statusCode).json({ error: err.message });
@@ -18,7 +39,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err instanceof ValidationError) {
-    const errors = errorParser.parseValidationErrors(err);
+    const errors = errorUtil.parseValidationErrors(err);
     if (err.name === 'SequelizeUniqueConstraintError') {
       return res.status(httpStatus.CONFLICT).json(errors);
     }
