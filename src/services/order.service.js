@@ -21,6 +21,15 @@ const generateOrderGroupFilter = (filterOption = {}) => {
   return option;
 };
 
+const checkOrderGroupBelongToUser = (orderGroup, userId) => {
+  if (orderGroup.userId !== userId) {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      "User don't have permission to update this order"
+    );
+  }
+};
+
 const checkAllProductInOrderIsAvailableAndGetProducts = async (products) => {
   return [
     ...(await Promise.all(
@@ -109,9 +118,11 @@ const createOrder = async ({
 
 const updateOrderGroupContact = async (
   orderGroupId,
+  userId,
   { address, phoneNumber }
 ) => {
   const orderGroup = await findOrderGroupById(orderGroupId);
+  checkOrderGroupBelongToUser(orderGroup, userId);
   if (orderGroup.state !== OrderGroup.state.new) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
@@ -135,8 +146,9 @@ const updateOrderGroupState = async (orderGroupId, { state }) => {
   return orderGroup.save();
 };
 
-const cancelOrder = async (orderGroupId, { reason }) => {
+const cancelOrder = async (orderGroupId, userId, { reason }) => {
   const orderGroup = await findOrderGroupById(orderGroupId);
+  checkOrderGroupBelongToUser(orderGroup, userId);
   if (orderGroup.state !== OrderGroup.state.new)
     throw new ApiError(
       httpStatus.BAD_REQUEST,

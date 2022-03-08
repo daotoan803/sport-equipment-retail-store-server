@@ -8,8 +8,10 @@ const createOrder = handleError(async (req, res) => {
 });
 
 const updateOrderGroupContactDetail = handleError(async (req, res) => {
+  const user = req.user;
   const orderGroup = await orderService.updateOrderGroupContact(
     req.params.orderGroupId,
+    user.id,
     req.body
   );
 
@@ -22,7 +24,8 @@ const updateOrderGroupState = handleError(async (req, res) => {
 });
 
 const cancelOrder = handleError(async (req, res) => {
-  await orderService.cancelOrder(req.params.orderGroupId, req.body);
+  const user = req.user;
+  await orderService.cancelOrder(req.params.orderGroupId, user.id, req.body);
   res.sendStatus(httpStatus.NO_CONTENT);
 });
 
