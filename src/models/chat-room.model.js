@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 
-const sequelizeConnection = require('../config/database.config');
+const sequelizeConnection = require('./db-connection');
 
 class ChatRoom extends Model {
   static roomType = {

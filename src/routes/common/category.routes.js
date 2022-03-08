@@ -1,12 +1,14 @@
-const categoryController = require('../../controllers/common/category.controller');
-
 const routes = require('express').Router();
+const categoryController = require('../../controllers/category.controller');
+const categoryValidation = require('../../validations/category.validation');
+const validate = require('../../middlewares/validate');
 
-/*------------------------------------------------------*/
-/*--------------------/api/categories-----------------------*/
-/*------------------------------------------------------*/
+routes.get(
+  '/',
+  validate(categoryValidation.getCategories),
+  categoryController.getCategories
+);
 
-routes.get('/', categoryController.getCategories);
-routes.get('/group', categoryController.getAllCategoryGroups);
+routes.get('/groups', categoryController.getCategoryGroups);
 
 module.exports = routes;

@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const Account = require('./account.model');
 const jwt = require('jsonwebtoken');
 
-const sequelizeConnection = require('../config/database.config');
+const sequelizeConnection = require('./db-connection');
 
 class User extends Model {
   static gender = {
@@ -51,7 +51,7 @@ class User extends Model {
         { transaction: t }
       );
       user.account = await user.createAccount({ password }, { transaction: t });
-      await user.createChatRoom({}, { transaction: t, });
+      await user.createChatRoom({}, { transaction: t });
       await t.commit();
       return user;
     } catch (e) {
@@ -157,6 +157,7 @@ User.init(
   {
     sequelize: sequelizeConnection,
     modelName: 'user',
+    timestamps: false,
   }
 );
 

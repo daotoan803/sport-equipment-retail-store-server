@@ -1,12 +1,8 @@
-const brandController = require('../../controllers/common/brand.controller');
-
 const routes = require('express').Router();
+const brandController = require('../../controllers/brand.controller');
+const brandValidation = require('../../validations/brand.validation');
+const validate = require('../../middlewares/validate');
 
-/*----------------------------------------------------*/
-/*--------------------/api/brands-----------------------*/
-/*----------------------------------------------------*/
-
-routes.get('/', brandController.getBrands);
-routes.get('/category/:categoryId', brandController.getBrandByCategory);
+routes.get('/', validate(brandValidation.getBrands), brandController.getBrands);
 
 module.exports = routes;

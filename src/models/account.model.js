@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
 
-const sequelizeConnection = require('../config/database.config');
+const sequelizeConnection = require('./db-connection');
 const uuid = require('uuid');
 
 class Account extends Model {
@@ -66,10 +66,15 @@ Account.init(
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
     },
+    otpCode: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     sequelize: sequelizeConnection,
     modelName: 'account',
+    timestamps: false,
     hooks: {
       async beforeCreate(account) {
         account.password = await bcrypt.hash(account.password, 10);

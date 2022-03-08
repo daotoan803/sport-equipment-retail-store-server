@@ -1,4 +1,6 @@
 const path = require('path');
+const { uploadedImageDirPath } = require('./project-path');
+const fs = require('fs');
 
 module.exports = {
   fileUploadingIsImage(file) {
@@ -11,7 +13,12 @@ module.exports = {
     return false;
   },
 
-  createImageUrl(imageFilename) {
-    return '/images/' + imageFilename;
+  createImageUrlFromMulterFile(image) {
+    return '/images/' + image.filename;
+  },
+
+  deleteUploadedImageByUrl(imageUrl = '') {
+    const imageName = imageUrl.split('/images/')[1];
+    return fs.promises.unlink(uploadedImageDirPath, imageName);
   },
 };

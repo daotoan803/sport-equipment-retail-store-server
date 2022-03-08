@@ -60,7 +60,7 @@ const createProduct = async (product, token) => {
   formData.append('state', product.state);
   formData.append('categoryId', product.categoryId);
   formData.append('brandId', product.brandId);
-  formData.append('images', images);
+  formData.append('mainImage', images);
 
   if (product.discountPrice) {
     formData.append('discountPrice', product.discountPrice);
@@ -144,7 +144,7 @@ const main = async () => {
         return createProduct(product, adminToken);
       };
     }),
-    5
+    100
   );
 };
 

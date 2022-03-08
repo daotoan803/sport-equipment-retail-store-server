@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 const { createCodeName } = require('../utils/model.util');
 
-const sequelizeConnection = require('../config/database.config');
+const sequelizeConnection = require('./db-connection');
 
 class Category extends Model {
   static findAllWherePk(categoryIdList) {
@@ -10,6 +10,10 @@ class Category extends Model {
         id: categoryIdList,
       },
     });
+  }
+
+  static findOneByCode(categoryCode, option) {
+    return Category.findOne({ where: { code: categoryCode }, ...option });
   }
 
   static async isNameAlreadyExists(name) {
@@ -54,7 +58,7 @@ Category.init(
     hooks: {
       async beforeCreate(category) {
         let code = createCodeName(category.name);
-        console.log('before create category')
+        console.log('before create category');
         let i = 1;
         while (await Category.findOne({ where: { code } })) {
           code = code + i;

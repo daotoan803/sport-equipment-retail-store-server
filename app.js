@@ -1,33 +1,45 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const morgan = require('morgan');
+const logger = require('morgan');
 const http = require('http');
 const { Server } = require('socket.io');
+const swaggerUI = require('swagger-ui-express');
+const swaggerSpec = require('./src/docs/swaggerOption');
 
-const routes = require('./src/routes/index.js');
-const database = require('./src/models/index.js');
-const registerChatHandler = require('./src/realtime_handler/chat.handler');
+const routes = require('./src/routes');
+// const registerChatHandler = require('./src/realtime_handler/chat.handler');
+const database = require('./src/models');
 
 const app = express();
+const server = http.createServer(app);
 
+// SWAGGER
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
+// LOGGER
 app.use(
-  morgan('dev', {
-    skip: (req) => {
+  logger('dev', {
+    skip(req) {
       return req.url.includes('/images/');
     },
   })
 );
+
+//MIDDLEWARES
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'upload')));
+
+//ROUTES
 app.use('/api', routes);
 
-const server = http.createServer(app);
+//SOCKET.IO
 const io = new Server(server);
-registerChatHandler(io);
+// registerChatHandler(io);
 
+//START SERVER
 if (require.main === module) {
   database.initialize().then(() => {
     const PORT = process.env.PORT || 4000;

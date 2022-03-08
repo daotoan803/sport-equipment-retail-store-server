@@ -1,9 +1,10 @@
 const express = require('express');
+const httpStatus = require('http-status');
 
 const commonRoutes = require('./common');
 const adminRoutes = require('./admin');
-const errorHandlerController = require('../controllers/error-handler.controller');
-const customerRoutes = require('./customer');
+
+const errorMiddlewares = require('../middlewares/error');
 
 const routes = express.Router();
 
@@ -13,10 +14,11 @@ const routes = express.Router();
 
 routes.use('/', commonRoutes);
 routes.use('/admin', adminRoutes);
-routes.use('/user', customerRoutes);
 
-routes.use(errorHandlerController.routesNotExistsHandle);
+routes.use((req, res) => {
+  return res.status(httpStatus.NOT_FOUND).json({ error: 'Endpoint not found' });
+});
 
-routes.use(errorHandlerController.errorHandler);
+routes.use(errorMiddlewares.errorHandler);
 
 module.exports = routes;

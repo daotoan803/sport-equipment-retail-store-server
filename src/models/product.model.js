@@ -1,7 +1,7 @@
 const sequelize = require('sequelize');
 const { Model, DataTypes } = sequelize;
 
-const sequelizeConnection = require('../config/database.config');
+const sequelizeConnection = require('./db-connection');
 
 class Product extends Model {
   static state = {
@@ -187,6 +187,18 @@ Product.init(
     sequelize: sequelizeConnection,
     modelName: 'product',
     paranoid: true,
+    hooks: {
+      beforeCreate(product) {
+        if (product.availableQuantity === 0) {
+          product.state === Product.state.outStock;
+        }
+      },
+      beforeSave(product) {
+        if (product.availableQuantity === 0) {
+          product.state === Product.state.outStock;
+        }
+      },
+    },
   }
 );
 
