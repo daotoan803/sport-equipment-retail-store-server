@@ -54,6 +54,14 @@ module.exports = routes;
  *        name: brandId
  *        schema:
  *          type: number
+ *      - in: query
+ *        name: categoryCode
+ *        schema:
+ *          type: string
+ *      - in: query
+ *        name: categoryGroupCode
+ *        schema:
+ *          type: string
  *    responses:
  *      200:
  *        content:

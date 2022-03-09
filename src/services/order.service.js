@@ -10,7 +10,7 @@ const generateOrderGroupFilter = (filterOption = {}) => {
   const option = {};
   const { page, limit, state } = filterOption;
   if (page && limit) {
-    option.offset = page * limit;
+    option.offset = (page-1) * limit;
     option.limit = limit;
   }
 

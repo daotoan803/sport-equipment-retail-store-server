@@ -67,6 +67,10 @@ const updateProduct = {
     categoryId: Joi.string().required(),
     removeImageIds: Joi.array().items(Joi.number()),
   }),
+  files: Joi.object({
+    images: Joi.array(),
+    mainImage: Joi.array().min(1),
+  }),
 };
 
 module.exports = {

@@ -13,7 +13,7 @@ const generateProductReviewFilterOption = ({
   option.where = { productId };
   if (point) option.where.point = point;
   if (page && limit) {
-    option.offset = page * limit;
+    option.offset = (page-1) * limit;
     option.limit = limit;
   }
   return option;

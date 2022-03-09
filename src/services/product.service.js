@@ -26,7 +26,7 @@ const generateProductFilterOption = (filterOption = {}) => {
   const option = {};
   const { page, limit, sortBy, brandId } = filterOption;
   if (page && limit) {
-    option.offset = page * limit;
+    option.offset = (page - 1) * limit;
     option.limit = limit;
   }
 
@@ -96,6 +96,7 @@ const getProductsByCategoryGroupCode = async (
   option.where = option.where || {};
   option.where.categoryId = categoriesIdList;
   option.attributes = productPreviewAttributes;
+  option.logging = console.log;
   return Product.findAndCountAll(option);
 };
 

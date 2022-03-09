@@ -12,6 +12,7 @@ const addProductToCartOrUpdateQuantity = async (
   productId,
   quantity = 1
 ) => {
+  quantity = quantity > 0 ? quantity : 1;
   await productService.findProductById(productId);
   const productInUserCart = await Cart.findOne({
     where: { userId, productId },
@@ -22,12 +23,17 @@ const addProductToCartOrUpdateQuantity = async (
   return Cart.create({
     userId,
     productId,
-    quantity: quantity,
+    quantity,
   });
 };
 
 const updateProductInCartQuantity = async (userId, productId, quantity) => {
   await productService.findProductById(productId);
+
+  const productInCart = await Cart.findOne({ where: { userId, productId } });
+  if (!productInCart)
+    return addProductToCartOrUpdateQuantity(userId, productId, quantity);
+
   if (quantity === 0) {
     await Cart.destroy({ where: { userId, productId } });
     return;

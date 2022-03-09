@@ -24,7 +24,7 @@ module.exports = routes;
 
 /**
  * @openapi
- * /api/users/cart:
+ * /api/user/cart:
  *  get:
  *    tags: [User Cart]
  *    summary: Get user cart

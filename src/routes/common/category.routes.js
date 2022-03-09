@@ -80,7 +80,7 @@ module.exports = routes;
 
 /**
  * @openapi
- * /api/categories/group:
+ * /api/categories/groups:
  *  get:
  *    tags: [Category]
  *    summary: Get list of categories group
