@@ -13,13 +13,16 @@ const deleteUploadedFiles = (req) => {
       return;
     } else if (typeof req.files === 'object') {
       Object.values(req.files).forEach((entry) => {
-        if (Array.isArray(entry)) return filesNeedToBeDelete.push(...entry);
+        if (Array.isArray(entry)) {
+          filesNeedToBeDelete.push(...entry);
+          return;
+        }
         filesNeedToBeDelete.push(entry);
       });
     }
   }
   if (req.file) filesNeedToBeDelete.push(req.file);
-  errorUtil.deleteUploadedFiles(filesNeedToBeDelete);
+  errorUtil.deleteUploadedFiles(...filesNeedToBeDelete);
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -35,7 +38,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err instanceof JsonWebTokenError) {
-    return res.sendStatus(httpStatus.UNAUTHORIZED);
+    return res.status(httpStatus.UNAUTHORIZED, 'Invalid token');
   }
 
   if (err instanceof ValidationError) {

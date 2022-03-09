@@ -58,7 +58,6 @@ Category.init(
     hooks: {
       async beforeCreate(category) {
         let code = createCodeName(category.name);
-        console.log('before create category');
         let i = 1;
         while (await Category.findOne({ where: { code } })) {
           code = code + i;

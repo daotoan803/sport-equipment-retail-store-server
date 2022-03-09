@@ -49,13 +49,29 @@ const getCategoriesByCategoryGroupCode = async (categoryGroupCode) => {
   return categoryGroup.categories;
 };
 
-const getCategoriesByBrandId = async (brandId) => {
-  const brand = await Brand.findByPk(brandId, { include: Category });
+const getCategoriesByBrandIdAndCategoryGroupCode = async (
+  brandId,
+  categoryGroupCode = null
+) => {
+  let categoryGroupId = null;
+  if (categoryGroupCode) {
+    const categoryGroup = await CategoryGroup.findOne({
+      where: { code: categoryGroupCode },
+    });
+    if (!categoryGroup)
+      throw new ApiError(httpStatus.NOT_FOUND, "Category group's id not found");
+    categoryGroupId = categoryGroup.id;
+  }
+  const option = categoryGroupCode
+    ? { include: { model: Category, where: { categoryGroupId } } }
+    : { include: Category };
+
+  const brand = await Brand.findByPk(brandId, option);
   if (!brand) throw new ApiError(httpStatus.NOT_FOUND, 'Brand id not exists');
   return brand.categories;
 };
 
-const getCategoryGroups = () => CategoryGroup.findAll();
+const getCategoryGroups = () => CategoryGroup.findAll({ include: Category });
 
 const addBrandToCategory = async (categoryId, brandId) => {
   try {
@@ -141,7 +157,7 @@ const deleteCategoryGroup = async (categoryGroupId) => {
 module.exports = {
   getCategories,
   getCategoriesByCategoryGroupCode,
-  getCategoriesByBrandId,
+  getCategoriesByBrandIdAndCategoryGroupCode,
   getCategoryGroups,
   findCategoryById,
   addBrandToCategory,

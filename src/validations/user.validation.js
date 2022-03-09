@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const signup = {
   body: Joi.object({
-    name: Joi.string().min(1).max(254).required(),
+    name: Joi.string().trim().min(1).max(254).required(),
     dob: Joi.date().max('now').required(),
     gender: Joi.string()
       .equal(...Object.values(User.gender))

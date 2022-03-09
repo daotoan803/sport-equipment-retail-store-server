@@ -40,7 +40,6 @@ const createUser = async ({ name, email, dob, gender, password }) => {
 
 const validateLogin = async ({ email, password }) => {
   const user = await findUserByEmail(email, {
-    attributes: ['id', 'name', 'avatarUrl'],
     include: Account,
   });
   if (!user)
@@ -53,12 +52,9 @@ const validateLogin = async ({ email, password }) => {
   if (!passwordIsCorrect)
     throw new ApiError(httpStatus.BAD_REQUEST, 'Password not correct');
 
-  return {
-    ...user.dataValues,
-    ...(user.account.role !== Account.role.customer
-      ? { role: user.account.role }
-      : {}),
-  };
+  let role = user.account.role;
+
+  return { user, role };
 };
 
 const changeUserKey = async ({ user, userId }) => {
@@ -76,10 +72,10 @@ const changeUserKey = async ({ user, userId }) => {
 
 const validateUserKey = async (userId, userKey) => {
   const user = await User.findByPk(userId, { include: Account });
-  if (!user) throw new ApiError(httpStatus.UNAUTHORIZED);
+  if (!user) throw new ApiError(httpStatus.UNAUTHORIZED, "Token not belong to any user");
 
   if (user.account.userKey !== userKey)
-    throw new ApiError(httpStatus.UNAUTHORIZED);
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Token key invalid");
 
   return user;
 };
@@ -92,8 +88,12 @@ const verifyUserHasAdminAuthorization = async (user) => {
     account = await user.getAccount();
   }
 
-  if (account.role !== Account.role.admin)
-    throw new ApiError(httpStatus.UNAUTHORIZED);
+  if (account.role !== Account.role.admin) {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      'Only admin have access to this functionality'
+    );
+  }
 };
 
 module.exports = {

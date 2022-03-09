@@ -9,7 +9,7 @@ const parseValidationErrors = (err) => {
 const deleteUploadedFiles = (...files) => {
   try {
     files.forEach((file) => {
-      fs.promises.unlink(file.destination);
+      fs.promises.unlink(file.path);
     });
   } catch (e) {
     console.error(e);

@@ -56,11 +56,11 @@ CategoryGroup.init(
   {
     sequelize: sequelizeConnection,
     timestamps: false,
+    modelName: 'categoryGroup',
     hooks: {
       async beforeCreate(categoryGroup) {
         let code = createCodeName(categoryGroup.name);
 
-        console.log('before create group');
         let i = 1;
         while (await CategoryGroup.findOne({ where: { code } })) {
           code = code + i;

@@ -3,9 +3,9 @@ const OrderGroup = require('../models/order-group.model');
 
 const createOrder = {
   body: Joi.object({
-    address: Joi.string().min(1).required(),
-    phoneNumber: Joi.string().min(10).required(),
-    note: Joi.string(),
+    address: Joi.string().trim().min(1).required(),
+    phoneNumber: Joi.string().trim().min(10).required(),
+    note: Joi.trim().string(),
     products: Joi.array().items(
       Joi.object({
         productId: Joi.string().required(),
@@ -17,8 +17,8 @@ const createOrder = {
 
 const updateOrderGroupContact = {
   body: Joi.object({
-    address: Joi.string().min(1).required(),
-    phoneNumber: Joi.string().min(10).required(),
+    address: Joi.string().trim().min(1).required(),
+    phoneNumber: Joi.string().trim().min(10).required(),
   }),
 };
 
@@ -38,7 +38,7 @@ const updateOrderGroupState = {
 
 const cancelOrder = {
   body: Joi.object({
-    reason: Joi.string().required(),
+    reason: Joi.string().trim().required(),
   }),
 };
 

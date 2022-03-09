@@ -136,6 +136,9 @@ module.exports = routes;
  *                  $ref: '#/components/schemas/User'
  *                token:
  *                  $ref: '#/components/schemas/token'
+ *                role:
+ *                  type: string
+ *                  enum: [admin, customer]
  *      "404":
  *        description: Email not exists
  *

@@ -25,8 +25,8 @@ const getProductDetail = {
 
 const addProduct = {
   body: Joi.object({
-    title: Joi.string().min(4).max(101).required(),
-    detail: Joi.string().min(1).required(),
+    title: Joi.string().trim().min(4).max(101).required(),
+    detail: Joi.string().trim().min(1).required(),
     price: Joi.number().min(0).required(),
     discountPrice: Joi.number().min(0).max(Joi.ref('price')),
     warrantyPeriodByDay: Joi.number().min(0).required(),
@@ -56,8 +56,8 @@ const checkProductTitleIsUnique = {
 
 const updateProduct = {
   body: Joi.object({
-    title: Joi.string().min(4).max(101).required(),
-    detail: Joi.string().min(1).required(),
+    title: Joi.string().trim().min(4).max(101).required(),
+    detail: Joi.string().trim().min(1).required(),
     price: Joi.number().min(0).required(),
     discountPrice: Joi.number().min(0).max(Joi.ref('price')),
     warrantyPeriodByDay: Joi.number().min(0).required(),

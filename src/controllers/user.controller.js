@@ -3,10 +3,10 @@ const tokenService = require('../services/token.service');
 const userService = require('../services/user.service');
 const httpStatus = require('http-status');
 
-const createTokenWithUserInfo = (user) => {
+const createTokenWithUserInfo = async (user) => {
   let account = null;
-  if (user.account) account = user.account;
-  else account = userService.getUserAccountByUserId(user.id);
+  if (user.account?.userKey) account = user.account;
+  else account = await userService.getUserAccountByUserId(user.id);
   return tokenService.createToken({
     userId: user.id,
     userKey: account.userKey,
@@ -15,14 +15,14 @@ const createTokenWithUserInfo = (user) => {
 
 const signup = handleError(async (req, res) => {
   const user = await userService.createUser(req.body);
-  const token = createTokenWithUserInfo(user);
+  const token = await createTokenWithUserInfo(user);
   return res.json({ user, token });
 });
 
 const login = handleError(async (req, res) => {
-  const user = await userService.validateLogin(req.body);
-  const token = createTokenWithUserInfo(user);
-  return res.json({ user, token });
+  const { user, role } = await userService.validateLogin(req.body);
+  const token = await createTokenWithUserInfo(user);
+  return res.json({ user, token, role });
 });
 
 const logoutAll = handleError(async (req, res) => {

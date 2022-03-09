@@ -7,10 +7,11 @@ const getCategories = handleError(async (req, res) => {
 
   let categories = null;
   if (brandId) {
-    categories = await categoryService.getCategoriesByBrandId(brandId);
+    categories = await categoryService.getCategoriesByBrandIdAndCategoryGroupCode(brandId, categoryGroupCode);
   } else if (categoryGroupCode) {
     categories = await categoryService.getCategoriesByCategoryGroupCode(
-      categoryGroupCode
+      categoryGroupCode,
+      brandId
     );
   } else {
     categories = await categoryService.getCategories();

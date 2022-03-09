@@ -8,8 +8,8 @@ routes.use('/', authentication.verifyToken);
 routes
   .route('/')
   .get(
-    validate(productReviewValidation.getReview),
-    productReviewController.getReview
+    validate(productReviewValidation.getProductReviews),
+    productReviewController.getProductReviews
   )
   .post(
     validate(productReviewValidation.addReview),
@@ -19,7 +19,7 @@ routes
 routes
   .route('/:reviewId')
   .put(
-    validate(productReviewValidation.editReview),
+    validate(productReviewValidation.addReview),
     productReviewController.editReview
   )
   .delete(productReviewController.deleteReview);
