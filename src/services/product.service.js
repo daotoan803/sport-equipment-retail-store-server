@@ -121,6 +121,7 @@ const createProduct = async ({
   price,
   discountPrice,
   warrantyPeriodByDay,
+  availableQuantity,
   state,
   brandId,
   categoryId,
@@ -145,6 +146,7 @@ const createProduct = async ({
         price,
         discountPrice,
         warrantyPeriodByDay,
+        availableQuantity,
         state,
         brandId,
         categoryId,
@@ -254,6 +256,11 @@ const updateProduct = async (
   }
 };
 
+const updateProductAvailableQuantity = async (productId, quantityChanged) => {
+  const product = await findProductById(productId);
+  return product.increment('availableQuantity', { by: quantityChanged });
+};
+
 module.exports = {
   getProductDetail,
   getProducts,
@@ -265,4 +272,5 @@ module.exports = {
   removeProductImages,
   updateProduct,
   findProductById,
+  updateProductAvailableQuantity,
 };

@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
 const Account = require('../models/account.model');
+const ChatRoom = require('../models/chat-room.model');
 
 const sequelizeConnection = require('../models/db-connection');
 const ApiError = require('../errors/ApiError');
@@ -14,7 +15,21 @@ const getUserAccountByUserId = (userId) => {
   return Account.findOne({ where: { userId } });
 };
 
-const getUserById = (userId, option = {}) => Account.findByPk(userId, option);
+const getUserByChatRoomId = async (chatRoomId) => {
+  const chatRoom = await ChatRoom.findByPk(chatRoomId, { include: User });
+  if (!chatRoom)
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      'Chat room not belong to any user'
+    );
+  return chatRoom.user;
+};
+
+const getUserById = async (userId, option = {}) => {
+  const user = await User.findByPk(userId, option);
+  if (!user) throw new ApiError(httpStatus.NOT_FOUND, 'userId not exists');
+  return user;
+};
 
 const createUser = async ({ name, email, dob, gender, password }) => {
   const emailAlreadyTaken = await findUserByEmail(email);
@@ -73,10 +88,11 @@ const changeUserKey = async ({ user, userId }) => {
 
 const validateUserKey = async (userId, userKey) => {
   const user = await User.findByPk(userId, { include: Account });
-  if (!user) throw new ApiError(httpStatus.UNAUTHORIZED, "Token not belong to any user");
+  if (!user)
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Token not belong to any user');
 
   if (user.account.userKey !== userKey)
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Token key invalid");
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Token key invalid');
 
   return user;
 };
@@ -106,4 +122,5 @@ module.exports = {
   changeUserKey,
   validateUserKey,
   verifyUserHasAdminAuthorization,
+  getUserByChatRoomId,
 };

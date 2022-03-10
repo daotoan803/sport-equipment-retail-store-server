@@ -3,7 +3,8 @@ const orderService = require('../services/order.service');
 const handleError = require('../utils/handle-error');
 
 const createOrder = handleError(async (req, res) => {
-  const orderGroup = await orderService.createOrder(req.body);
+  const { user } = req;
+  const orderGroup = await orderService.createOrder(user.id, req.body);
   res.json({ orderGroup });
 });
 

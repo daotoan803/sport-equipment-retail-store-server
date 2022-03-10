@@ -4,13 +4,14 @@ const Product = require('../models/product.model');
 const sequelizeConnection = require('../models/db-connection');
 const ApiError = require('../errors/ApiError');
 const httpStatus = require('http-status');
+const productService = require('./product.service');
 
 const generateOrderGroupFilter = (filterOption = {}) => {
   if (Object.keys(filterOption).length === 0) return {};
   const option = {};
   const { page, limit, state } = filterOption;
   if (page && limit) {
-    option.offset = (page-1) * limit;
+    option.offset = (page - 1) * limit;
     option.limit = limit;
   }
 
@@ -68,12 +69,10 @@ const findOrderGroupById = async (orderGroupId, options = {}) => {
   return orderGroup;
 };
 
-const createOrder = async ({
-  address,
-  phoneNumber,
-  note,
-  products: productIdAndQuantityList,
-}) => {
+const createOrder = async (
+  userId,
+  { address, phoneNumber, note, products: productIdAndQuantityList }
+) => {
   const products = await checkAllProductInOrderIsAvailableAndGetProducts(
     productIdAndQuantityList
   );
@@ -92,6 +91,7 @@ const createOrder = async ({
         phoneNumber,
         note,
         totalPrice,
+        userId,
       },
       { transaction }
     );
@@ -107,6 +107,14 @@ const createOrder = async ({
 
     await orderGroup.addOrders(orders, { transaction });
     await transaction.commit();
+
+    products.forEach((product) => {
+      productService.updateProductAvailableQuantity(
+        product.id,
+        -product.quantity
+      );
+    });
+
     orderGroup.orders = orders;
 
     return orderGroup;
@@ -147,13 +155,20 @@ const updateOrderGroupState = async (orderGroupId, { state }) => {
 };
 
 const cancelOrder = async (orderGroupId, userId, { reason }) => {
-  const orderGroup = await findOrderGroupById(orderGroupId);
+  const orderGroup = await findOrderGroupById(orderGroupId, { include: Order });
   checkOrderGroupBelongToUser(orderGroup, userId);
   if (orderGroup.state !== OrderGroup.state.new)
     throw new ApiError(
       httpStatus.BAD_REQUEST,
       "Order can only be cancel when order's state is new"
     );
+
+  orderGroup.orders.forEach((product) => {
+    productService.updateProductAvailableQuantity(
+      product.productId,
+      product.quantity
+    );
+  });
 
   orderGroup.state = OrderGroup.state.canceled;
   orderGroup.reason = reason;
@@ -169,8 +184,8 @@ const getOrderGroups = async ({ state, page, limit }) => {
   });
 };
 
-const getOrderGroupsByUser = async (userId, { state, page, limit }) => {
-  const filterOption = generateOrderGroupFilter({ state, page, limit });
+const getOrderGroupsByUser = async (userId, { page, limit }) => {
+  const filterOption = generateOrderGroupFilter({ page, limit });
   filterOption.where = filterOption.where || {};
   filterOption.where.userId = userId;
   return OrderGroup.findAll({

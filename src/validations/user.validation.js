@@ -21,9 +21,10 @@ const login = {
 };
 
 const findUser = {
-  params: Joi.object({
-    userId: Joi.string().required(),
-  }),
+  query: Joi.object({
+    userId: Joi.string(),
+    chatRoomId: Joi.number(),
+  }).min(1),
 };
 
 module.exports = {

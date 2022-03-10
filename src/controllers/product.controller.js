@@ -62,10 +62,10 @@ const checkProductTitleIsUnique = handleError(async (req, res) => {
 
 const updateProduct = handleError(async (req, res) => {
   const { productId } = req.params;
-  const {
-    images,
-    mainImage: [mainImage],
-  } = req.files;
+  const images = req.files?.images;
+  let mainImage = req.files?.mainImage;
+  mainImage = mainImage ? mainImage[0] : null;
+
   const { removeImageIds } = req.body;
 
   if (mainImage) {

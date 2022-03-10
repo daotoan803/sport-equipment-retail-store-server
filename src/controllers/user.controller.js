@@ -41,8 +41,13 @@ const getUserDetail = handleError(async (req, res) => {
 });
 
 const findUserDetail = handleError(async (req, res) => {
-  const { userId } = req.params;
-  const user = await userService.getUserById(userId);
+  const { userId, chatRoomId } = req.query;
+  let user = null;
+  if (userId) {
+    user = await userService.getUserById(userId);
+  } else {
+    user = await userService.getUserByChatRoomId(chatRoomId);
+  }
   res.json({ user });
 });
 

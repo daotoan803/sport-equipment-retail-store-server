@@ -4,7 +4,7 @@ const validate = require('../../../middlewares/validate');
 const cartValidation = require('../../../validations/cart.validation');
 
 routes
-  .route('/cart')
+  .route('/')
   .get(cartController.getProductsInCart)
   .post(
     validate(cartValidation.addProductToCart),

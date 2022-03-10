@@ -8,7 +8,7 @@ const userController = require('../../controllers/user.controller');
 /*------------------------------------------------------*/
 
 routes.get(
-  '/:userId',
+  '/',
   validate(userValidation.findUser),
   userController.findUserDetail
 );

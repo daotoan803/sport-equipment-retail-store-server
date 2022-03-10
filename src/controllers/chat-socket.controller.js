@@ -3,7 +3,6 @@ const uuid = require('uuid');
 const ChatMessage = require('../models/chat-message.model');
 const { uploadedImageDirPath } = require('../utils/project-path');
 const path = require('path');
-const imageUtils = require('../utils/image.util');
 const fs = require('fs');
 const ApiError = require('../errors/ApiError');
 const chatService = require('../services/chat.service');
@@ -73,7 +72,7 @@ const onNewMessage = (socket) => {
         await chatService.createNewMessage(user.id, chatRoomId, { message });
 
       const data = {
-        message: { ...newMessage.dataValues },
+        ...newMessage.dataValues,
         user: { ...user.dataValues },
         chatRoom: { ...chatRoom.dataValues },
       };
@@ -95,7 +94,7 @@ const onImageSend = (socket) => {
   return async ({ imageBuffer, chatRoomId }, cb = () => {}) => {
     try {
       const imageName = 'chat_images' + uuid.v4() + '.jpg';
-      const imageUrl = imageUtils.createImageUrl(imageName);
+      const imageUrl = `/images/${imageName}`;
 
       await fs.promises.writeFile(
         path.join(uploadedImageDirPath, imageName),
@@ -114,7 +113,7 @@ const onImageSend = (socket) => {
       );
 
       const data = {
-        message: { ...message.dataValues },
+        ...message.dataValues,
         user: { ...user.dataValues },
         chatRoom: { ...chatRoom.dataValues },
       };
