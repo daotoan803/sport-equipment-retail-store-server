@@ -11,7 +11,7 @@ const options = {
     servers: [{ url: 'http://localhost:4000' }],
     
   },
-  apis: ['src/docs/*.yml', 'src/routes/admin/*.js', 'src/routes/common/*.js'],
+  apis: ['src/docs/*.yml', 'src/routes/admin/*.js', 'src/routes/common/*.js', 'src/routes/common/user/*.js'],
 };
 
 module.exports = swaggerJsDoc(options);

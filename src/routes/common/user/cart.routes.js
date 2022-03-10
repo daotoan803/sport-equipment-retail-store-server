@@ -1,7 +1,7 @@
 const routes = require('express').Router();
-const cartController = require('../../controllers/cart.controller');
-const validate = require('../../middlewares/validate');
-const cartValidation = require('../../validations/cart.validation');
+const cartController = require('../../../controllers/cart.controller');
+const validate = require('../../../middlewares/validate');
+const cartValidation = require('../../../validations/cart.validation');
 
 routes
   .route('/cart')

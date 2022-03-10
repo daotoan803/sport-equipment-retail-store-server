@@ -3,6 +3,7 @@ const supertest = require('supertest');
 const { faker } = require('@faker-js/faker');
 const User = require('../../models/user.model');
 
+
 describe('Test crud user functionality', () => {
   const newAccount = {
     email: faker.internet.email(),

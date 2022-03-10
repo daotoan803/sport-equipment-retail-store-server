@@ -1,7 +1,7 @@
 const routes = require('express').Router();
-const orderController = require('../../controllers/order.controller');
-const validate = require('../../middlewares/validate');
-const orderValidation = require('../../validations/order.validation');
+const orderController = require('../../../controllers/order.controller');
+const validate = require('../../../middlewares/validate');
+const orderValidation = require('../../../validations/order.validation');
 
 routes.get(
   '/',

@@ -1,10 +1,11 @@
 const routes = require('express').Router();
-const validate = require('../../middlewares/validate');
-const userValidation = require('../../validations/user.validation');
-const userController = require('../../controllers/user.controller');
-const authMiddleware = require('../../middlewares/authentication');
+const validate = require('../../../middlewares/validate');
+const userValidation = require('../../../validations/user.validation');
+const userController = require('../../../controllers/user.controller');
+const authMiddleware = require('../../../middlewares/authentication');
 const cartRoutes = require('./cart.routes');
 const orderRoutes = require('./order.routes');
+const chatRoutes = require('./chat.routes');
 
 /*------------------------------------------------------*/
 /*--------------------/api/user-----------------------*/
@@ -27,9 +28,9 @@ routes.post(
 );
 
 routes.get('/', authMiddleware.verifyToken, userController.getUserDetail);
-
 routes.use('/cart', authMiddleware.verifyToken, cartRoutes);
 routes.use('/order', authMiddleware.verifyToken, orderRoutes);
+routes.use('/chat', authMiddleware.verifyToken, chatRoutes);
 
 module.exports = routes;
 

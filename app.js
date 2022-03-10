@@ -8,8 +8,8 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerSpec = require('./src/docs/swaggerOption');
 
 const routes = require('./src/routes');
-// const registerChatHandler = require('./src/realtime_handler/chat.handler');
 const database = require('./src/models');
+const chatSocket = require('./src/socket/chat.socket');
 
 const app = express();
 const server = http.createServer(app);
@@ -37,7 +37,7 @@ app.use('/api', routes);
 
 //SOCKET.IO
 const io = new Server(server);
-// registerChatHandler(io);
+chatSocket.init(io);
 
 //START SERVER
 if (require.main === module) {

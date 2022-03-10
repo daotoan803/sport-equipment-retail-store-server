@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest --testPathPattern=\"src/__test__\" --detectOpenHandles --watch",
+    "test": "jest --testPathPattern=\"src/__test__\" --detectOpenHandles",
     "craw": "node ./data-crawler/main.craw.js",
     "upload": "node ./data-crawler/upload.js"
   },

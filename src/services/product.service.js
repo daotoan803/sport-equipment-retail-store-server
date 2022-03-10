@@ -96,7 +96,6 @@ const getProductsByCategoryGroupCode = async (
   option.where = option.where || {};
   option.where.categoryId = categoriesIdList;
   option.attributes = productPreviewAttributes;
-  option.logging = console.log;
   return Product.findAndCountAll(option);
 };
 

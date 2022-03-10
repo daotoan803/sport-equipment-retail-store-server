@@ -53,6 +53,7 @@ const validateLogin = async ({ email, password }) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Password not correct');
 
   let role = user.account.role;
+  delete user.dataValues.account;
 
   return { user, role };
 };
