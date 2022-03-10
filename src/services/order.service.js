@@ -115,7 +115,7 @@ const createOrder = async (
       );
     });
 
-    orderGroup.orders = orders;
+    orderGroup.dataValues.orders = orders;
 
     return orderGroup;
   } catch (e) {
@@ -129,7 +129,7 @@ const updateOrderGroupContact = async (
   userId,
   { address, phoneNumber }
 ) => {
-  const orderGroup = await findOrderGroupById(orderGroupId);
+  const orderGroup = await findOrderGroupById(orderGroupId, { include: Order });
   checkOrderGroupBelongToUser(orderGroup, userId);
   if (orderGroup.state !== OrderGroup.state.new) {
     throw new ApiError(

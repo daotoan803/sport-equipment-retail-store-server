@@ -90,6 +90,9 @@ module.exports = routes;
  *    summary: Update category info
  *    security:
  *      - bearerAuth: []
+ *    parameters:
+ *      - in: params
+ *        name: categoryId
  *    requestBody:
  *      required: true
  *      content:
@@ -124,6 +127,9 @@ module.exports = routes;
  *    summary: Delete a category
  *    security:
  *      - bearerAuth: []
+ *    parameters:
+ *      - in: params
+ *        name: categoryId
  *    responses:
  *      204:
  *        description: Delete category success
@@ -191,6 +197,9 @@ module.exports = routes;
  *    summary: Update category group info
  *    security:
  *      - bearerAuth: []
+ *    parameters:
+ *      - in: params
+ *        name: categoryGroupId
  *    requestBody:
  *      required: true
  *      content:
@@ -221,6 +230,9 @@ module.exports = routes;
  *    summary: Delete a category group
  *    security:
  *      - bearerAuth: []
+ *    parameters:
+ *      - in: params
+ *        name: categoryGroupId
  *    responses:
  *      204:
  *        description: Delete category group success

@@ -29,7 +29,6 @@ routes.put(
 
 module.exports = routes;
 
-
 /**
  * @openapi
  * tags: Admin order
@@ -60,12 +59,26 @@ module.exports = routes;
  *        schema:
  *          type: number
  *          minValue: 1
- *    responses: 
+ *    responses:
  *      200:
  *        content:
  *          application/json:
  *            schema:
  *              type: object
- *              properties
- *                
+ *              properties:
+ *                orderGroups:
+ *                  type: array
+ *                  items:
+ *                    $ref: '#components/schemas/OrderGroup'
+ *      400:
+ *        description: Invalid field
+ *        content:
+ *          application/json:
+ *            example:
+ *              error: "\"title\" is required"
+ *      403:
+ *        $ref: '#components/responses/Forbidden'
+ *      401:
+ *        $ref: '#components/responses/Unauthorized'
+ *
  */

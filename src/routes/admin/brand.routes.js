@@ -67,6 +67,10 @@ module.exports = routes;
  *    summary: update brand
  *    security:
  *      - bearerAuth: []
+ *
+ *    parameters:
+ *      - in: params
+ *        name: brandId
  *    requestBody:
  *      required: true
  *      content:
@@ -99,10 +103,9 @@ module.exports = routes;
  *    summary: Delete a brand
  *    security:
  *      - bearerAuth: []
- *    parameter:
+ *    parameters:
  *      - in: params
- *        name: id
- *        type: string
+ *        name: brandId
  *        description: Id of brand need to be delete
  *    responses:
  *      204:

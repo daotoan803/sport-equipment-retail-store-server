@@ -5,6 +5,72 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: number
+        quantity:
+          type: number
+        price:
+          type: number
+        orderGroupId:
+          type: number
+        productId:
+          type: string
+      example:
+        id: 3
+        quantity: 3
+        price: 314.91
+        orderGroupId: 2
+        productId: cbc61339-5290-4679-81e0-d0263e7df786
+    OrderGroup:
+      type: object
+      properties:
+        id:
+          type: string
+        state:
+          type: string
+          enum: [new, confirm, shipping, done, canceled]
+        address:
+          type: string
+        totalPrice:
+          type: number
+        phoneNumber:
+          type: string
+        note:
+          type: string
+        reason:
+          type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+        userId:
+          type: string
+        orders:
+          type: array
+          items:
+            $ref: '#component/schemas/Order'
+      example:
+        id: 2
+        state: new
+        address: Some address
+        totalPrice: 105000944.73
+        phoneNumber: 0123456789
+        note: Hello world
+        reason: null
+        createdAt: 2022-03-10T11:33:49.000Z
+        updatedAt: 2022-03-10T11:33:49.000Z
+        userId: 433daec0-c163-4889-9248-f26f978e77d0
+        orders:
+          - id: 3
+            quantity: 3
+            price: 314.91
+            orderGroupId: 2
+            productId: cbc61339-5290-4679-81e0-d0263e7df786
     User:
       type: object
       properties:

@@ -162,6 +162,9 @@ module.exports = routes;
  *    summary: Update product
  *    security:
  *      - bearerAuth: []
+ *    parameters:
+ *      - in: params
+ *        name: productId
  *    requestBody:
  *      required: true
  *      content:
