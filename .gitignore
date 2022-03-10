@@ -8,5 +8,4 @@ coverage
 *.txt
 data.json
 product_links.json
-data-crawler/*.json
 data-crawler/images

@@ -1,0 +1,170 @@
+{
+  "Khác": [
+    { "name": "Máy Chạy Bộ", "link": "https://dungcutheduc.vn/may-chay-bo/" },
+    {
+      "name": "Xe Đạp Tập",
+      "link": "https://dungcutheduc.vn/xe-dap-tap-the-duc/"
+    },
+    {
+      "name": "Máy Tập Bụng",
+      "link": "https://dungcutheduc.vn/may-tap-co-bung/"
+    },
+    { "name": "Ghế Massage", "link": "https://dungcutheduc.vn/ghe-massage/" },
+    {
+      "name": "Thiết Bị Dạy Học",
+      "link": "https://dungcutheduc.vn/thiet-bi-day-hoc-the-duc/"
+    },
+    {
+      "name": "Dụng Cụ Ngoài Trời",
+      "link": "https://dungcutheduc.vn/dung-cu-the-thao-ngoai-troi/"
+    },
+    {
+      "name": "Thiết Bị Phòng Gym",
+      "link": "https://dungcutheduc.vn/thiet-bi-phong-gym/"
+    },
+    {
+      "name": "Dụng Cụ Bóng Chày",
+      "link": "https://dungcutheduc.vn/dung-cu-bong-chay/"
+    }
+  ],
+  "Dụng Cụ Tập Gym ": [
+    { "name": "Ghế Tập Tạ", "link": "https://dungcutheduc.vn/ghe-tap-ta/" },
+    {
+      "name": "Giàn Tạ Đa Năng",
+      "link": "https://dungcutheduc.vn/gian-ta-da-nang/"
+    },
+    { "name": "Ghế Tập Bụng", "link": "https://dungcutheduc.vn/ghe-tap-bung/" },
+    {
+      "name": "Tạ Tay - Tạ Đơn",
+      "link": "https://dungcutheduc.vn/ta-tay-ta-don/"
+    },
+    {
+      "name": "Xà Đơn - Xà Kép",
+      "link": "https://dungcutheduc.vn/xa-don-xa-kep/"
+    },
+    {
+      "name": "Phụ Kiện Tập Gym",
+      "link": "https://dungcutheduc.vn/phu-kien-tap-gym/"
+    }
+  ],
+  "Dụng Cụ Võ Thuật ": [
+    {
+      "name": "Bao Cát Đấm Bốc",
+      "link": "https://dungcutheduc.vn/bao-cat-dam-boc/"
+    },
+    {
+      "name": "Găng Tay Boxing",
+      "link": "https://dungcutheduc.vn/gang-tay-boxing/"
+    },
+    {
+      "name": "Đích đá - Đích đấm",
+      "link": "https://dungcutheduc.vn/dich-dam-dich-da/"
+    },
+    {
+      "name": "Mũ - Áo Giáp Võ Thuật",
+      "link": "https://dungcutheduc.vn/mu-ao-giap-vo-thuat/"
+    },
+    {
+      "name": "Dụng Cụ Tập Thể Lực",
+      "link": "https://dungcutheduc.vn/dung-cu-tap-the-luc/"
+    }
+  ],
+  "Dụng Cụ Tập Yoga ": [
+    {
+      "name": "Thảm Tập Yoga",
+      "link": "https://dungcutheduc.vn/tham-tap-yoga/"
+    },
+    {
+      "name": "Bóng Tập Yoga",
+      "link": "https://dungcutheduc.vn/bong-tap-yoga/"
+    },
+    {
+      "name": "Phụ Kiện Yoga",
+      "link": "https://dungcutheduc.vn/phu-kien-yoga/"
+    }
+  ],
+  "Dụng Cụ Bóng Đá ": [
+    { "name": "Quả Bóng Đá", "link": "https://dungcutheduc.vn/qua-bong-da/" },
+    {
+      "name": "Lưới - Khung Thành Bóng Đá",
+      "link": "https://dungcutheduc.vn/luoi-khung-thanh-bong-da/"
+    },
+    {
+      "name": "Phụ Kiện Bóng Đá",
+      "link": "https://dungcutheduc.vn/phu-kien-bong-da/"
+    }
+  ],
+  "Dụng Cụ Bóng Bàn ": [
+    { "name": "Bàn Bóng Bàn", "link": "https://dungcutheduc.vn/ban-bong-ban/" },
+    { "name": "Vợt Bóng Bàn", "link": "https://dungcutheduc.vn/vot-bong-ban/" },
+    {
+      "name": "Cốt - Mặt Vợt Bóng Bàn",
+      "link": "https://dungcutheduc.vn/cot-mat-vot-bong-ban/"
+    },
+    {
+      "name": "Máy Bắn Bóng Bàn",
+      "link": "https://dungcutheduc.vn/may-ban-bong-ban/"
+    },
+    { "name": "Quả Bóng Bàn", "link": "https://dungcutheduc.vn/qua-bong-ban/" },
+    {
+      "name": "Phụ Kiện Bóng Bàn",
+      "link": "https://dungcutheduc.vn/phu-kien-bong-ban/"
+    }
+  ],
+  "Dụng Cụ Cầu Lông ": [
+    { "name": "Quả Cầu Lông", "link": "https://dungcutheduc.vn/qua-cau-long/" },
+    {
+      "name": "Trụ - Lưới Cầu Lông",
+      "link": "https://dungcutheduc.vn/tru-luoi-cau-long/"
+    },
+    {
+      "name": "Thảm Sân Cầu Lông",
+      "link": "https://dungcutheduc.vn/tham-san-cau-long/"
+    },
+    {
+      "name": "Phụ Kiện Cầu Lông",
+      "link": "https://dungcutheduc.vn/phu-kien-cau-long/"
+    }
+  ],
+  "Dụng Cụ Bóng Chuyền ": [
+    {
+      "name": "Quả Bóng Chuyền",
+      "link": "https://dungcutheduc.vn/qua-bong-chuyen/"
+    },
+    {
+      "name": "Trụ - Lưới Bóng Chuyền",
+      "link": "https://dungcutheduc.vn/tru-luoi-bong-chuyen/"
+    },
+    {
+      "name": "Phụ Kiện Bóng Chuyền",
+      "link": "https://dungcutheduc.vn/phu-kien-bong-chuyen/"
+    }
+  ],
+  "Dụng Cụ Bóng Rổ ": [
+    { "name": "Quả Bóng Rổ", "link": "https://dungcutheduc.vn/qua-bong-ro/" },
+    { "name": "Trụ Bóng Rổ", "link": "https://dungcutheduc.vn/tru-bong-ro/" },
+    {
+      "name": "Phụ Kiện Bóng Rổ",
+      "link": "https://dungcutheduc.vn/phu-kien-bong-ro/"
+    }
+  ],
+  "Dụng Cụ Bơi Lội ": [
+    { "name": "Kính Bơi", "link": "https://dungcutheduc.vn/kinh-boi/" },
+    { "name": "Mũ Bơi", "link": "https://dungcutheduc.vn/mu-boi/" },
+    {
+      "name": "Phụ Kiện Bơi Lội",
+      "link": "https://dungcutheduc.vn/phu-kien-boi-loi/"
+    }
+  ],
+  "Dụng Cụ Tennis ": [
+    {
+      "name": "Trụ - Lưới Tennis",
+      "link": "https://dungcutheduc.vn/tru-luoi-tennis/"
+    },
+    { "name": "Bóng Tennis", "link": "https://dungcutheduc.vn/bong-tennis/" },
+    {
+      "name": "Phụ Kiện Tennis",
+      "link": "https://dungcutheduc.vn/phu-kien-tennis/"
+    }
+  ]
+}
