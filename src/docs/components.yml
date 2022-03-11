@@ -253,6 +253,38 @@ components:
           type: string
         productId:
           type: string
+    ProductReview:
+      type: object
+      properties:
+        id:
+          type: number
+        point:
+          type: number
+        createdAt:
+          type: string
+          format: Date
+        updatedAt:
+          type: string
+          format: Date
+        productId:
+          type: string
+        userId:
+          type: string
+        user:
+          type: object
+          properties:
+            name:
+              type: string
+      example:
+        id: 1
+        point: 5
+        review: This is good
+        createdAt: 2022-03-11T06:26:40.000Z
+        updatedAt: 2022-03-11T06:26:40.000Z
+        productId: 0c2f9a96-7ed4-4141-82e4-c924ac00d097
+        userId: b478788e-e0e9-4e44-b4cc-35e90ea1701e
+        user:
+          name: User 1
 
   responses:
     BadRequest:

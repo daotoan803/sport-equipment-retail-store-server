@@ -14,6 +14,7 @@ const productPreviewAttributes = [
   'title',
   'price',
   'discountPrice',
+  'availableQuantity',
   'state',
   'mainImageUrl',
   'soldCount',

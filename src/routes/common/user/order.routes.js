@@ -137,7 +137,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: orderGroupsId
  *    requestBody:
  *      required: true
@@ -184,7 +184,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: orderGroupsId
  *    requestBody:
  *      required: true

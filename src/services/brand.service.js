@@ -1,10 +1,13 @@
 const Brand = require('../models/brand.model');
 const Category = require('../models/category.model');
 const categoryService = require('./category.service');
+const CategoryBrand = require('../models/category-brand.model');
 
 const ApiError = require('../errors/ApiError');
 const httpStatus = require('http-status');
 const Product = require('../models/product.model');
+
+const { Sequelize } = require('sequelize');
 
 const findBrandById = async (brandId, option = {}) => {
   const brand = await Brand.findByPk(brandId, option);
@@ -35,17 +38,21 @@ const getBrandsByCategoryGroupCode = async (categoryGroupCode) => {
   const categories = await categoryService.getCategoriesByCategoryGroupCode(
     categoryGroupCode
   );
-  const [...brands] = await Promise.all(
-    categories.map((category) => category.getBrands())
-  );
-  const data = {};
-  brands.flat().forEach((brand) => {
-    if (!data[brand.id]) {
-      data[brand.id] = brand;
-    }
+
+  const categoriesIdList = categories.map((category) => category.id);
+
+  const brandIdList = await CategoryBrand.findAll({
+    attributes: [
+      [Sequelize.fn('DISTINCT', Sequelize.col('brandId')), 'brandId'],
+    ],
+    where: { categoryId: categoriesIdList },
   });
 
-  return Object.values(data);
+  const brands = await Brand.findAll({
+    where: { id: brandIdList.map((id) => id.brandId) },
+  });
+
+  return brands;
 };
 
 const createBrand = async ({ name }) => {

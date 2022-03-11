@@ -91,7 +91,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: categoryId
  *    requestBody:
  *      required: true
@@ -128,7 +128,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: categoryId
  *    responses:
  *      204:
@@ -198,7 +198,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: categoryGroupId
  *    requestBody:
  *      required: true
@@ -231,7 +231,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: categoryGroupId
  *    responses:
  *      204:

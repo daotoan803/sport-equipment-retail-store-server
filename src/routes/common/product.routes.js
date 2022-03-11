@@ -17,7 +17,7 @@ routes.get(
   productController.getProduct
 );
 
-routes.use('/:productId/review', productReviewRoutes);
+routes.use('/', productReviewRoutes);
 
 module.exports = routes;
 
@@ -82,7 +82,7 @@ module.exports = routes;
  *    tags: [Product]
  *    summary: Get product detail
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: id
  *        schema:
  *          type: string

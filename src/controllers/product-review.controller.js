@@ -15,6 +15,8 @@ const addReview = handleError(async (req, res) => {
   const user = req.user;
   const productId = req.params.productId;
 
+  console.log(req.params);
+
   const review = await productReviewService.createReview(
     user.id,
     productId,

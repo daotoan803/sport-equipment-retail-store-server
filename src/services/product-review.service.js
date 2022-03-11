@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const ProductReview = require('../models/product-review.model');
 const productService = require('./product.service');
 const ApiError = require('../errors/ApiError');
+const User = require('../models/user.model');
 
 const generateProductReviewFilterOption = ({
   productId,
@@ -13,7 +14,7 @@ const generateProductReviewFilterOption = ({
   option.where = { productId };
   if (point) option.where.point = point;
   if (page && limit) {
-    option.offset = (page-1) * limit;
+    option.offset = (page - 1) * limit;
     option.limit = limit;
   }
   return option;
@@ -42,6 +43,10 @@ const getProductReviews = async (productId, { point, page, limit }) => {
     page,
     limit,
   });
+  option.include = {
+    model: User,
+    attributes: ['name'],
+  };
   const reviews = await ProductReview.findAll(option);
   if (!reviews) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product id not exists');

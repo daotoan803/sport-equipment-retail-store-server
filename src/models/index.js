@@ -39,8 +39,8 @@ Brand.hasMany(Product);
 Product.belongsTo(Brand);
 
 // Category --- Brand *-*
-Category.belongsToMany(Brand, { through: CategoryBrand, onDelete: 'CASCADE' });
-Brand.belongsToMany(Category, { through: CategoryBrand, onDelete: 'CASCADE' });
+Category.belongsToMany(Brand, { through: CategoryBrand });
+Brand.belongsToMany(Category, { through: CategoryBrand });
 
 // Product --- ProductPreview 1-*
 Product.hasMany(ProductReview);

@@ -163,7 +163,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: productId
  *    requestBody:
  *      required: true

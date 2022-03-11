@@ -69,7 +69,7 @@ module.exports = routes;
  *      - bearerAuth: []
  *
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: brandId
  *    requestBody:
  *      required: true
@@ -104,7 +104,7 @@ module.exports = routes;
  *    security:
  *      - bearerAuth: []
  *    parameters:
- *      - in: params
+ *      - in: path
  *        name: brandId
  *        description: Id of brand need to be delete
  *    responses:
