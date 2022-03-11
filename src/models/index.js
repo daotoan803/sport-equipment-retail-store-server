@@ -78,18 +78,20 @@ Product.hasMany(Order);
 Order.belongsTo(Product);
 
 exports.initialize = async () => {
-  const force = false;
+  const force = !false;
   const syncOptions = { force, alter: !force };
   if (syncOptions.force) {
     dbUtils.cleanImageUploadFolder(syncOptions);
   }
-  await sequelizeConnection.sync();
+  await sequelizeConnection.sync(syncOptions);
 
-  await Promise.all([
-    dbUtils.createDefaultAdminAccount(),
-    dbUtils.createSampleDataForTesting(),
-    dbUtils.createDummyUsers(),
-  ]);
+  if (force) {
+    await Promise.all([
+      dbUtils.createDefaultAdminAccount(),
+      dbUtils.createSampleDataForTesting(),
+      dbUtils.createDummyUsers(),
+    ]);
+  }
 
   return;
 };
