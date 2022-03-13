@@ -76,7 +76,10 @@ module.exports = routes;
  *                  type: array
  *                  items:
  *                    $ref: '#components/schemas/ProductPreview'
- *
+ *      404:
+ *        description: Category code or categoryGroupCode or brandId not exists
+ *      400:
+ *        description: Invalid query
  * /api/products/{id}:
  *  get:
  *    tags: [Product]

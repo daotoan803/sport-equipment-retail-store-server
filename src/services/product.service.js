@@ -8,6 +8,7 @@ const Brand = require('../models/brand.model');
 const ProductImage = require('../models/product-image.model');
 const sequelizeConnection = require('../models/db-connection');
 const imageUtil = require('../utils/image.util');
+const CategoryGroup = require('../models/category-group.model');
 
 const productPreviewAttributes = [
   'id',
@@ -25,7 +26,7 @@ const productPreviewAttributes = [
 const generateProductFilterOption = (filterOption = {}) => {
   if (Object.keys(filterOption).length === 0) return {};
   const option = {};
-  const { page, limit, sortBy, brandId } = filterOption;
+  const { page, limit, sortBy, brandId, state } = filterOption;
   if (page && limit) {
     option.offset = (page - 1) * limit;
     option.limit = limit;
@@ -37,6 +38,14 @@ const generateProductFilterOption = (filterOption = {}) => {
 
   if (brandId) {
     option.where = { brandId };
+  }
+
+  option.where = option.where || {};
+
+  option.where.state = [Product.state.available, Product.state.outStock];
+
+  if (state) {
+    option.where.state = state;
   }
 
   return option;
@@ -57,7 +66,7 @@ const findProductById = async (productId, options = {}) => {
 
 const getProductDetail = async (productId) => {
   const product = await Product.findByPk(productId, {
-    include: [Brand, Category, ProductImage],
+    include: [Brand, { model: Category, include: CategoryGroup }, ProductImage],
   });
 
   if (!product)

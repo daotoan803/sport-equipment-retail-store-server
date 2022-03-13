@@ -14,6 +14,12 @@ routes.post(
   productController.addProduct
 );
 
+routes.get(
+  '/',
+  validate(productValidation.getProductsForAdmin),
+  productController.getProducts
+);
+
 routes.post(
   '/check-title',
   validate(productValidation.checkProductTitleIsUnique),
@@ -41,6 +47,62 @@ module.exports = routes;
 /**
  * @openapi
  * /api/admin/products:
+ *  get:
+ *    summary: Get products
+ *    tags: [Admin Product]
+ *    
+ *    parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *           type: number
+ *           minValue: 1
+ *      - in: query
+ *        name: limit
+ *        schema:
+ *          type: number
+ *          minValue: 0
+ *      - in: query
+ *        name: sortBy
+ *        schema:
+ *          type: string
+ *          enum: [name, priceAsc, priceDesc, mostVisited, mostSold]
+ *      - in: query
+ *        name: brandId
+ *        schema:
+ *          type: number
+ *      - in: query
+ *        name: categoryCode
+ *        schema:
+ *          type: string
+ *      - in: query
+ *        name: categoryGroupCode
+ *        schema:
+ *          type: string
+ *      - in: query
+ *        name: state
+ *        description: find by state
+ *        schema:
+ *          type: string
+ *          enum: [available, outStock, hidden]
+ *    responses:
+ *      200:
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                count:
+ *                  type: number
+ *                  description: Total products
+ *                rows:
+ *                  type: array
+ *                  items:
+ *                    $ref: '#components/schemas/ProductPreview'
+ *      404:
+ *        description: Category code or categoryGroupCode or brandId not exists
+ *      400:
+ *        description: Invalid query
  *  post:
  *    tags: [Admin Product]
  *    summary: Add new product

@@ -14,6 +14,20 @@ const getProducts = {
     .with('page', 'limit'),
 };
 
+const getProductsForAdmin = {
+  query: Joi.object({
+    sortBy: Joi.string().equal(...Object.keys(Product.sortOptions)),
+    page: Joi.number().min(1),
+    limit: Joi.number().min(0),
+    categoryGroupCode: Joi.string(),
+    categoryCode: Joi.string(),
+    brandId: Joi.alternatives(Joi.string(), Joi.number()),
+    state: Joi.boolean(),
+  })
+    .without('categoryGroupCode', 'categoryCode')
+    .with('page', 'limit'),
+};
+
 const getProductDetail = {
   params: Joi.object({
     productId: Joi.alternatives(
@@ -31,7 +45,9 @@ const addProduct = {
     discountPrice: Joi.number().min(0).max(Joi.ref('price')),
     warrantyPeriodByDay: Joi.number().min(0).required(),
     availableQuantity: Joi.number().min(0).required(),
-    state: Joi.string().equal(...Object.values(Product.state)).required(),
+    state: Joi.string()
+      .equal(...Object.values(Product.state))
+      .required(),
     brandId: Joi.string().required(),
     categoryId: Joi.string().required(),
   }),
@@ -62,7 +78,9 @@ const updateProduct = {
     discountPrice: Joi.number().min(0).max(Joi.ref('price')),
     warrantyPeriodByDay: Joi.number().min(0).required(),
     availableQuantity: Joi.number().min(0).required(),
-    state: Joi.string().equal(...Object.values(Product.state)).required(),
+    state: Joi.string()
+      .equal(...Object.values(Product.state))
+      .required(),
     brandId: Joi.string().required(),
     categoryId: Joi.string().required(),
     removeImageIds: Joi.array().items(Joi.number()),
@@ -76,8 +94,9 @@ const updateProduct = {
 module.exports = {
   getProducts,
   getProductDetail,
-  addProduct, 
+  addProduct,
   addPreviewImages,
   checkProductTitleIsUnique,
   updateProduct,
+  getProductsForAdmin,
 };
