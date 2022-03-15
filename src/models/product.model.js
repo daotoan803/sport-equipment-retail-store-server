@@ -189,11 +189,19 @@ Product.init(
     paranoid: true,
     hooks: {
       beforeCreate(product) {
+        console.log(product.availableQuantity);
         if (product.availableQuantity === 0) {
           product.state === Product.state.outStock;
         }
       },
       beforeSave(product) {
+        console.log(product.availableQuantity);
+        if (product.availableQuantity === 0) {
+          product.state === Product.state.outStock;
+        }
+      },
+      beforeUpdate(product) {
+        console.log(product.availableQuantity);
         if (product.availableQuantity === 0) {
           product.state === Product.state.outStock;
         }

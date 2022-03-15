@@ -67,6 +67,7 @@ const findProductById = async (productId, options = {}) => {
 const getProductDetail = async (productId) => {
   const product = await Product.findByPk(productId, {
     include: [Brand, { model: Category, include: CategoryGroup }, ProductImage],
+    paranoid: false,
   });
 
   if (!product)
@@ -265,15 +266,22 @@ const updateProduct = async (
     throw e;
   }
 };
-
-const updateProductAvailableQuantity = async (productId, quantityChanged) => {
-  const product = await findProductById(productId);
-  return product.increment('availableQuantity', { by: quantityChanged });
+const onOrder = async (productId, quantity) => {
+  await Product.increment(
+    { availableQuantity: -quantity, soldCount: quantity },
+    { where: { id: productId } }
+  );
+  const product = await Product.findByPk(productId);
+  if (product.availableQuantity === 0) {
+    product.state = Product.state.outStock;
+    return product.save();
+  }
 };
 
 module.exports = {
   getProductDetail,
   getProducts,
+  onOrder,
   getProductsByCategoryCode,
   getProductsByCategoryGroupCode,
   increaseProductVisitedCount,
@@ -282,5 +290,4 @@ module.exports = {
   removeProductImages,
   updateProduct,
   findProductById,
-  updateProductAvailableQuantity,
 };

@@ -8,7 +8,7 @@ const checkProductInUserCart = async (cart) => {
     cart.map((productInCart) => {
       if (productInCart.state !== Product.state.available) {
         hasChange = true;
-        return productInCart.destroy();
+        return productInCart.cart.destroy();
       } else if (
         productInCart.availableQuantity < productInCart.cart.quantity
       ) {

@@ -34,35 +34,38 @@ const checkOrderGroupBelongToUser = (orderGroup, userId) => {
 const checkAllProductInOrderIsAvailableAndGetProducts = async (products) => {
   return [
     ...(await Promise.all(
-      products.map(async ({ productId, quantity, price }) => {
-        const product = await Product.findByPk(productId);
-        if (!product) {
-          throw new ApiError(
-            httpStatus.NOT_FOUND,
-            `Product id: ${productId} not exists`
-          );
-        }
-        if (product.state !== Product.state.available) {
-          throw new ApiError(
-            httpStatus.BAD_REQUEST,
-            `Product ${product.title} is not available for sell`
-          );
-        }
-        if (product.availableQuantity < quantity) {
-          throw new ApiError(
-            httpStatus.CONFLICT,
-            `${product.id} only has ${product.availableQuantity} in stock`
-          );
-        }
-        if (product.price !== price && product.discountPrice !== price) {
-          throw new ApiError(
-            httpStatus.CONFLICT,
-            `${productId} has changed price, please reload and try again`
-          );
-        }
-        product.quantity = quantity;
-        return product;
-      })
+      products
+        .filter(({ quantity }) => quantity !== 0)
+        .map(async ({ productId, quantity, price }) => {
+          const product = await Product.findByPk(productId);
+
+          if (!product) {
+            throw new ApiError(
+              httpStatus.NOT_FOUND,
+              `Product id: ${productId} not exists`
+            );
+          }
+          if (product.state !== Product.state.available) {
+            throw new ApiError(
+              httpStatus.BAD_REQUEST,
+              `Product ${product.title} is not available for sell`
+            );
+          }
+          if (product.availableQuantity < quantity) {
+            throw new ApiError(
+              httpStatus.CONFLICT,
+              `${product.id} only has ${product.availableQuantity} in stock`
+            );
+          }
+          if (product.price !== price && product.discountPrice !== price) {
+            throw new ApiError(
+              httpStatus.CONFLICT,
+              `${productId} has changed price, please reload and try again`
+            );
+          }
+          product.quantity = quantity;
+          return product;
+        })
     )),
   ];
 };
@@ -76,9 +79,15 @@ const findOrderGroupById = async (orderGroupId, options = {}) => {
 };
 
 const createOrder = async (
-  userId,
+  user,
   { address, phoneNumber, note, products: productInOrders }
 ) => {
+  user.address = user.address || address;
+  user.phoneNumber = user.phoneNumber || phoneNumber;
+  user.save();
+
+  const userId = user.id;
+
   const products = await checkAllProductInOrderIsAvailableAndGetProducts(
     productInOrders
   );
@@ -115,10 +124,7 @@ const createOrder = async (
     await transaction.commit();
 
     products.forEach((product) => {
-      productService.updateProductAvailableQuantity(
-        product.id,
-        -product.quantity
-      );
+      productService.onOrder(product.id, product.quantity)
     });
 
     orderGroup.dataValues.orders = orders;
@@ -185,8 +191,14 @@ const getOrderGroups = async ({ state, page, limit }) => {
   const filterOption = generateOrderGroupFilter({ state, page, limit });
   return OrderGroup.findAll({
     ...filterOption,
-    order: [['createdAt', 'ASC']],
-    include: Order,
+    order: [['createdAt', 'DESC']],
+    include: {
+      model: Order,
+      include: {
+        model: Product,
+        attributes: ['mainImageUrl'],
+      },
+    },
   });
 };
 
@@ -196,8 +208,14 @@ const getOrderGroupsByUser = async (userId, { page, limit }) => {
   filterOption.where.userId = userId;
   return OrderGroup.findAll({
     ...filterOption,
-    order: [['createdAt', 'ASC']],
-    include: Order,
+    order: [['createdAt', 'DESC']],
+    include: {
+      model: Order,
+      include: {
+        model: Product,
+        attributes: ['mainImageUrl', 'title'],
+      },
+    },
   });
 };
 

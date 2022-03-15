@@ -1,6 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
 const _ = require('lodash');
-const validator = require('validator');
 const bcrypt = require('bcrypt');
 const Account = require('./account.model');
 const jwt = require('jsonwebtoken');
@@ -112,14 +111,6 @@ User.init(
       allowNull: true,
       set(value) {
         this.setDataValue('phoneNumber', value.trim());
-      },
-      validate: {
-        isPhoneNumber(value) {
-          if (!value) return;
-          if (!validator.isMobilePhone(value, 'vi-VN')) {
-            throw new Error('Please enter a valid phone number');
-          }
-        },
       },
     },
 

@@ -5,7 +5,7 @@ const createOrder = {
   body: Joi.object({
     address: Joi.string().trim().min(10).required(),
     phoneNumber: Joi.string().trim().min(10).max(20).required(),
-    note: Joi.string().trim(),
+    note: Joi.string().allow(null, ''),
     products: Joi.array().items(
       Joi.object({
         productId: Joi.string().required(),
