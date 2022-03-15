@@ -32,7 +32,7 @@ OrderGroup.init(
       allowNull: false,
     },
     phoneNumber: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(20),
       allowNull: false,
     },
     note: {

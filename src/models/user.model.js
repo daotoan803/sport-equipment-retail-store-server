@@ -59,6 +59,20 @@ class User extends Model {
       throw e;
     }
   }
+
+  getCart() {
+    return this.getProducts({
+      attributes: [
+        'id',
+        'title',
+        'price',
+        'discountPrice',
+        'state',
+        'mainImageUrl',
+        'availableQuantity',
+      ],
+    });
+  }
 }
 
 User.init(

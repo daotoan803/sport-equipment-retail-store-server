@@ -94,6 +94,8 @@ const validateUserKey = async (userId, userKey) => {
   if (user.account.userKey !== userKey)
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Token key invalid');
 
+  delete user.dataValues.account;
+
   return user;
 };
 

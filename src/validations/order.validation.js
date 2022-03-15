@@ -3,13 +3,14 @@ const OrderGroup = require('../models/order-group.model');
 
 const createOrder = {
   body: Joi.object({
-    address: Joi.string().trim().min(1).required(),
-    phoneNumber: Joi.string().trim().min(10).required(),
+    address: Joi.string().trim().min(10).required(),
+    phoneNumber: Joi.string().trim().min(10).max(20).required(),
     note: Joi.string().trim(),
     products: Joi.array().items(
       Joi.object({
         productId: Joi.string().required(),
         quantity: Joi.number().min(1).required(),
+        price: Joi.number().required(),
       })
     ),
   }),

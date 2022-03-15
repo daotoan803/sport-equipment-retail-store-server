@@ -1,5 +1,33 @@
 const Cart = require('../models/cart.model');
 const productService = require('../services/product.service');
+const Product = require('../models/product.model');
+
+const checkProductInUserCart = async (cart) => {
+  let hasChange = false;
+  await Promise.all(
+    cart.map((productInCart) => {
+      if (productInCart.state !== Product.state.available) {
+        hasChange = true;
+        return productInCart.destroy();
+      } else if (
+        productInCart.availableQuantity < productInCart.cart.quantity
+      ) {
+        hasChange = true;
+        return Cart.update(
+          { quantity: productInCart.availableQuantity },
+          {
+            where: {
+              userId: productInCart.cart.userId,
+              productId: productInCart.id,
+            },
+          }
+        );
+      }
+    })
+  );
+
+  return hasChange;
+};
 
 /**
  * If product not in user's cart, add it to user's cart. Else, increase the quantity
@@ -13,12 +41,15 @@ const addProductToCartOrUpdateQuantity = async (
   quantity = 1
 ) => {
   quantity = quantity > 0 ? quantity : 1;
-  await productService.findProductById(productId);
+  const product = await productService.findProductById(productId);
+  quantity = Math.min(quantity, product.availableQuantity);
   const productInUserCart = await Cart.findOne({
     where: { userId, productId },
   });
   if (productInUserCart) {
-    return productInUserCart.increment('quantity', { by: quantity });
+    return productInUserCart.increment('quantity', {
+      by: quantity,
+    });
   }
   return Cart.create({
     userId,
@@ -28,7 +59,7 @@ const addProductToCartOrUpdateQuantity = async (
 };
 
 const updateProductInCartQuantity = async (userId, productId, quantity) => {
-  await productService.findProductById(productId);
+  const product = await productService.findProductById(productId);
 
   const productInCart = await Cart.findOne({ where: { userId, productId } });
   if (!productInCart)
@@ -38,20 +69,17 @@ const updateProductInCartQuantity = async (userId, productId, quantity) => {
     await Cart.destroy({ where: { userId, productId } });
     return;
   }
+  quantity = Math.min(quantity, product.availableQuantity);
   await Cart.update({ quantity }, { where: { userId, productId } });
 };
 
 const getProductsInUserCart = async (user) => {
-  const cart = await user.getProducts({
-    attributes: [
-      'id',
-      'title',
-      'price',
-      'discountPrice',
-      'state',
-      'mainImageUrl',
-    ],
-  });
+  let cart = await user.getCart();
+
+  const hasChange = await checkProductInUserCart(cart);
+  if (hasChange) {
+    cart = await user.getCart();
+  }
 
   return cart.map((product) => {
     const quantity = product.cart.quantity;

@@ -34,7 +34,7 @@ const checkOrderGroupBelongToUser = (orderGroup, userId) => {
 const checkAllProductInOrderIsAvailableAndGetProducts = async (products) => {
   return [
     ...(await Promise.all(
-      products.map(async ({ productId, quantity }) => {
+      products.map(async ({ productId, quantity, price }) => {
         const product = await Product.findByPk(productId);
         if (!product) {
           throw new ApiError(
@@ -50,8 +50,14 @@ const checkAllProductInOrderIsAvailableAndGetProducts = async (products) => {
         }
         if (product.availableQuantity < quantity) {
           throw new ApiError(
-            httpStatus.BAD_REQUEST,
-            `${product.id} is out of stock`
+            httpStatus.CONFLICT,
+            `${product.id} only has ${product.availableQuantity} in stock`
+          );
+        }
+        if (product.price !== price && product.discountPrice !== price) {
+          throw new ApiError(
+            httpStatus.CONFLICT,
+            `${productId} has changed price, please reload and try again`
           );
         }
         product.quantity = quantity;
@@ -71,10 +77,10 @@ const findOrderGroupById = async (orderGroupId, options = {}) => {
 
 const createOrder = async (
   userId,
-  { address, phoneNumber, note, products: productIdAndQuantityList }
+  { address, phoneNumber, note, products: productInOrders }
 ) => {
   const products = await checkAllProductInOrderIsAvailableAndGetProducts(
-    productIdAndQuantityList
+    productInOrders
   );
 
   const totalPrice = products.reduce(
